@@ -1,8 +1,8 @@
 {
   "_type": "session_loader",
-  "_version": "0.6.0",
+  "_version": "0.6.1",
   "_instructions": {
-    "purpose": "Lightweight session loader. Fetch this file at session start and acknowledge it is loaded. Use the file paths below to fetch index or chunk files individually — never fetch knowledge_base.json (deprecated).",
+    "purpose": "Lightweight session loader. Fetch this file at session start and acknowledge it is loaded. Use the file paths below to fetch index or chunk files individually.",
     "how_to_load": [
       "1. At session start: fetch session_loader.json. Acknowledge it is loaded. Do NOT fetch any chunk or index file yet.",
       "2. INDEX QUERIES (e.g. 'index: concepts.frameworks'): fetch ONLY the corresponding index/ file. These are tiny and answer listing questions without loading content.",
@@ -11,7 +11,7 @@
       "5. After confirmation: fetch ONLY the corresponding chunks/ file.",
       "6. After reading a chunk: summarise what was loaded and proceed.",
       "7. Never speculatively fetch additional files unless the user explicitly requests it.",
-      "8. knowledge_base.json is DEPRECATED. Never fetch it."
+      "8. NEVER fetch anything from _archive/. That folder is a read-only human backup and must never be accessed by Claude."
     ],
     "lookup_syntax": {
       "load": "load: <domain>.<subtopic>",
