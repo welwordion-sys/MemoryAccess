@@ -5,165 +5,284 @@
 
   "meta": {
     "project_info": {
-      "_last_updated": "YYYY-MM-DD",
+      "_last_updated": "2026-04-28",
       "data": {
-        "project_name": "",
-        "author": "",
-        "description": "",
+        "project_name": "Representation Space Traversal AI",
+        "author": "welwordion-sys",
+        "description": "A novel AI architecture where traversal of data representation space is the primary computational mechanism. The system explicitly navigates transformations of problem representations until recognisable patterns emerge, rather than treating representation learning as a byproduct of optimisation.",
         "status": "active"
       },
-      "notes": "## Project Info\nReplace the fields above with your project details. Status options: active | paused | archived."
+      "notes": "## Project Info\nStarted April 28 2026. Core idea: instead of find the answer, find the representation in which the answer becomes obvious."
     },
     "versioning": {
-      "_last_updated": "YYYY-MM-DD",
+      "_last_updated": "2026-04-28",
       "data": {
         "schema_version": "0.1.0",
-        "changelog": []
+        "changelog": [
+          { "date": "2026-04-28", "change": "Initial population from sessions 1-6" }
+        ]
       },
       "notes": "## Versioning\nAdd changelog entries as: { \"date\": \"YYYY-MM-DD\", \"change\": \"description\" }"
     },
     "global_tags": {
-      "_last_updated": "YYYY-MM-DD",
+      "_last_updated": "2026-04-28",
       "data": {
-        "tags": []
+        "tags": ["graph-theory", "representation-learning", "genetic-algorithms", "graph-rewriting", "AI-architecture", "traversal", "innovation", "translation"]
       },
-      "notes": "## Global Tags\nShared tags used across chunks for cross-referencing. Example: [\"physics\", \"draft\", \"priority\"]"
+      "notes": "## Global Tags\nShared tags used across chunks for cross-referencing."
     }
   },
 
   "research": {
     "sources": {
-      "_last_updated": "YYYY-MM-DD",
+      "_last_updated": "2026-04-28",
       "data": {
-        "sources": []
+        "sources": [
+          { "id": "src_01", "title": "Kolmogorov Complexity", "author": "", "url": "", "accessed": "", "relevance": "Shortest description of data — related to compression criterion for library entries" },
+          { "id": "src_02", "title": "Solomonoff Induction", "author": "", "url": "", "accessed": "", "relevance": "Searching over programs — related to traversal over rule space" },
+          { "id": "src_03", "title": "Weisfeiler-Leman Graph Isomorphism Algorithm", "author": "", "url": "", "accessed": "", "relevance": "Approximate graph similarity — alternative to exact GI for pattern recognition" },
+          { "id": "src_04", "title": "Graph Neural Networks", "author": "", "url": "", "accessed": "", "relevance": "Fuzzy pattern matching over graphs without solving GI explicitly" },
+          { "id": "src_05", "title": "Minimum Description Length (MDL) Principle", "author": "", "url": "", "accessed": "", "relevance": "Candidate compression criterion for when a subgraph earns library entry" },
+          { "id": "src_06", "title": "Cognitive Chunking Theory", "author": "", "url": "", "accessed": "", "relevance": "Compressing repeated patterns into single units — analogous to translator/library mechanism" },
+          { "id": "src_07", "title": "Hierarchical Temporal Memory (HTM)", "author": "", "url": "", "accessed": "", "relevance": "Related hierarchical pattern recognition architecture" },
+          { "id": "src_08", "title": "Category Theory", "author": "", "url": "", "accessed": "", "relevance": "Structure-preserving transformations — relevant to translation operations" }
+        ]
       },
-      "notes": "## Sources\nEach source: { \"id\": \"src_01\", \"title\": \"\", \"author\": \"\", \"url\": \"\", \"accessed\": \"YYYY-MM-DD\", \"relevance\": \"\" }"
+      "notes": "## Sources\nRelated existing concepts identified during sessions. Not direct citations — areas to explore."
     },
     "findings": {
-      "_last_updated": "YYYY-MM-DD",
+      "_last_updated": "2026-04-28",
       "data": {
-        "findings": []
+        "findings": [
+          { "id": "f_01", "summary": "Most data structures reduce to directed graphs + traversal rules. Arrays, trees, linked lists, state machines, neural nets are all special cases.", "source_ids": [], "confidence": "high", "tags": ["graph-theory", "data-structures"] },
+          { "id": "f_02", "summary": "Problem difficulty is often a function of representation, not inherent complexity. Math problem solving and genetic algorithm effectiveness both confirm this.", "source_ids": [], "confidence": "high", "tags": ["representation-learning"] },
+          { "id": "f_03", "summary": "Graph isomorphism is not known to be in P, but approximate similarity (graph kernels, WL algorithm) may suffice for pattern recognition.", "source_ids": ["src_03", "src_04"], "confidence": "high", "tags": ["graph-theory", "GI"] },
+          { "id": "f_04", "summary": "Hybrid representation (graph structure + primitive attributes at leaves) addresses bloat concern without requiring purely graph-based encoding.", "source_ids": [], "confidence": "medium", "tags": ["representation-learning", "graph-theory"] },
+          { "id": "f_05", "summary": "Rule space bloat is the lesser evil compared to data space bloat — rules are static one-time design cost, data is dynamic runtime cost.", "source_ids": [], "confidence": "medium", "tags": ["architecture"] },
+          { "id": "f_06", "summary": "Library entries must be rule-invariant pairs, not subgraphs alone. A subgraph only has diagnostic value relative to the rules that produced it during traversal.", "source_ids": [], "confidence": "high", "tags": ["library", "invariants"] },
+          { "id": "f_07", "summary": "Frequency of occurrence alone does not earn library entry. Entries persist only when occurrence correlates with labels.", "source_ids": [], "confidence": "high", "tags": ["library", "labelling"] }
+        ]
       },
-      "notes": "## Findings\nEach finding: { \"id\": \"f_01\", \"summary\": \"\", \"source_ids\": [], \"confidence\": \"high|medium|low\", \"tags\": [] }"
+      "notes": "## Findings\nKey insights established across sessions 1-6."
     },
     "open_questions": {
-      "_last_updated": "YYYY-MM-DD",
+      "_last_updated": "2026-04-28",
       "data": {
-        "questions": []
+        "questions": [
+          { "id": "q_01", "question": "What defines the topology of representation space? How do you know you are moving toward a simpler or more recognisable encoding without already having a pattern to compare against?", "priority": "high", "related_chunks": ["concepts.frameworks", "concepts.definitions"] },
+          { "id": "q_02", "question": "What compression criterion governs when a subgraph earns its own upper-layer node / library entry? Candidates: frequency, MDL, predictive utility.", "priority": "high", "related_chunks": ["concepts.frameworks"] },
+          { "id": "q_03", "question": "How does the data system decide which candidate invariants to retain vs discard without an explicit confirmation step? Reinforcement through labelled use is the current answer — needs formalising.", "priority": "high", "related_chunks": ["concepts.frameworks"] },
+          { "id": "q_04", "question": "How does the rewrite system evolve itself — same feedback loop, but what is the fitness signal for its own logic?", "priority": "high", "related_chunks": ["concepts.frameworks"] },
+          { "id": "q_05", "question": "Should genetic operations (mutation, crossover) be fixed primitives or should they also be representable as graph rewrites and therefore evolvable?", "priority": "medium", "related_chunks": ["concepts.frameworks"] },
+          { "id": "q_06", "question": "Is exact graph isomorphism needed or is approximate similarity sufficient for the recognition cascade?", "priority": "medium", "related_chunks": ["research.findings"] }
+        ]
       },
-      "notes": "## Open Questions\nEach question: { \"id\": \"q_01\", \"question\": \"\", \"priority\": \"high|medium|low\", \"related_chunks\": [] }"
+      "notes": "## Open Questions\nUnresolved questions as of session 6."
     },
     "methodology": {
-      "_last_updated": "YYYY-MM-DD",
+      "_last_updated": "2026-04-28",
       "data": {
-        "approach": "",
-        "tools": [],
-        "constraints": []
+        "approach": "Theoretical architecture design through iterative conversation. Ideas developed session by session, with corrections applied when misunderstandings identified. Photo recognition used as concrete fitness function / test case.",
+        "tools": ["Claude AI (sessions 1-6)", "GitHub MCP for persistent memory"],
+        "constraints": ["No implementation yet — purely architectural", "Graph isomorphism computational cost is a known concern", "Unbounded parameter growth in hierarchy is a known concern"]
       },
-      "notes": "## Methodology\nDescribe the research approach, tools used, and any known constraints or biases."
+      "notes": "## Methodology\nPurely theoretical at this stage. Implementation not started."
     }
   },
 
   "concepts": {
     "definitions": {
-      "_last_updated": "YYYY-MM-DD",
+      "_last_updated": "2026-04-28",
       "data": {
-        "terms": []
+        "terms": [
+          { "term": "Translation", "definition": "Reversible graph transformation. Same data viewed in a different representation. No information lost. Can always be undone. Primary operation of the data transformation system.", "aliases": ["reversible transformation"], "related_terms": ["Innovation", "Data System"], "tags": ["core-concept"] },
+          { "term": "Innovation", "definition": "Irreversible transformation. Information is destroyed or genuinely created. New structure emerges that cannot be walked back. Permitted only in the logic rewriting system.", "aliases": ["irreversible transformation"], "related_terms": ["Translation", "Rewrite System"], "tags": ["core-concept"] },
+          { "term": "Library", "definition": "Shared store of rule-invariant pairs discovered through labelled training. Has two layers: empirical (label-correlated, permanent) and reasoned (logic-derived, requires human approval to unlock). Read by both systems, written only by the data system (empirical layer).", "aliases": ["shared library", "invariant library"], "related_terms": ["Empirical Library", "Reasoned Library", "Rule-Invariant Pair"], "tags": ["core-concept"] },
+          { "term": "Rule-Invariant Pair", "definition": "A library entry consisting of a subgraph paired with the rule context that produced it during traversal. A subgraph alone has no diagnostic value — the rule context is required.", "aliases": [], "related_terms": ["Library"], "tags": ["core-concept"] },
+          { "term": "Empirical Library", "definition": "Layer 1 of the shared library. Contains only label-correlated entries. Permanent — never overwritten. Serves as ground truth anchor for the whole system.", "aliases": [], "related_terms": ["Library", "Reasoned Library"], "tags": ["core-concept"] },
+          { "term": "Reasoned Library", "definition": "Layer 2 of the shared library. Contains logic-derived entries. Only unlocked after human approval of capability threshold. Can be audited and diffed against empirical library.", "aliases": [], "related_terms": ["Library", "Empirical Library"], "tags": ["core-concept"] },
+          { "term": "Layer Fusion", "definition": "Collapsing subgraphs upward — compressing two layers into one. A perspective change, not terrain restructuring. Governed by the data system.", "aliases": ["fusion"], "related_terms": ["Layer Splitting", "Data System"], "tags": ["architecture"] },
+          { "term": "Layer Splitting", "definition": "Expanding subgraphs downward — decomposing one layer into two. Governed by the data system.", "aliases": ["splitting"], "related_terms": ["Layer Fusion", "Data System"], "tags": ["architecture"] },
+          { "term": "Recognition Cascade", "definition": "Recognition is not one test but a cascade of partial matches climbing layers until a threshold is met. E.g. pixel layer: no pattern; edge layer: partial structure; object layer: isomorphism fires.", "aliases": [], "related_terms": ["Library", "Translation"], "tags": ["mechanism"] }
+        ]
       },
-      "notes": "## Definitions\nEach term: { \"term\": \"\", \"definition\": \"\", \"aliases\": [], \"related_terms\": [], \"tags\": [] }"
+      "notes": "## Definitions\nCore terms established across sessions 1-6."
     },
     "frameworks": {
-      "_last_updated": "YYYY-MM-DD",
+      "_last_updated": "2026-04-28",
       "data": {
-        "frameworks": []
+        "frameworks": [
+          {
+            "name": "Representation Space Traversal Architecture",
+            "description": "A two-system AI architecture where the primary mechanism is explicit traversal of data representation space, rather than treating representation learning as a byproduct of optimisation.",
+            "components": [
+              "Data Transformation System",
+              "Logic Rewriting System",
+              "Shared Library (Empirical + Reasoned layers)",
+              "Hierarchical Graph Structure",
+              "Input Layer (immutable)"
+            ],
+            "source_ids": [],
+            "tags": ["AI-architecture", "core-framework"]
+          },
+          {
+            "name": "Data Transformation System",
+            "description": "Travels representation space using reversible graph transformations (translations). Owns and restructures the shared library. Governs layer fusion and splitting. Writes to empirical library only when occurrence matches labels. Cannot innovate — all operations reversible.",
+            "components": [
+              "Graph traversal engine",
+              "Layer fusion/splitting logic",
+              "Empirical library writer",
+              "Rule assignment after restructuring"
+            ],
+            "source_ids": [],
+            "tags": ["AI-architecture", "data-system"]
+          },
+          {
+            "name": "Logic Rewriting System",
+            "description": "Improves the travel logic of the data system. Operates irreversibly on rules (innovation permitted). Evolves itself by the same mechanism using match quality as fitness signal. No write access to either library layer or data.",
+            "components": [
+              "Rule graph rewriter",
+              "Self-evolution mechanism",
+              "Match quality fitness signal"
+            ],
+            "source_ids": [],
+            "tags": ["AI-architecture", "rewrite-system"]
+          },
+          {
+            "name": "Hierarchical Graph Layer Structure",
+            "description": "Multi-layer graph hierarchy where lower layers hold raw structure/primitives and upper layers hold nodes that represent subgraphs from below. Each layer has its own ruleset. Layers can fuse or split. Input layer is immutable. Middle layers can swap rules without propagating effects upward due to reversibility.",
+            "components": [
+              "Input layer (immutable)",
+              "Middle layers (reversible rule-swapping)",
+              "Upper layers (subgraph nodes)",
+              "Per-layer rulesets"
+            ],
+            "source_ids": [],
+            "tags": ["AI-architecture", "graph-theory"]
+          },
+          {
+            "name": "Hybrid Representation Model",
+            "description": "Graph structure serves as the structural backbone; primitive values (numbers, raw data) are stored as node/edge attributes at leaves. Avoids bloating graph structure with primitive encodings while retaining full graph expressiveness for relationships and transformations.",
+            "components": [
+              "Graph backbone",
+              "Primitive leaf attributes",
+              "Lazy expansion policy (unfold to graph only when needed)"
+            ],
+            "source_ids": [],
+            "tags": ["representation-learning", "graph-theory"]
+          },
+          {
+            "name": "Human Capability Threshold Gate",
+            "description": "Human evaluates system readiness before unlocking the Reasoned Library. Threshold is NOT delegated to the system. Candidate criteria: accuracy across minimum distinct tasks, generalisation outside training distribution, internal consistency of logic-derived entries validated against labels.",
+            "components": [
+              "Success rate surface by system",
+              "Human evaluation step",
+              "Empirical library backup (permanent reference)"
+            ],
+            "source_ids": [],
+            "tags": ["safety", "human-oversight"]
+          }
+        ]
       },
-      "notes": "## Frameworks\nEach framework: { \"name\": \"\", \"description\": \"\", \"components\": [], \"source_ids\": [], \"tags\": [] }"
+      "notes": "## Frameworks\nMain architectural frameworks as of session 6."
     },
     "relationships": {
-      "_last_updated": "YYYY-MM-DD",
+      "_last_updated": "2026-04-28",
       "data": {
-        "relationships": []
+        "relationships": [
+          { "from": "Data System", "relation": "owns", "to": "Library", "notes": "Only the data system writes to the empirical library" },
+          { "from": "Rewrite System", "relation": "improves", "to": "Data System", "notes": "Rewrite system improves travel logic, not data directly" },
+          { "from": "Rewrite System", "relation": "reads", "to": "Library", "notes": "No write access" },
+          { "from": "Translation", "relation": "opposes", "to": "Innovation", "notes": "Translation is reversible; innovation is irreversible" },
+          { "from": "Layer Fusion", "relation": "derives_from", "to": "Translation", "notes": "Fusion is a perspective change — reversible — therefore belongs to data system" },
+          { "from": "Empirical Library", "relation": "grounds", "to": "Reasoned Library", "notes": "Empirical library is permanent anchor; reasoned library validated against it" },
+          { "from": "Rule-Invariant Pair", "relation": "composes", "to": "Library", "notes": "Library entries are pairs, not standalone subgraphs" },
+          { "from": "Genetic Algorithm", "relation": "operates_on", "to": "Rewrite System", "notes": "GA mechanism applies to rule graphs — mutation and crossover of rule structure" }
+        ]
       },
-      "notes": "## Relationships\nEach relationship: { \"from\": \"term_or_entity\", \"relation\": \"influences|opposes|derives_from|...\", \"to\": \"term_or_entity\", \"notes\": \"\" }"
+      "notes": "## Relationships\nKey relationships between architectural components."
     }
   },
 
   "entities": {
     "people": {
-      "_last_updated": "YYYY-MM-DD",
+      "_last_updated": "2026-04-28",
       "data": {
-        "people": []
+        "people": [
+          { "id": "p_01", "name": "welwordion-sys", "role": "Author / Designer", "affiliation": "", "relevance": "Creator of the Representation Space Traversal AI architecture", "tags": [] }
+        ]
       },
-      "notes": "## People\nEach person: { \"id\": \"p_01\", \"name\": \"\", \"role\": \"\", \"affiliation\": \"\", \"relevance\": \"\", \"tags\": [] }"
+      "notes": "## People"
     },
-    "organizations": {
-      "_last_updated": "YYYY-MM-DD",
-      "data": {
-        "organizations": []
-      },
-      "notes": "## Organizations\nEach org: { \"id\": \"o_01\", \"name\": \"\", \"type\": \"\", \"relevance\": \"\", \"tags\": [] }"
-    },
-    "locations": {
-      "_last_updated": "YYYY-MM-DD",
-      "data": {
-        "locations": []
-      },
-      "notes": "## Locations\nEach location: { \"id\": \"l_01\", \"name\": \"\", \"type\": \"city|region|virtual|...\", \"relevance\": \"\", \"tags\": [] }"
-    },
+    "organizations": { "_last_updated": "YYYY-MM-DD", "data": { "organizations": [] }, "notes": "## Organizations" },
+    "locations": { "_last_updated": "YYYY-MM-DD", "data": { "locations": [] }, "notes": "## Locations" },
     "artifacts": {
-      "_last_updated": "YYYY-MM-DD",
+      "_last_updated": "2026-04-28",
       "data": {
-        "artifacts": []
+        "artifacts": [
+          { "id": "a_01", "name": "knowledge_base.json", "type": "dataset", "description": "Persistent knowledge base for the project stored in GitHub", "location": "https://raw.githubusercontent.com/welwordion-sys/MemoryAccess/main/knowledge_base.json", "tags": ["memory"] },
+          { "id": "a_02", "name": "session_loader.json", "type": "tool", "description": "Lightweight session loader — share at start of each session to bootstrap context", "location": "https://raw.githubusercontent.com/welwordion-sys/MemoryAccess/main/session_loader.json", "tags": ["memory"] }
+        ]
       },
-      "notes": "## Artifacts\nEach artifact: { \"id\": \"a_01\", \"name\": \"\", \"type\": \"document|dataset|tool|...\", \"description\": \"\", \"location\": \"\", \"tags\": [] }"
+      "notes": "## Artifacts"
     }
   },
 
   "timeline": {
     "events": {
-      "_last_updated": "YYYY-MM-DD",
+      "_last_updated": "2026-04-28",
       "data": {
-        "events": []
+        "events": [
+          { "id": "e_01", "date": "2026-04-28", "title": "Project inception", "description": "Core idea of representation space traversal as primary AI mechanism first articulated", "related_entities": ["p_01"], "tags": [] },
+          { "id": "e_02", "date": "2026-04-28", "title": "Hybrid representation decided", "description": "Graph backbone + primitive leaf attributes chosen to address bloat concern", "related_entities": [], "tags": [] },
+          { "id": "e_03", "date": "2026-04-28", "title": "Two-system architecture established", "description": "Data system and rewrite system separated, with translation/innovation distinction", "related_entities": [], "tags": [] },
+          { "id": "e_04", "date": "2026-04-28", "title": "Two-layer library architecture established", "description": "Empirical and reasoned library layers defined with human capability threshold gate", "related_entities": [], "tags": [] },
+          { "id": "e_05", "date": "2026-04-28", "title": "GitHub MCP connected", "description": "Persistent memory via GitHub MCP established, knowledge base populated", "related_entities": ["p_01"], "tags": [] }
+        ]
       },
-      "notes": "## Events\nEach event: { \"id\": \"e_01\", \"date\": \"YYYY-MM-DD\", \"title\": \"\", \"description\": \"\", \"related_entities\": [], \"tags\": [] }"
+      "notes": "## Events"
     },
     "milestones": {
-      "_last_updated": "YYYY-MM-DD",
+      "_last_updated": "2026-04-28",
       "data": {
-        "milestones": []
+        "milestones": [
+          { "id": "m_01", "date": "2026-04-28", "title": "Architecture design phase complete (v0.1)", "status": "reached", "notes": "Core two-system architecture with library established across sessions 1-6" },
+          { "id": "m_02", "date": "", "title": "Formalise invariant retention criterion", "status": "planned", "notes": "Formalise how data system decides which candidate invariants to retain" },
+          { "id": "m_03", "date": "", "title": "Formalise rewrite system fitness signal", "status": "planned", "notes": "Define fitness signal for rewrite system self-evolution" },
+          { "id": "m_04", "date": "", "title": "First implementation prototype", "status": "planned", "notes": "Begin implementation — domain TBD" }
+        ]
       },
-      "notes": "## Milestones\nEach milestone: { \"id\": \"m_01\", \"date\": \"YYYY-MM-DD\", \"title\": \"\", \"status\": \"planned|reached|missed\", \"notes\": \"\" }"
+      "notes": "## Milestones"
     },
-    "periods": {
-      "_last_updated": "YYYY-MM-DD",
-      "data": {
-        "periods": []
-      },
-      "notes": "## Periods\nEach period: { \"id\": \"per_01\", \"label\": \"\", \"start\": \"YYYY-MM-DD\", \"end\": \"YYYY-MM-DD\", \"description\": \"\", \"tags\": [] }"
-    }
+    "periods": { "_last_updated": "YYYY-MM-DD", "data": { "periods": [] }, "notes": "## Periods" }
   },
 
   "notes": {
     "session_logs": {
-      "_last_updated": "YYYY-MM-DD",
+      "_last_updated": "2026-04-28",
       "data": {
-        "sessions": []
+        "sessions": [
+          { "date": "2026-04-28", "summary": "Session 1: Core idea introduced. Representation space traversal as primary mechanism. Analogy to math problem solving and GAs. Key concerns: discrete graph limits, primitive bloat, GI cost.", "chunks_loaded": [], "updates_made": [], "open_threads": ["topology of representation space", "learned vs rule-driven similarity metric"] },
+          { "date": "2026-04-28", "summary": "Session 2: Hybrid representation decided. Hierarchical layer architecture proposed. Translator as compression function. Unbounded parameter growth identified as core problem. Compression criterion needed.", "chunks_loaded": [], "updates_made": [], "open_threads": ["compression criterion for library entry", "learned vs rule-driven translator"] },
+          { "date": "2026-04-28", "summary": "Session 3: Graph rewriting + genetic algorithms introduced. Misunderstandings flagged by user — self-modifying recursive interpretation was off-base.", "chunks_loaded": [], "updates_made": [], "open_threads": ["clarify GA role — corrected in session 4"] },
+          { "date": "2026-04-28", "summary": "Session 4: Two transformation types defined (translation/innovation). Two-system architecture established. Layer fusion/splitting introduced. Open question: which system governs fusion/splitting.", "chunks_loaded": [], "updates_made": [], "open_threads": ["fusion/splitting ownership — resolved in session 5"] },
+          { "date": "2026-04-28", "summary": "Session 5: Fusion/splitting assigned to data system. Rewrite system feedback loop defined. Library introduced as shared structure. No known solution graphs — invariants discovered from labels.", "chunks_loaded": [], "updates_made": [], "open_threads": ["invariant retention formalisation", "rewrite system fitness signal"] },
+          { "date": "2026-04-28", "summary": "Session 6: Library corrected to rule-invariant pairs (not standalone subgraphs). Two-layer library established (empirical + reasoned). Human capability threshold gate defined for reasoned layer.", "chunks_loaded": [], "updates_made": [], "open_threads": ["invariant retention formalisation", "rewrite system fitness signal"] }
+        ]
       },
-      "notes": "## Session Logs\nEach session: { \"date\": \"YYYY-MM-DD\", \"summary\": \"\", \"chunks_loaded\": [], \"updates_made\": [], \"open_threads\": [] }"
+      "notes": "## Session Logs"
     },
-    "drafts": {
-      "_last_updated": "YYYY-MM-DD",
-      "data": {
-        "drafts": []
-      },
-      "notes": "## Drafts\nEach draft: { \"id\": \"d_01\", \"title\": \"\", \"status\": \"rough|review|final\", \"content\": \"\", \"tags\": [] }"
-    },
+    "drafts": { "_last_updated": "YYYY-MM-DD", "data": { "drafts": [] }, "notes": "## Drafts" },
     "ideas": {
-      "_last_updated": "YYYY-MM-DD",
+      "_last_updated": "2026-04-28",
       "data": {
-        "ideas": []
+        "ideas": [
+          { "id": "i_01", "idea": "Use photo recognition as first concrete fitness function / test domain for the system", "status": "exploring", "related_chunks": ["concepts.frameworks", "research.methodology"], "tags": ["implementation"] },
+          { "id": "i_02", "idea": "Genetic algorithm operates on rule graphs — mutation and crossover of rule structure, not just rule values. This is stronger than standard GAs which evolve values within fixed representation.", "status": "exploring", "related_chunks": ["concepts.frameworks"], "tags": ["genetic-algorithms", "graph-rewriting"] },
+          { "id": "i_03", "idea": "Grammar over rule space — impose hierarchy or grammar on rules so rule space itself has navigable structure rather than being flat.", "status": "exploring", "related_chunks": ["concepts.frameworks"], "tags": ["architecture"] }
+        ]
       },
-      "notes": "## Ideas\nEach idea: { \"id\": \"i_01\", \"idea\": \"\", \"status\": \"raw|exploring|shelved\", \"related_chunks\": [], \"tags\": [] }"
+      "notes": "## Ideas"
     }
   }
 }
