@@ -1,0 +1,169 @@
+{
+  "_type": "knowledge_base",
+  "_version": "0.1.0",
+  "_note": "Do not read this file in full. Load chunks by key path as directed by session_loader.json.",
+
+  "meta": {
+    "project_info": {
+      "_last_updated": "YYYY-MM-DD",
+      "data": {
+        "project_name": "",
+        "author": "",
+        "description": "",
+        "status": "active"
+      },
+      "notes": "## Project Info\nReplace the fields above with your project details. Status options: active | paused | archived."
+    },
+    "versioning": {
+      "_last_updated": "YYYY-MM-DD",
+      "data": {
+        "schema_version": "0.1.0",
+        "changelog": []
+      },
+      "notes": "## Versioning\nAdd changelog entries as: { \"date\": \"YYYY-MM-DD\", \"change\": \"description\" }"
+    },
+    "global_tags": {
+      "_last_updated": "YYYY-MM-DD",
+      "data": {
+        "tags": []
+      },
+      "notes": "## Global Tags\nShared tags used across chunks for cross-referencing. Example: [\"physics\", \"draft\", \"priority\"]"
+    }
+  },
+
+  "research": {
+    "sources": {
+      "_last_updated": "YYYY-MM-DD",
+      "data": {
+        "sources": []
+      },
+      "notes": "## Sources\nEach source: { \"id\": \"src_01\", \"title\": \"\", \"author\": \"\", \"url\": \"\", \"accessed\": \"YYYY-MM-DD\", \"relevance\": \"\" }"
+    },
+    "findings": {
+      "_last_updated": "YYYY-MM-DD",
+      "data": {
+        "findings": []
+      },
+      "notes": "## Findings\nEach finding: { \"id\": \"f_01\", \"summary\": \"\", \"source_ids\": [], \"confidence\": \"high|medium|low\", \"tags\": [] }"
+    },
+    "open_questions": {
+      "_last_updated": "YYYY-MM-DD",
+      "data": {
+        "questions": []
+      },
+      "notes": "## Open Questions\nEach question: { \"id\": \"q_01\", \"question\": \"\", \"priority\": \"high|medium|low\", \"related_chunks\": [] }"
+    },
+    "methodology": {
+      "_last_updated": "YYYY-MM-DD",
+      "data": {
+        "approach": "",
+        "tools": [],
+        "constraints": []
+      },
+      "notes": "## Methodology\nDescribe the research approach, tools used, and any known constraints or biases."
+    }
+  },
+
+  "concepts": {
+    "definitions": {
+      "_last_updated": "YYYY-MM-DD",
+      "data": {
+        "terms": []
+      },
+      "notes": "## Definitions\nEach term: { \"term\": \"\", \"definition\": \"\", \"aliases\": [], \"related_terms\": [], \"tags\": [] }"
+    },
+    "frameworks": {
+      "_last_updated": "YYYY-MM-DD",
+      "data": {
+        "frameworks": []
+      },
+      "notes": "## Frameworks\nEach framework: { \"name\": \"\", \"description\": \"\", \"components\": [], \"source_ids\": [], \"tags\": [] }"
+    },
+    "relationships": {
+      "_last_updated": "YYYY-MM-DD",
+      "data": {
+        "relationships": []
+      },
+      "notes": "## Relationships\nEach relationship: { \"from\": \"term_or_entity\", \"relation\": \"influences|opposes|derives_from|...\", \"to\": \"term_or_entity\", \"notes\": \"\" }"
+    }
+  },
+
+  "entities": {
+    "people": {
+      "_last_updated": "YYYY-MM-DD",
+      "data": {
+        "people": []
+      },
+      "notes": "## People\nEach person: { \"id\": \"p_01\", \"name\": \"\", \"role\": \"\", \"affiliation\": \"\", \"relevance\": \"\", \"tags\": [] }"
+    },
+    "organizations": {
+      "_last_updated": "YYYY-MM-DD",
+      "data": {
+        "organizations": []
+      },
+      "notes": "## Organizations\nEach org: { \"id\": \"o_01\", \"name\": \"\", \"type\": \"\", \"relevance\": \"\", \"tags\": [] }"
+    },
+    "locations": {
+      "_last_updated": "YYYY-MM-DD",
+      "data": {
+        "locations": []
+      },
+      "notes": "## Locations\nEach location: { \"id\": \"l_01\", \"name\": \"\", \"type\": \"city|region|virtual|...\", \"relevance\": \"\", \"tags\": [] }"
+    },
+    "artifacts": {
+      "_last_updated": "YYYY-MM-DD",
+      "data": {
+        "artifacts": []
+      },
+      "notes": "## Artifacts\nEach artifact: { \"id\": \"a_01\", \"name\": \"\", \"type\": \"document|dataset|tool|...\", \"description\": \"\", \"location\": \"\", \"tags\": [] }"
+    }
+  },
+
+  "timeline": {
+    "events": {
+      "_last_updated": "YYYY-MM-DD",
+      "data": {
+        "events": []
+      },
+      "notes": "## Events\nEach event: { \"id\": \"e_01\", \"date\": \"YYYY-MM-DD\", \"title\": \"\", \"description\": \"\", \"related_entities\": [], \"tags\": [] }"
+    },
+    "milestones": {
+      "_last_updated": "YYYY-MM-DD",
+      "data": {
+        "milestones": []
+      },
+      "notes": "## Milestones\nEach milestone: { \"id\": \"m_01\", \"date\": \"YYYY-MM-DD\", \"title\": \"\", \"status\": \"planned|reached|missed\", \"notes\": \"\" }"
+    },
+    "periods": {
+      "_last_updated": "YYYY-MM-DD",
+      "data": {
+        "periods": []
+      },
+      "notes": "## Periods\nEach period: { \"id\": \"per_01\", \"label\": \"\", \"start\": \"YYYY-MM-DD\", \"end\": \"YYYY-MM-DD\", \"description\": \"\", \"tags\": [] }"
+    }
+  },
+
+  "notes": {
+    "session_logs": {
+      "_last_updated": "YYYY-MM-DD",
+      "data": {
+        "sessions": []
+      },
+      "notes": "## Session Logs\nEach session: { \"date\": \"YYYY-MM-DD\", \"summary\": \"\", \"chunks_loaded\": [], \"updates_made\": [], \"open_threads\": [] }"
+    },
+    "drafts": {
+      "_last_updated": "YYYY-MM-DD",
+      "data": {
+        "drafts": []
+      },
+      "notes": "## Drafts\nEach draft: { \"id\": \"d_01\", \"title\": \"\", \"status\": \"rough|review|final\", \"content\": \"\", \"tags\": [] }"
+    },
+    "ideas": {
+      "_last_updated": "YYYY-MM-DD",
+      "data": {
+        "ideas": []
+      },
+      "notes": "## Ideas\nEach idea: { \"id\": \"i_01\", \"idea\": \"\", \"status\": \"raw|exploring|shelved\", \"related_chunks\": [], \"tags\": [] }"
+    }
+  }
+}
