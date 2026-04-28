@@ -1,0 +1,51 @@
+{
+  "_type": "session_loader",
+  "_version": "0.2.0",
+  "_instructions": {
+    "purpose": "This is the lightweight loader file. Share this file at the start of every session. The main knowledge base URL is embedded — fetch it directly when a chunk is needed.",
+    "how_to_load": [
+      "1. At session start: read only this file. Acknowledge it is loaded. Do not fetch the knowledge base yet.",
+      "2. When the user makes a request: scan the top-level index to identify relevant domains.",
+      "3. Suggest which domain(s) and sub-index keys seem relevant. Wait for user confirmation.",
+      "4. After confirmation: fetch knowledge_base_url and load ONLY the confirmed chunk(s) by key path.",
+      "5. After reading a chunk: summarize what was loaded and proceed with the task.",
+      "6. Never speculatively read additional chunks unless the user requests it."
+    ],
+    "lookup_syntax": {
+      "load_domain": "load: <domain_key>",
+      "load_sub_topic": "load: <domain_key>.<subtopic_key>",
+      "load_multiple": "load: <domain_key>.<subtopic_key>, <domain_key>.<subtopic_key>",
+      "show_index": "index: <domain_key>",
+      "update_chunk": "update: <domain_key>.<subtopic_key>",
+      "new_chunk": "new chunk: <domain_key>.<subtopic_key>"
+    },
+    "knowledge_base_url": "https://gist.github.com/welwordion-sys/5a0c4f71d1d6d50c37934c8695604835",
+    "note": "The index below reflects the top-level domains and their sub-index summaries. Sub-topic details live only in the knowledge base at knowledge_base_url."
+  },
+  "index": {
+    "meta": {
+      "_summary": "Project-level metadata: author, dates, versioning, global tags.",
+      "_subtopics": ["project_info", "versioning", "global_tags"]
+    },
+    "research": {
+      "_summary": "Core research areas, sources, and findings.",
+      "_subtopics": ["sources", "findings", "open_questions", "methodology"]
+    },
+    "concepts": {
+      "_summary": "Key terms, definitions, and conceptual frameworks.",
+      "_subtopics": ["definitions", "frameworks", "relationships"]
+    },
+    "entities": {
+      "_summary": "Named entities: people, organizations, locations, artifacts.",
+      "_subtopics": ["people", "organizations", "locations", "artifacts"]
+    },
+    "timeline": {
+      "_summary": "Chronological events and milestones relevant to the project.",
+      "_subtopics": ["events", "milestones", "periods"]
+    },
+    "notes": {
+      "_summary": "Working notes, drafts, and session logs.",
+      "_subtopics": ["session_logs", "drafts", "ideas"]
+    }
+  }
+}
