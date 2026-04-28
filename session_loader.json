@@ -1,15 +1,17 @@
 {
   "_type": "session_loader",
-  "_version": "0.3.0",
+  "_version": "0.4.0",
   "_instructions": {
-    "purpose": "This is the lightweight loader file. At the start of every session the user will say 'access my MemoryAccess repository'. Claude should then fetch this file via GitHub MCP and acknowledge it is loaded. The main knowledge base URL is embedded — fetch chunks directly when needed.",
+    "purpose": "Lightweight session loader. Fetch this file at session start and acknowledge it is loaded. The index below is the sole source of domain/subtopic information — never fetch knowledge_base.json just to show an index.",
     "how_to_load": [
-      "1. At session start: user says 'access my MemoryAccess repository'. Fetch session_loader.json via GitHub MCP (owner: welwordion-sys, repo: MemoryAccess). Acknowledge it is loaded. Do not fetch the knowledge base yet.",
-      "2. When the user makes a request: scan the top-level index to identify relevant domains.",
-      "3. Suggest which domain(s) and sub-index keys seem relevant. Wait for user confirmation.",
-      "4. After confirmation: fetch knowledge_base.json via GitHub MCP and load ONLY the confirmed chunk(s) by key path.",
-      "5. After reading a chunk: summarize what was loaded and proceed with the task.",
-      "6. Never speculatively read additional chunks unless the user requests it."
+      "1. At session start: fetch session_loader.json via GitHub MCP. Acknowledge it is loaded. Do NOT fetch knowledge_base.json yet.",
+      "2. When the user makes a request: read the index in THIS file to identify the most relevant domain(s) and subtopic(s). Commit to a specific recommendation — do not list all options and ask the user to choose. Only present alternatives if the request is genuinely ambiguous across two equally plausible chunks.",
+      "3. State your recommended chunk(s) with a brief rationale and ask for confirmation to load. Example: 'This looks like concepts.frameworks — shall I load that?'",
+      "4. NEVER fetch knowledge_base.json to answer an index/listing question. The index here is sufficient. Only fetch knowledge_base.json after the user confirms a specific chunk to load.",
+      "5. After confirmation: fetch knowledge_base.json via GitHub MCP and extract ONLY the confirmed chunk(s) by key path.",
+      "6. After reading a chunk: summarise what was loaded and proceed with the task.",
+      "7. Never speculatively read additional chunks unless the user explicitly requests it.",
+      "8. RETRIEVAL DISCIPLINE: The index in this file is complete for navigation purposes. Fetching the full knowledge base to inspect subtopics is always wrong unless a chunk has been confirmed for loading."
     ],
     "lookup_syntax": {
       "load_domain": "load: <domain_key>",
@@ -27,7 +29,7 @@
       "knowledge_base_path": "knowledge_base.json"
     },
     "knowledge_base_url": "https://raw.githubusercontent.com/welwordion-sys/MemoryAccess/refs/heads/main/knowledge_base.json",
-    "note": "The index below reflects the top-level domains and their sub-index summaries. Sub-topic details live only in the knowledge base."
+    "note": "The index below is the authoritative domain/subtopic map. Sub-topic content lives only in knowledge_base.json."
   },
   "index": {
     "meta": {
