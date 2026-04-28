@@ -1,0 +1,13 @@
+{
+  "_chunk": "timeline.milestones",
+  "_last_updated": "2026-04-28",
+  "data": {
+    "milestones": [
+      { "id": "m_01", "date": "2026-04-28", "title": "Architecture design phase complete (v0.1)", "status": "reached", "notes": "Core two-system architecture with library established across sessions 1-6" },
+      { "id": "m_02", "date": "", "title": "Formalise invariant retention criterion", "status": "planned" },
+      { "id": "m_03", "date": "", "title": "Formalise rewrite system fitness signal", "status": "planned" },
+      { "id": "m_04", "date": "", "title": "First implementation prototype", "status": "planned" }
+    ]
+  },
+  "notes": ""
+}

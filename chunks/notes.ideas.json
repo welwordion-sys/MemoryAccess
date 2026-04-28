@@ -1,0 +1,12 @@
+{
+  "_chunk": "notes.ideas",
+  "_last_updated": "2026-04-28",
+  "data": {
+    "ideas": [
+      { "id": "i_01", "idea": "Use photo recognition as first concrete fitness function / test domain for the system", "status": "exploring", "related_chunks": ["concepts.frameworks", "research.methodology"] },
+      { "id": "i_02", "idea": "Genetic algorithm operates on rule graphs — mutation and crossover of rule structure, not just rule values. Stronger than standard GAs which evolve values within fixed representation.", "status": "exploring", "related_chunks": ["concepts.frameworks"] },
+      { "id": "i_03", "idea": "Grammar over rule space — impose hierarchy or grammar on rules so rule space itself has navigable structure rather than being flat.", "status": "exploring", "related_chunks": ["concepts.frameworks"] }
+    ]
+  },
+  "notes": ""
+}

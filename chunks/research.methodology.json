@@ -1,0 +1,10 @@
+{
+  "_chunk": "research.methodology",
+  "_last_updated": "2026-04-28",
+  "data": {
+    "approach": "Theoretical architecture design through iterative conversation. Ideas developed session by session, with corrections applied when misunderstandings identified. Photo recognition used as concrete fitness function / test case.",
+    "tools": ["Claude AI (sessions 1-6)", "GitHub MCP for persistent memory"],
+    "constraints": ["No implementation yet — purely architectural", "Graph isomorphism computational cost is a known concern", "Unbounded parameter growth in hierarchy is a known concern"]
+  },
+  "notes": "Purely theoretical at this stage. Implementation not started."
+}

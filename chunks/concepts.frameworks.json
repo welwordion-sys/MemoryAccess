@@ -1,0 +1,39 @@
+{
+  "_chunk": "concepts.frameworks",
+  "_last_updated": "2026-04-28",
+  "data": {
+    "frameworks": [
+      {
+        "name": "Representation Space Traversal Architecture",
+        "description": "A two-system AI architecture where the primary mechanism is explicit traversal of data representation space, rather than treating representation learning as a byproduct of optimisation.",
+        "components": ["Data Transformation System", "Logic Rewriting System", "Shared Library (Empirical + Reasoned layers)", "Hierarchical Graph Structure", "Input Layer (immutable)"]
+      },
+      {
+        "name": "Data Transformation System",
+        "description": "Travels representation space using reversible graph transformations (translations). Owns and restructures the shared library. Governs layer fusion and splitting. Writes to empirical library only when occurrence matches labels. Cannot innovate — all operations reversible.",
+        "components": ["Graph traversal engine", "Layer fusion/splitting logic", "Empirical library writer", "Rule assignment after restructuring"]
+      },
+      {
+        "name": "Logic Rewriting System",
+        "description": "Improves the travel logic of the data system. Operates irreversibly on rules (innovation permitted). Evolves itself by the same mechanism using match quality as fitness signal. No write access to either library layer or data.",
+        "components": ["Rule graph rewriter", "Self-evolution mechanism", "Match quality fitness signal"]
+      },
+      {
+        "name": "Hierarchical Graph Layer Structure",
+        "description": "Multi-layer graph hierarchy where lower layers hold raw structure/primitives and upper layers hold nodes that represent subgraphs from below. Each layer has its own ruleset. Layers can fuse or split. Input layer is immutable.",
+        "components": ["Input layer (immutable)", "Middle layers (reversible rule-swapping)", "Upper layers (subgraph nodes)", "Per-layer rulesets"]
+      },
+      {
+        "name": "Hybrid Representation Model",
+        "description": "Graph structure serves as the structural backbone; primitive values (numbers, raw data) are stored as node/edge attributes at leaves. Avoids bloating graph structure with primitive encodings while retaining full graph expressiveness.",
+        "components": ["Graph backbone", "Primitive leaf attributes", "Lazy expansion policy (unfold to graph only when needed)"]
+      },
+      {
+        "name": "Human Capability Threshold Gate",
+        "description": "Human evaluates system readiness before unlocking the Reasoned Library. Threshold is NOT delegated to the system. Candidate criteria: accuracy across minimum distinct tasks, generalisation outside training distribution, internal consistency of logic-derived entries validated against labels.",
+        "components": ["Success rate surface by system", "Human evaluation step", "Empirical library backup (permanent reference)"]
+      }
+    ]
+  },
+  "notes": "Main architectural frameworks as of session 6."
+}

@@ -1,0 +1,15 @@
+{
+  "_chunk": "research.open_questions",
+  "_last_updated": "2026-04-28",
+  "data": {
+    "questions": [
+      { "id": "q_01", "question": "What defines the topology of representation space? How do you know you are moving toward a simpler or more recognisable encoding without already having a pattern to compare against?", "priority": "high", "related_chunks": ["concepts.frameworks", "concepts.definitions"] },
+      { "id": "q_02", "question": "What compression criterion governs when a subgraph earns its own upper-layer node / library entry? Candidates: frequency, MDL, predictive utility.", "priority": "high", "related_chunks": ["concepts.frameworks"] },
+      { "id": "q_03", "question": "How does the data system decide which candidate invariants to retain vs discard without an explicit confirmation step?", "priority": "high", "related_chunks": ["concepts.frameworks"] },
+      { "id": "q_04", "question": "How does the rewrite system evolve itself — same feedback loop, but what is the fitness signal for its own logic?", "priority": "high", "related_chunks": ["concepts.frameworks"] },
+      { "id": "q_05", "question": "Should genetic operations (mutation, crossover) be fixed primitives or should they also be representable as graph rewrites and therefore evolvable?", "priority": "medium", "related_chunks": ["concepts.frameworks"] },
+      { "id": "q_06", "question": "Is exact graph isomorphism needed or is approximate similarity sufficient for the recognition cascade?", "priority": "medium", "related_chunks": ["research.findings"] }
+    ]
+  },
+  "notes": "Unresolved questions as of session 6."
+}

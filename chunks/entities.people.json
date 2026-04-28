@@ -1,0 +1,10 @@
+{
+  "_chunk": "entities.people",
+  "_last_updated": "2026-04-28",
+  "data": {
+    "people": [
+      { "id": "p_01", "name": "welwordion-sys", "role": "Author / Designer", "relevance": "Creator of the Representation Space Traversal AI architecture" }
+    ]
+  },
+  "notes": ""
+}

@@ -1,0 +1,13 @@
+{
+  "_chunk": "meta.versioning",
+  "_last_updated": "2026-04-28",
+  "data": {
+    "schema_version": "0.1.0",
+    "changelog": [
+      { "date": "2026-04-28", "change": "Initial population from sessions 1-6" },
+      { "date": "2026-04-28", "change": "v0.5.0 session_loader: tighter retrieval discipline" },
+      { "date": "2026-04-28", "change": "v0.6.0 restructure: split into chunks/ and index/ files" }
+    ]
+  },
+  "notes": "Add changelog entries as: { \"date\": \"YYYY-MM-DD\", \"change\": \"description\" }"
+}

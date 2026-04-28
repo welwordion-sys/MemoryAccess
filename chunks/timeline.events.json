@@ -1,0 +1,15 @@
+{
+  "_chunk": "timeline.events",
+  "_last_updated": "2026-04-28",
+  "data": {
+    "events": [
+      { "id": "e_01", "date": "2026-04-28", "title": "Project inception", "description": "Core idea of representation space traversal as primary AI mechanism first articulated" },
+      { "id": "e_02", "date": "2026-04-28", "title": "Hybrid representation decided", "description": "Graph backbone + primitive leaf attributes chosen to address bloat concern" },
+      { "id": "e_03", "date": "2026-04-28", "title": "Two-system architecture established", "description": "Data system and rewrite system separated, with translation/innovation distinction" },
+      { "id": "e_04", "date": "2026-04-28", "title": "Two-layer library architecture established", "description": "Empirical and reasoned library layers defined with human capability threshold gate" },
+      { "id": "e_05", "date": "2026-04-28", "title": "GitHub MCP connected", "description": "Persistent memory via GitHub MCP established, knowledge base populated" },
+      { "id": "e_06", "date": "2026-04-28", "title": "KB restructured into chunks/ and index/", "description": "Monolithic knowledge_base.json split into per-subtopic files for efficient retrieval" }
+    ]
+  },
+  "notes": ""
+}

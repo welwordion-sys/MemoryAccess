@@ -1,0 +1,13 @@
+{
+  "_chunk": "entities.artifacts",
+  "_last_updated": "2026-04-28",
+  "data": {
+    "artifacts": [
+      { "id": "a_01", "name": "knowledge_base.json", "type": "dataset", "description": "Legacy monolithic knowledge base — superseded by chunks/ and index/ structure", "status": "deprecated" },
+      { "id": "a_02", "name": "session_loader.json", "type": "tool", "description": "Lightweight session loader — fetch at start of each session to bootstrap context" },
+      { "id": "a_03", "name": "chunks/", "type": "directory", "description": "Individual content files per subtopic" },
+      { "id": "a_04", "name": "index/", "type": "directory", "description": "Lightweight index files per subtopic — item name lists only" }
+    ]
+  },
+  "notes": ""
+}
