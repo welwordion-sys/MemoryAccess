@@ -1,0 +1,11 @@
+{
+  "_chunk": "meta.project_info",
+  "_last_updated": "2026-04-28",
+  "data": {
+    "project_name": "Representation Space Traversal AI",
+    "author": "welwordion-sys",
+    "description": "A novel AI architecture where traversal of data representation space is the primary computational mechanism. The system explicitly navigates transformations of problem representations until recognisable patterns emerge, rather than treating representation learning as a byproduct of optimisation.",
+    "status": "active"
+  },
+  "notes": "Started April 28 2026. Core idea: instead of find the answer, find the representation in which the answer becomes obvious."
+}
