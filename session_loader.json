@@ -19,7 +19,7 @@
       "update_chunk": "update: <domain_key>.<subtopic_key>",
       "new_chunk": "new chunk: <domain_key>.<subtopic_key>"
     },
-    "knowledge_base_url": "https://gist.github.com/welwordion-sys/5a0c4f71d1d6d50c37934c8695604835",
+    "knowledge_base_url": "https://raw.githubusercontent.com/welwordion-sys/MemoryAccess/refs/heads/main/knowledge_base.json",
     "note": "The index below reflects the top-level domains and their sub-index summaries. Sub-topic details live only in the knowledge base at knowledge_base_url."
   },
   "index": {
