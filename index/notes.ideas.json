@@ -1,1 +1,1 @@
-{ "_index": "notes.ideas", "items": ["i_01: Photo recognition as first test domain", "i_02: GA operating on rule graphs", "i_03: Grammar over rule space"] }
+{ "_index": "notes.ideas", "items": ["i_01: Photo recognition as first test domain", "i_02: GA operating on rule graphs", "i_03: Grammar over rule space", "i_04: Dataset recommendation — MNIST then CIFAR-10, clean labels required"] }
