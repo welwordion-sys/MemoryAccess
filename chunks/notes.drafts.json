@@ -1,12 +1,12 @@
 {
   "_chunk": "notes.drafts",
-  "_version": "0.1.0",
+  "_version": "0.2.0",
   "entries": [
     {
       "id": "d_01",
       "title": "Comparative Analysis — Memory Solutions for Claude",
       "status": "draft",
-      "summary": "A survey of memory architectures available for or applied to Claude, their design philosophies, tradeoffs, and how the MemoryAccess GitHub-based system fits within the landscape.",
+      "summary": "A survey of memory architectures available for or applied to Claude, their design philosophies, tradeoffs, and how the MemoryAccess GitHub-based system fits within the landscape. Includes optimization candidates derived from open-source solutions.",
       "solutions": [
         {
           "name": "Claude Native Memory (claude.ai)",
@@ -71,7 +71,41 @@
           }
         }
       ],
-      "positioning_notes": "MemoryAccess sits closest to Claude Code's CLAUDE.md philosophy — inspectable, version-controlled, user-authored — but extends it with explicit domain structure, on-demand loading, and a session loader protocol. It trades automatic capture for deliberate curation, which suits research and conceptual work better than workflow/coding memory. The main gap relative to MCP-based solutions is the absence of semantic retrieval; the index lookup system is a lightweight substitute that works well at current scale."
+      "positioning_notes": "MemoryAccess sits closest to Claude Code's CLAUDE.md philosophy — inspectable, version-controlled, user-authored — but extends it with explicit domain structure, on-demand loading, and a session loader protocol. It trades automatic capture for deliberate curation, which suits research and conceptual work better than workflow/coding memory. The main gap relative to MCP-based solutions is the absence of semantic retrieval; the index lookup system is a lightweight substitute that works well at current scale.",
+      "optimization_candidates": [
+        {
+          "id": "opt_01",
+          "name": "Tiered metadata on index entries",
+          "source": "Mem0 (open-source)",
+          "description": "Mem0 ranks retrieved memories by relevance, importance, and recency. Currently MemoryAccess index entries are flat label strings with no metadata. Adding lightweight fields such as 'importance', 'last_updated', or topic tags to index entries would enable smarter lookup decisions without requiring semantic search infrastructure.",
+          "effort": "low",
+          "impact": "medium — improves retrieval precision as index grows"
+        },
+        {
+          "id": "opt_02",
+          "name": "Explicit separation of online (fast) vs offline (heavy) operations",
+          "source": "Lightweight LLM Agent Memory with SLMs (arxiv 2025)",
+          "description": "Research distinguishes high-frequency lightweight memory decisions (index lookup, chunk retrieval) from heavy offline operations (chunk writing, restructuring, archiving). MemoryAccess already follows this pattern implicitly. Making it an explicit design principle would guide future decisions about what Claude does in-session vs what gets deferred to explicit update commands.",
+          "effort": "none — principle only",
+          "impact": "medium — guards against session bloat as system grows"
+        },
+        {
+          "id": "opt_03",
+          "name": "Context eviction policy (MemGPT-style paging)",
+          "source": "MemGPT (open-source)",
+          "description": "MemGPT treats the context window as virtual memory with explicit eviction of chunks no longer needed. As sessions grow longer and multiple chunks get loaded, a lightweight rule for when to consider a chunk 'done' and no longer worth carrying in active context would prevent context window pressure.",
+          "effort": "low — can be a loader instruction addition",
+          "impact": "medium-high for long sessions"
+        },
+        {
+          "id": "opt_04",
+          "name": "Stale chunk deprecation / forgetting policy",
+          "source": "MemoryBank (open-source)",
+          "description": "MemoryBank uses a forgetting mechanism to control knowledge base growth. As MemoryAccess chunks accumulate, entries that have not been accessed or updated over a long period could be flagged in the index (e.g. 'stale': true) and eventually moved to an archive subtopic. This keeps the active index lean without permanent deletion.",
+          "effort": "low-medium",
+          "impact": "high at scale — directly addresses index bloat concern"
+        }
+      ]
     }
   ]
 }
