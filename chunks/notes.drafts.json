@@ -1,6 +1,7 @@
 {
   "_chunk": "notes.drafts",
-  "_version": "0.3.0",
+  "_version": "0.4.0",
+  "_scope": "General — cross-project notes and memory system documentation only. Project-specific drafts live in projects.<name>.* chunks.",
   "entries": [
     {
       "id": "d_01",
@@ -8,169 +9,19 @@
       "status": "complete",
       "summary": "A survey of memory architectures available for or applied to Claude, their design philosophies, tradeoffs, and how the MemoryAccess GitHub-based system fits within the landscape. Includes optimization candidates derived from open-source solutions.",
       "solutions": [
-        {
-          "name": "Claude Native Memory (claude.ai)",
-          "type": "Platform-managed, summarization-based",
-          "mechanism": "Automatically scans chat history and generates a synthesized summary every 24 hours. Also supports explicit 'remember this' commands for immediate updates. Implemented as two tool calls: conversation_search and recent_chats, operating over raw chat history rather than AI-compressed profiles.",
-          "scope": "Personal/user-level. Projects get separate memory spaces. Enterprise admins can disable org-wide.",
-          "tradeoffs": {
-            "strengths": ["Zero setup", "Available to all tiers as of March 2026", "Portable/exportable", "Project-scoped isolation"],
-            "weaknesses": ["24hr synthesis delay", "Shallow profile — captures who you are, not what you are building", "Claude-platform locked", "Not structured or queryable", "Cannot be version-controlled"]
-          }
-        },
-        {
-          "name": "Claude Code — CLAUDE.md + Auto Memory",
-          "type": "File-based, inspectable, user-controlled",
-          "mechanism": "Two complementary systems loaded at session start. CLAUDE.md: user-written instruction files per project, stored in version control. Auto Memory: Claude writes notes to ~/.claude/projects/<project>/memory/ based on what it deems worth retaining — build commands, architecture notes, debugging insights. Subagents maintain their own auto memory.",
-          "scope": "Project-scoped, git-repo-bound. Shared via version control for teams.",
-          "design_principle": "Inspectability and auditability over expressiveness. Every instruction Claude sees is readable, editable, and committable by the user.",
-          "tradeoffs": {
-            "strengths": ["Fully transparent", "Version-controllable", "Editable by user", "Team-shareable via git", "No opaque summaries"],
-            "weaknesses": ["Manual curation burden for CLAUDE.md", "Auto memory is flat-file, not structured", "No semantic retrieval", "Context window still finite"]
-          }
-        },
-        {
-          "name": "Anthropic Memory Tool (API)",
-          "type": "Client-side file-based memory via tool calls",
-          "mechanism": "Claude makes tool calls (create/read/update/delete) on a /memories directory. The application executes operations locally. Claude checks memory before starting tasks. Designed as a just-in-time context retrieval primitive — load what is relevant, not everything.",
-          "scope": "Developer-controlled. Infrastructure is user-owned.",
-          "tradeoffs": {
-            "strengths": ["Full user control", "No vendor lock-in on storage", "Just-in-time loading keeps context lean", "Suitable for long-running agent workflows"],
-            "weaknesses": ["Requires developer setup", "No built-in semantic retrieval", "Flat file structure unless user builds hierarchy"]
-          }
-        },
-        {
-          "name": "MCP-based External Memory (e.g. Pieces, XTrace)",
-          "type": "External structured memory via MCP connectors",
-          "mechanism": "Memory stored in external systems, exposed to Claude via MCP tool calls (e.g. ask_pieces_ltm, create_pieces_memory). Real-time capture rather than delayed synthesis. Pieces captures activity across apps on-device. XTrace stores decisions, artifacts, and facts as typed linked objects.",
-          "scope": "Cross-platform, portable across AI tools, not tied to Claude.",
-          "tradeoffs": {
-            "strengths": ["Real-time capture", "Structured and queryable", "Cross-AI portable", "Rich context (what you built, why, where you left off)"],
-            "weaknesses": ["Third-party dependency", "Setup overhead", "Privacy considerations with external storage", "Vendor risk"]
-          }
-        },
-        {
-          "name": "claude-mem (Claude Code plugin)",
-          "type": "Session-capture and injection plugin",
-          "mechanism": "Captures everything Claude does during coding sessions, compresses with AI, injects relevant context into future sessions. Beta: Endless Mode uses a biomimetic memory architecture for extended sessions.",
-          "scope": "Claude Code sessions.",
-          "tradeoffs": {
-            "strengths": ["Automatic capture", "AI compression", "Web viewer UI"],
-            "weaknesses": ["Third-party, early-stage", "Lossy compression risk", "Opaque to user inspection"]
-          }
-        },
-        {
-          "name": "MemoryAccess — GitHub-based Structured Knowledge Base (this system)",
-          "type": "Version-controlled, domain-partitioned, on-demand chunk loading",
-          "mechanism": "Knowledge stored as JSON chunks in a GitHub repo, organized by domain and subtopic. Session loader fetched at session start. Index files consulted before any chunk load. Chunks fetched on demand — only what is relevant to the current conversation. Claude writes and updates chunks explicitly.",
-          "scope": "Project/research-level. User-owned. Platform-agnostic in principle.",
-          "design_principle": "Deliberate access over ambient loading. The user and Claude co-author the knowledge base. Structure is explicit, not inferred. Context is loaded intentionally, not speculatively.",
-          "tradeoffs": {
-            "strengths": ["Full user control and ownership", "Version-controlled history", "Structured and domain-organized", "Minimal context overhead — load only what is needed", "Human-readable and editable", "No third-party dependency beyond GitHub", "Scales via index design"],
-            "weaknesses": ["Manual curation required", "No automatic capture — must be explicitly written", "Retrieval is keyword/index-guided not semantic", "GitHub API latency per fetch", "Index can bloat at scale (future optimization needed)"]
-          }
-        }
+        { "name": "Claude Native Memory (claude.ai)", "type": "Platform-managed, summarization-based", "mechanism": "Automatically scans chat history and generates a synthesized summary every 24 hours. Also supports explicit 'remember this' commands. Implemented as two tool calls: conversation_search and recent_chats.", "scope": "Personal/user-level. Projects get separate memory spaces.", "tradeoffs": { "strengths": ["Zero setup", "Available to all tiers as of March 2026", "Portable/exportable", "Project-scoped isolation"], "weaknesses": ["24hr synthesis delay", "Shallow profile", "Claude-platform locked", "Not structured or queryable", "Cannot be version-controlled"] } },
+        { "name": "Claude Code — CLAUDE.md + Auto Memory", "type": "File-based, inspectable, user-controlled", "mechanism": "CLAUDE.md: user-written instruction files per project, stored in version control. Auto Memory: Claude writes notes to ~/.claude/projects/<project>/memory/.", "scope": "Project-scoped, git-repo-bound.", "design_principle": "Inspectability and auditability over expressiveness.", "tradeoffs": { "strengths": ["Fully transparent", "Version-controllable", "Editable by user", "Team-shareable via git"], "weaknesses": ["Manual curation burden", "Auto memory is flat-file", "No semantic retrieval"] } },
+        { "name": "Anthropic Memory Tool (API)", "type": "Client-side file-based memory via tool calls", "mechanism": "Claude makes tool calls (create/read/update/delete) on a /memories directory. Just-in-time context retrieval primitive.", "scope": "Developer-controlled. Infrastructure is user-owned.", "tradeoffs": { "strengths": ["Full user control", "No vendor lock-in", "Just-in-time loading"], "weaknesses": ["Requires developer setup", "No built-in semantic retrieval", "Flat file structure"] } },
+        { "name": "MCP-based External Memory (e.g. Pieces, XTrace)", "type": "External structured memory via MCP connectors", "mechanism": "Memory stored in external systems, exposed to Claude via MCP tool calls. Real-time capture.", "scope": "Cross-platform, portable across AI tools.", "tradeoffs": { "strengths": ["Real-time capture", "Structured and queryable", "Cross-AI portable"], "weaknesses": ["Third-party dependency", "Setup overhead", "Privacy considerations", "Vendor risk"] } },
+        { "name": "claude-mem (Claude Code plugin)", "type": "Session-capture and injection plugin", "mechanism": "Captures Claude coding sessions, compresses with AI, injects relevant context into future sessions.", "scope": "Claude Code sessions.", "tradeoffs": { "strengths": ["Automatic capture", "AI compression"], "weaknesses": ["Third-party, early-stage", "Lossy compression risk", "Opaque to user inspection"] } },
+        { "name": "MemoryAccess — GitHub-based Structured Knowledge Base (this system)", "type": "Version-controlled, domain-partitioned, on-demand chunk loading", "mechanism": "Knowledge stored as JSON chunks in a GitHub repo. Session loader fetched at session start. Index files consulted before any chunk load. Chunks fetched on demand.", "scope": "General memory system. User-owned. Platform-agnostic in principle. Open-ended: project findings may eventually inform the memory architecture itself.", "design_principle": "Deliberate access over ambient loading. User and Claude co-author the knowledge base.", "tradeoffs": { "strengths": ["Full user control and ownership", "Version-controlled history", "Structured and domain-organized", "Minimal context overhead", "Human-readable and editable", "No third-party dependency beyond GitHub"], "weaknesses": ["Manual curation required", "No automatic capture", "Retrieval is keyword/index-guided not semantic", "GitHub API latency per fetch"] } }
       ],
-      "positioning_notes": "MemoryAccess sits closest to Claude Code's CLAUDE.md philosophy — inspectable, version-controlled, user-authored — but extends it with explicit domain structure, on-demand loading, and a session loader protocol. It trades automatic capture for deliberate curation, which suits research and conceptual work better than workflow/coding memory. The main gap relative to MCP-based solutions is the absence of semantic retrieval; the index lookup system is a lightweight substitute that works well at current scale.",
+      "positioning_notes": "MemoryAccess sits closest to Claude Code's CLAUDE.md philosophy but extends it with explicit domain structure, on-demand loading, and a session loader protocol. Main gap relative to MCP-based solutions is absence of semantic retrieval.",
       "optimization_candidates": [
-        {
-          "id": "opt_01",
-          "name": "Tiered metadata on index entries",
-          "source": "Mem0 (open-source)",
-          "description": "Mem0 ranks retrieved memories by relevance, importance, and recency. Currently MemoryAccess index entries are flat label strings with no metadata. Adding lightweight fields such as 'importance', 'last_updated', or topic tags to index entries would enable smarter lookup decisions without requiring semantic search infrastructure.",
-          "effort": "low",
-          "impact": "medium — improves retrieval precision as index grows"
-        },
-        {
-          "id": "opt_02",
-          "name": "Explicit separation of online (fast) vs offline (heavy) operations",
-          "source": "Lightweight LLM Agent Memory with SLMs (arxiv 2025)",
-          "description": "Research distinguishes high-frequency lightweight memory decisions (index lookup, chunk retrieval) from heavy offline operations (chunk writing, restructuring, archiving). MemoryAccess already follows this pattern implicitly. Making it an explicit design principle would guide future decisions about what Claude does in-session vs what gets deferred to explicit update commands.",
-          "effort": "none — principle only",
-          "impact": "medium — guards against session bloat as system grows"
-        },
-        {
-          "id": "opt_03",
-          "name": "Context eviction policy (MemGPT-style paging)",
-          "source": "MemGPT (open-source)",
-          "description": "MemGPT treats the context window as virtual memory with explicit eviction of chunks no longer needed. As sessions grow longer and multiple chunks get loaded, a lightweight rule for when to consider a chunk 'done' and no longer worth carrying in active context would prevent context window pressure.",
-          "effort": "low — can be a loader instruction addition",
-          "impact": "medium-high for long sessions"
-        },
-        {
-          "id": "opt_04",
-          "name": "Stale chunk deprecation / forgetting policy",
-          "source": "MemoryBank (open-source)",
-          "description": "MemoryBank uses a forgetting mechanism to control knowledge base growth. As MemoryAccess chunks accumulate, entries that have not been accessed or updated over a long period could be flagged in the index (e.g. 'stale': true) and eventually moved to an archive subtopic. This keeps the active index lean without permanent deletion.",
-          "effort": "low-medium",
-          "impact": "high at scale — directly addresses index bloat concern"
-        }
-      ]
-    },
-    {
-      "id": "d_02",
-      "title": "Prototype Roadmap — Base System to First Testable Version",
-      "status": "active",
-      "created": "2026-04-29",
-      "scope": "Base prototype on MNIST to first measurable test result. Excludes: reasoned library, second meta-level system, weighted graphs, hyperedges (unless Phase 6 forces it), full self-evolving rewrite system.",
-      "phases": [
-        {
-          "id": "p1",
-          "title": "Graph Substrate and Operations",
-          "status": "not_started",
-          "description": "Implement directed graph structure with binary edge typing (structural / operational). Implement the Graph Operation Interface: match, apply, revert, complexity, lookup, register. Unit test each operation group on hand-constructed graphs. No layer structure yet — flat graphs only.",
-          "exit_condition": "All five operation groups work correctly on hand-constructed test graphs."
-        },
-        {
-          "id": "p2",
-          "title": "Input Layer and Quantization",
-          "status": "not_started",
-          "description": "Define quantization scheme: pixels to discrete graph primitives (nodes + structural edges). Implement input layer as immutable — no transformations permitted at this layer. Verify same image produces same graph deterministically. Note: quantization design directly affects what the system can discover — requires careful design before implementation.",
-          "exit_condition": "MNIST images reliably converted to base graphs. Sample manually inspected and encoding confirmed sane.",
-          "open_decision": "Quantization scheme not yet defined — must be resolved before implementation."
-        },
-        {
-          "id": "p3",
-          "title": "Layer Structure and Compression",
-          "status": "not_started",
-          "description": "Implement multi-layer structure: lower layers hold primitives, upper-layer nodes represent compressed subgraphs from below. Layer identity is determined by representational scale, not operation type. Implement layer fusion and splitting governed by the data system. Implement per-layer rulesets. Layer boundaries are earned through GA convergence — not assigned upfront.",
-          "exit_condition": "System can take a base graph, apply rules, and promote recurring label-correlated subgraphs into upper-layer nodes."
-        },
-        {
-          "id": "p4",
-          "title": "Empirical Library",
-          "status": "not_started",
-          "description": "Implement rule-invariant pair storage (subgraph + rule context, not subgraph alone). Implement label-correlation filter. Implement library lookup via the operation interface. Implement recognition cascade: partial matches climbing layers until threshold met.",
-          "exit_condition": "After exposure to a subset of MNIST, library contains non-trivial entries. Lookup on a new image returns matches."
-        },
-        {
-          "id": "p5",
-          "title": "Traversal Loop",
-          "status": "not_started",
-          "description": "Implement the traversal loop: apply rules, evaluate compression, update library, repeat. Reversibility enforced at interface level. Rules fixed for this phase — GA not yet active.",
-          "exit_condition": "System traverses a batch of MNIST images, builds a library, and can be queried. Measure: library growth curve, match rate on held-out images."
-        },
-        {
-          "id": "p5b",
-          "title": "Minimal GA over Rule Graphs",
-          "status": "not_started",
-          "description": "Implement GA operating on rule graphs. Mutation and crossover on rule graph structure — not rule values. Fitness signal: given a fixed label, measure variance in subgraph structures produced across different images with that label. Lower variance = higher fitness. GA drives rules toward label-conditioned reproducibility. Library entry is a byproduct of convergence. Fixed GA primitives only — self-evolution deferred. Run GA cycles between traversal passes.",
-          "rationale": "Without rule improvement, label-conditioned reproducibility of subgraph production is not achievable. The GA is load-bearing for the empirical library to populate meaningfully.",
-          "exit_condition": "Rule quality measurably improves across generations — match rate increases, library entries stabilize. Per-label fitness surface observable.",
-          "open_decision": "Initial rule set for burn-in before GA activates not yet defined."
-        },
-        {
-          "id": "p6",
-          "title": "First Test and Decision Gates",
-          "status": "not_started",
-          "description": "Run on MNIST training subset, evaluate on test subset. Measure: recognition accuracy, library size, isomorphism matching cost per image. Inspect failure modes: representation fragmentation (q_07 signal) or matching cost (q_09 signal). Make hyperedge decision based on evidence.",
-          "exit_condition": "A number exists — accuracy, match rate, cost profile — and q_07 has a documented empirical answer."
-        }
-      ],
-      "known_risks": [
-        "Isomorphism cost is the primary technical risk — matching cost per rule firing must be profiled in Phase 6.",
-        "Quantization design in Phase 2 is load-bearing — poor encoding limits what the system can discover regardless of later phases.",
-        "GA cold start: first GA generation has no library entries to validate against — burn-in pass with random rules may be needed before fitness signal is meaningful."
+        { "id": "opt_01", "name": "Tiered metadata on index entries", "source": "Mem0", "description": "Add importance, last_updated, topic tags to index entries for smarter lookup decisions.", "effort": "low", "impact": "medium" },
+        { "id": "opt_02", "name": "Explicit online vs offline operation separation", "source": "Lightweight LLM Agent Memory (arxiv 2025)", "description": "Make fast/slow operation distinction an explicit design principle guiding future decisions.", "effort": "none — principle only", "impact": "medium" },
+        { "id": "opt_03", "name": "Context eviction policy", "source": "MemGPT", "description": "Rule for when a loaded chunk is considered done and no longer worth carrying in active context.", "effort": "low", "impact": "medium-high for long sessions" },
+        { "id": "opt_04", "name": "Stale chunk deprecation", "source": "MemoryBank", "description": "Flag rarely-accessed entries as stale in index; archive rather than delete.", "effort": "low-medium", "impact": "high at scale" }
       ]
     }
   ]
