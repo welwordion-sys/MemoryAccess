@@ -1,11 +1,11 @@
 {
   "_chunk": "notes.drafts",
-  "_version": "0.2.0",
+  "_version": "0.3.0",
   "entries": [
     {
       "id": "d_01",
       "title": "Comparative Analysis — Memory Solutions for Claude",
-      "status": "draft",
+      "status": "complete",
       "summary": "A survey of memory architectures available for or applied to Claude, their design philosophies, tradeoffs, and how the MemoryAccess GitHub-based system fits within the landscape. Includes optimization candidates derived from open-source solutions.",
       "solutions": [
         {
@@ -117,43 +117,52 @@
         {
           "id": "p1",
           "title": "Graph Substrate and Operations",
+          "status": "not_started",
           "description": "Implement directed graph structure with binary edge typing (structural / operational). Implement the Graph Operation Interface: match, apply, revert, complexity, lookup, register. Unit test each operation group on hand-constructed graphs. No layer structure yet — flat graphs only.",
           "exit_condition": "All five operation groups work correctly on hand-constructed test graphs."
         },
         {
           "id": "p2",
           "title": "Input Layer and Quantization",
+          "status": "not_started",
           "description": "Define quantization scheme: pixels to discrete graph primitives (nodes + structural edges). Implement input layer as immutable — no transformations permitted at this layer. Verify same image produces same graph deterministically. Note: quantization design directly affects what the system can discover — requires careful design before implementation.",
-          "exit_condition": "MNIST images reliably converted to base graphs. Sample manually inspected and encoding confirmed sane."
+          "exit_condition": "MNIST images reliably converted to base graphs. Sample manually inspected and encoding confirmed sane.",
+          "open_decision": "Quantization scheme not yet defined — must be resolved before implementation."
         },
         {
           "id": "p3",
           "title": "Layer Structure and Compression",
+          "status": "not_started",
           "description": "Implement multi-layer structure: lower layers hold primitives, upper-layer nodes represent compressed subgraphs from below. Layer identity is determined by representational scale, not operation type. Implement layer fusion and splitting governed by the data system. Implement per-layer rulesets. Layer boundaries are earned through GA convergence — not assigned upfront.",
           "exit_condition": "System can take a base graph, apply rules, and promote recurring label-correlated subgraphs into upper-layer nodes."
         },
         {
           "id": "p4",
           "title": "Empirical Library",
+          "status": "not_started",
           "description": "Implement rule-invariant pair storage (subgraph + rule context, not subgraph alone). Implement label-correlation filter. Implement library lookup via the operation interface. Implement recognition cascade: partial matches climbing layers until threshold met.",
           "exit_condition": "After exposure to a subset of MNIST, library contains non-trivial entries. Lookup on a new image returns matches."
         },
         {
           "id": "p5",
           "title": "Traversal Loop",
+          "status": "not_started",
           "description": "Implement the traversal loop: apply rules, evaluate compression, update library, repeat. Reversibility enforced at interface level. Rules fixed for this phase — GA not yet active.",
           "exit_condition": "System traverses a batch of MNIST images, builds a library, and can be queried. Measure: library growth curve, match rate on held-out images."
         },
         {
           "id": "p5b",
           "title": "Minimal GA over Rule Graphs",
+          "status": "not_started",
           "description": "Implement GA operating on rule graphs. Mutation and crossover on rule graph structure — not rule values. Fitness signal: given a fixed label, measure variance in subgraph structures produced across different images with that label. Lower variance = higher fitness. GA drives rules toward label-conditioned reproducibility. Library entry is a byproduct of convergence. Fixed GA primitives only — self-evolution deferred. Run GA cycles between traversal passes.",
           "rationale": "Without rule improvement, label-conditioned reproducibility of subgraph production is not achievable. The GA is load-bearing for the empirical library to populate meaningfully.",
-          "exit_condition": "Rule quality measurably improves across generations — match rate increases, library entries stabilize. Per-label fitness surface observable."
+          "exit_condition": "Rule quality measurably improves across generations — match rate increases, library entries stabilize. Per-label fitness surface observable.",
+          "open_decision": "Initial rule set for burn-in before GA activates not yet defined."
         },
         {
           "id": "p6",
           "title": "First Test and Decision Gates",
+          "status": "not_started",
           "description": "Run on MNIST training subset, evaluate on test subset. Measure: recognition accuracy, library size, isomorphism matching cost per image. Inspect failure modes: representation fragmentation (q_07 signal) or matching cost (q_09 signal). Make hyperedge decision based on evidence.",
           "exit_condition": "A number exists — accuracy, match rate, cost profile — and q_07 has a documented empirical answer."
         }
@@ -162,10 +171,6 @@
         "Isomorphism cost is the primary technical risk — matching cost per rule firing must be profiled in Phase 6.",
         "Quantization design in Phase 2 is load-bearing — poor encoding limits what the system can discover regardless of later phases.",
         "GA cold start: first GA generation has no library entries to validate against — burn-in pass with random rules may be needed before fitness signal is meaningful."
-      ],
-      "open_decisions_before_implementation": [
-        "Quantization scheme for pixel-to-graph encoding (Phase 2).",
-        "Initial rule set for burn-in before GA activates (Phase 5b)."
       ]
     }
   ]
