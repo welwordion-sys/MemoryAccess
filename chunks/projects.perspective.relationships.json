@@ -1,0 +1,18 @@
+{
+  "_chunk": "projects.perspective.relationships",
+  "_project": "perspective",
+  "_last_updated": "2026-04-29",
+  "data": {
+    "relationships": [
+      { "from": "Data System", "relation": "owns", "to": "Library", "notes": "Only the data system writes to the empirical library" },
+      { "from": "Rewrite System", "relation": "improves", "to": "Data System", "notes": "Rewrite system improves travel logic, not data directly" },
+      { "from": "Rewrite System", "relation": "reads", "to": "Library", "notes": "No write access" },
+      { "from": "Translation", "relation": "opposes", "to": "Innovation", "notes": "Translation is reversible; innovation is irreversible" },
+      { "from": "Layer Fusion", "relation": "derives_from", "to": "Translation", "notes": "Fusion is a perspective change — reversible — therefore belongs to data system" },
+      { "from": "Empirical Library", "relation": "grounds", "to": "Reasoned Library", "notes": "Empirical library is permanent anchor; reasoned library validated against it" },
+      { "from": "Rule-Invariant Pair", "relation": "composes", "to": "Library", "notes": "Library entries are pairs, not standalone subgraphs" },
+      { "from": "Genetic Algorithm", "relation": "operates_on", "to": "Rewrite System", "notes": "GA mechanism applies to rule graphs — mutation and crossover of rule structure" }
+    ]
+  },
+  "notes": "Migrated from concepts.relationships s_08."
+}
