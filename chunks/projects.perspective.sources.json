@@ -1,0 +1,18 @@
+{
+  "_chunk": "projects.perspective.sources",
+  "_project": "perspective",
+  "_last_updated": "2026-04-29",
+  "data": {
+    "sources": [
+      { "id": "src_01", "title": "Kolmogorov Complexity", "relevance": "Shortest description of data — related to compression criterion for library entries" },
+      { "id": "src_02", "title": "Solomonoff Induction", "relevance": "Searching over programs — related to traversal over rule space" },
+      { "id": "src_03", "title": "Weisfeiler-Leman Graph Isomorphism Algorithm", "relevance": "Approximate graph similarity — alternative to exact GI for pattern recognition" },
+      { "id": "src_04", "title": "Graph Neural Networks", "relevance": "Fuzzy pattern matching over graphs without solving GI explicitly" },
+      { "id": "src_05", "title": "Minimum Description Length (MDL) Principle", "relevance": "Candidate compression criterion for when a subgraph earns library entry" },
+      { "id": "src_06", "title": "Cognitive Chunking Theory", "relevance": "Compressing repeated patterns into single units — analogous to translator/library mechanism" },
+      { "id": "src_07", "title": "Hierarchical Temporal Memory (HTM)", "relevance": "Related hierarchical pattern recognition architecture" },
+      { "id": "src_08", "title": "Category Theory", "relevance": "Structure-preserving transformations — relevant to translation operations" }
+    ]
+  },
+  "notes": "Migrated from research.sources s_08."
+}
