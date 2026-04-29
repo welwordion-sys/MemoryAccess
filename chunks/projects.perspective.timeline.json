@@ -1,0 +1,26 @@
+{
+  "_chunk": "projects.perspective.timeline",
+  "_project": "perspective",
+  "_last_updated": "2026-04-29",
+  "data": {
+    "events": [
+      { "id": "e_01", "date": "2026-04-28", "title": "Project inception", "description": "Core idea of representation space traversal as primary AI mechanism first articulated" },
+      { "id": "e_02", "date": "2026-04-28", "title": "Hybrid representation considered and rejected", "description": "Graph backbone + primitive leaf attributes initially chosen, then rejected in s_07 as counter to design philosophy" },
+      { "id": "e_03", "date": "2026-04-28", "title": "Two-system architecture established", "description": "Data system and rewrite system separated, with translation/innovation distinction" },
+      { "id": "e_04", "date": "2026-04-28", "title": "Two-layer library architecture established", "description": "Empirical and reasoned library layers defined with human capability threshold gate" },
+      { "id": "e_05", "date": "2026-04-28", "title": "GitHub MCP connected", "description": "Persistent memory via GitHub MCP established, knowledge base populated" },
+      { "id": "e_06", "date": "2026-04-28", "title": "KB restructured into chunks/ and index/", "description": "Monolithic knowledge_base.json split into per-subtopic files for efficient retrieval" },
+      { "id": "e_07", "date": "2026-04-29", "title": "Base substrate architecture finalised", "description": "Binary edge typing adopted, hyperedges and weights deferred as upgrade paths, Graph Operation Interface defined" },
+      { "id": "e_08", "date": "2026-04-29", "title": "Layer structure corrected and GA fitness signal established", "description": "Layer identity defined as representational scale. GA confirmed as load-bearing for prototype. Fitness signal: label-conditioned reproducibility." },
+      { "id": "e_09", "date": "2026-04-29", "title": "Prototype roadmap created", "description": "6-phase roadmap to first testable MNIST run, including minimal GA (Phase 5b)" },
+      { "id": "e_10", "date": "2026-04-29", "title": "Knowledge base refactored to general memory system", "description": "Project-specific content migrated to projects.perspective namespace. General domains kept clean for cross-project use." }
+    ],
+    "milestones": [
+      { "id": "m_01", "date": "2026-04-28", "title": "Architecture design phase complete (v0.1)", "status": "reached", "notes": "Core two-system architecture with library established across sessions 1-6" },
+      { "id": "m_02", "date": "2026-04-29", "title": "Invariant retention criterion formalised", "status": "reached", "notes": "Resolved as label-conditioned reproducibility under converged GA rules" },
+      { "id": "m_03", "date": "2026-04-29", "title": "Rewrite system fitness signal formalised", "status": "reached", "notes": "Minimize variance in subgraph output per label across images" },
+      { "id": "m_04", "date": "", "title": "First implementation prototype", "status": "planned", "notes": "Phase 1 of roadmap d_02 not yet started" }
+    ]
+  },
+  "notes": "Merged timeline.events and timeline.milestones into single project timeline. Migrated s_08."
+}
