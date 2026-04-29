@@ -1,6 +1,6 @@
 {
   "_type": "session_loader",
-  "_version": "0.6.3",
+  "_version": "0.7.0",
   "_instructions": {
     "purpose": "Lightweight session loader. Fetch this file at session start and acknowledge it is loaded. Use the file paths below to fetch index or chunk files individually.",
     "posture": "Be bold with loading. When evidence points clearly to a chunk, fetch it. Prefer action over confirmation.",
@@ -22,6 +22,11 @@
       "index": "index: <domain>.<subtopic>",
       "update": "update: <domain>.<subtopic>",
       "new": "new chunk: <domain>.<subtopic>"
+    },
+    "logging_format": {
+      "description": "Two-tier format. Use the correct tier when writing session log entries.",
+      "tier_1_decisions": "Architectural and design decisions. Fields: decision (what was decided), rationale (one sentence why), affects (chunk name). Written at end of session under decisions[session_id].",
+      "tier_2_implementation": "Implementation-phase entries. Fields: attempted (what was tried), outcome (what happened), decided (what was concluded). Written during implementation sessions under implementation[]."
     },
     "github": {
       "owner": "welwordion-sys",
@@ -53,7 +58,7 @@
       "_subtopics": ["events", "milestones", "periods"]
     },
     "notes": {
-      "_summary": "Working notes, drafts, and session logs.",
+      "_summary": "Working notes, drafts, session logs, and ideas.",
       "_subtopics": ["session_logs", "drafts", "ideas"]
     }
   }
