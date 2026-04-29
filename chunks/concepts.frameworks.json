@@ -10,18 +10,20 @@
       },
       {
         "name": "Data Transformation System",
-        "description": "Travels representation space using reversible graph transformations (translations). Owns and restructures the shared library. Governs layer fusion and splitting. Writes to empirical library only when occurrence matches labels. Cannot innovate — all operations reversible.",
-        "components": ["Graph traversal engine", "Layer fusion/splitting logic", "Empirical library writer", "Rule assignment after restructuring"]
+        "description": "Travels representation space using reversible graph transformations (translations). Owns and restructures the shared library. Governs layer fusion and splitting. Writes to empirical library only when subgraph occurrence is consistent under converged rules for a given label. Cannot innovate — all transformations reversible. Requires GA-improved rules to produce label-conditioned reproducibility; without rule improvement, consistent subgraph production across images is not achievable.",
+        "components": ["Graph traversal engine", "Layer fusion/splitting logic", "Empirical library writer", "Rule assignment after restructuring"],
+        "fitness_signal": "Label-conditioned reproducibility: given a fixed label, minimize variance in subgraph structures produced across different images with that label. Lower variance = higher fitness. Library entry is a byproduct of GA convergence — subgraphs that consistently appear under converged rules for a given label earn entry."
       },
       {
         "name": "Logic Rewriting System",
-        "description": "Improves the travel logic of the data system. Operates irreversibly on rules (innovation permitted). Evolves itself by the same mechanism using match quality as fitness signal. No write access to either library layer or data. Represented as a graph and operated on by the second system.",
-        "components": ["Rule graph rewriter", "Self-evolution mechanism", "Match quality fitness signal"]
+        "description": "Improves the travel logic of the data system. Operates irreversibly on rules (innovation permitted). Evolves itself by the same mechanism using match quality as fitness signal. No write access to either library layer or data. Represented as a graph and operated on by the second system. In the base prototype, GA primitives (mutation and crossover on rule graphs) are fixed — self-evolution mechanism is deferred to second system design.",
+        "components": ["Rule graph rewriter", "GA over rule graphs (mutation + crossover on rule structure)", "Label-conditioned reproducibility fitness signal", "Self-evolution mechanism (deferred)"]
       },
       {
         "name": "Hierarchical Graph Layer Structure",
-        "description": "Multi-layer graph hierarchy where lower layers hold raw structure/primitives and upper layers hold nodes that represent subgraphs from below. Each layer has its own ruleset. Layers can fuse or split. Input layer is immutable.",
-        "components": ["Input layer (immutable)", "Middle layers (reversible rule-swapping)", "Upper layers (subgraph nodes)", "Per-layer rulesets"]
+        "description": "Multi-layer graph hierarchy where lower layers hold raw structure and primitives, and upper layers hold nodes that represent compressed subgraphs from below. What a node IS defines what layer it belongs to — layer identity is determined by representational scale, not by operation type. Each layer has its own ruleset. Layers can fuse or split. Input layer is immutable. Reversibility is a property of the Data Transformation System as a whole, not a distinguishing property of any particular layer.",
+        "components": ["Input layer (immutable)", "Layer nodes (each upper-layer node represents a subgraph from the layer below)", "Per-layer rulesets", "Fusion and splitting (governed by data system)"],
+        "layer_boundary_definition": "A subgraph from layer N becomes a node at layer N+1 when the GA has converged on rules that consistently produce that subgraph for a given label. The boundary is earned through convergence, not assigned by design."
       },
       {
         "name": "Hybrid Representation Model",
@@ -42,7 +44,7 @@
           "edge_types": "Exactly two types, globally fixed, no extensions permitted at this level. Type 1: structural — defines what a pattern is. Type 2: operational — defines transformations between patterns. Reduces isomorphism complexity by allowing regime-separated matching. Binary typing does not clutter rule space.",
           "node_typing": "None. Typing complicates rule space. Identity emerges from structural relationships and library compression, not labels.",
           "weights": "Not in base prototype. Named upgrade path — to be evaluated empirically.",
-          "hyperedges": "Not in base prototype. Named upgrade path — motivated by CA-derived insight that discrete systems have fragmented representation spaces with unreachable configurations. To be evaluated empirically.",
+          "hyperedges": "Not in base prototype. Named upgrade path — motivated by CA-derived insight that discrete systems have fragmented representation spaces with unreachable configurations. To be evaluated empirically via Phase 6 of prototype roadmap.",
           "automation": "Substrate upgrade decisions are made manually by the researcher at the start of a training run, not automated at runtime."
         },
         "two_level_principle": "Every substrate decision must be evaluated twice — once for the traveler operating on data, once for the second system operating on the traveler. Features that only serve one level do not belong in the shared base.",
@@ -84,5 +86,5 @@
       }
     ]
   },
-  "notes": "Updated session 7. Hybrid representation model rejected. Base Substrate Architecture, Graph Operation Interface, and Second System added. Two-level evaluation principle established."
+  "notes": "Session 8: Data Transformation System updated with GA requirement and fitness signal. Hierarchical Graph Layer Structure corrected — layer identity is representational scale, not operation type. Reversibility is a system-wide constraint, not a layer property. Layer boundary definition added: layers are earned through GA convergence, not assigned."
 }
