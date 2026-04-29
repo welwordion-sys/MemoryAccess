@@ -1,0 +1,17 @@
+{
+  "_chunk": "projects.perspective.findings",
+  "_project": "perspective",
+  "_last_updated": "2026-04-29",
+  "data": {
+    "findings": [
+      { "id": "f_01", "summary": "Most data structures reduce to directed graphs + traversal rules. Arrays, trees, linked lists, state machines, neural nets are all special cases.", "confidence": "high", "tags": ["graph-theory", "data-structures"] },
+      { "id": "f_02", "summary": "Problem difficulty is often a function of representation, not inherent complexity. Math problem solving and genetic algorithm effectiveness both confirm this.", "confidence": "high", "tags": ["representation-learning"] },
+      { "id": "f_03", "summary": "Graph isomorphism is not known to be in P, but approximate similarity (graph kernels, WL algorithm) may suffice for pattern recognition.", "confidence": "high", "tags": ["graph-theory", "GI"] },
+      { "id": "f_04", "summary": "Hybrid representation (graph structure + primitive attributes at leaves) was considered but rejected — counter to design philosophy. Complexity is absorbed upward through layer hierarchy.", "confidence": "high", "tags": ["representation-learning", "graph-theory"], "status": "superseded", "superseded_by": "Base Substrate Architecture" },
+      { "id": "f_05", "summary": "Rule space bloat is the lesser evil compared to data space bloat — rules are static one-time design cost, data is dynamic runtime cost.", "confidence": "medium", "tags": ["architecture"] },
+      { "id": "f_06", "summary": "Library entries must be rule-invariant pairs, not subgraphs alone. A subgraph only has diagnostic value relative to the rules that produced it during traversal.", "confidence": "high", "tags": ["library", "invariants"] },
+      { "id": "f_07", "summary": "Frequency of occurrence alone does not earn library entry. Entries persist only when occurrence correlates with labels — and specifically when GA has converged on consistent production of that subgraph for a given label.", "confidence": "high", "tags": ["library", "labelling", "GA"] }
+    ]
+  },
+  "notes": "Migrated from research.findings s_08. f_04 updated to reflect hybrid model rejection."
+}
