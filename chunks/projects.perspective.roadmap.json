@@ -1,0 +1,26 @@
+{
+  "_chunk": "projects.perspective.roadmap",
+  "_project": "perspective",
+  "_last_updated": "2026-04-29",
+  "data": {
+    "id": "d_02",
+    "title": "Prototype Roadmap — Base System to First Testable Version",
+    "status": "active",
+    "created": "2026-04-29",
+    "scope": "Base prototype on MNIST to first measurable test result. Excludes: reasoned library, second meta-level system, weighted graphs, hyperedges (unless Phase 6 forces it), full self-evolving rewrite system.",
+    "phases": [
+      { "id": "p1", "title": "Graph Substrate and Operations", "status": "not_started", "description": "Implement directed graph structure with binary edge typing (structural / operational). Implement the Graph Operation Interface: match, apply, revert, complexity, lookup, register. Unit test each operation group on hand-constructed graphs. No layer structure yet — flat graphs only.", "exit_condition": "All five operation groups work correctly on hand-constructed test graphs." },
+      { "id": "p2", "title": "Input Layer and Quantization", "status": "not_started", "description": "Define quantization scheme: pixels to discrete graph primitives (nodes + structural edges). Implement input layer as immutable. Verify same image produces same graph deterministically.", "exit_condition": "MNIST images reliably converted to base graphs. Sample manually inspected and encoding confirmed sane.", "open_decision": "Quantization scheme not yet defined — must be resolved before implementation." },
+      { "id": "p3", "title": "Layer Structure and Compression", "status": "not_started", "description": "Implement multi-layer structure. Layer identity is representational scale, not operation type. Implement layer fusion and splitting. Implement per-layer rulesets. Layer boundaries earned through GA convergence.", "exit_condition": "System can take a base graph, apply rules, and promote recurring label-correlated subgraphs into upper-layer nodes." },
+      { "id": "p4", "title": "Empirical Library", "status": "not_started", "description": "Implement rule-invariant pair storage. Implement label-correlation filter. Implement library lookup. Implement recognition cascade.", "exit_condition": "After exposure to a subset of MNIST, library contains non-trivial entries. Lookup on a new image returns matches." },
+      { "id": "p5", "title": "Traversal Loop", "status": "not_started", "description": "Implement traversal loop: apply rules, evaluate compression, update library, repeat. Reversibility enforced. Rules fixed for this phase.", "exit_condition": "System traverses a batch of MNIST images, builds a library, can be queried." },
+      { "id": "p5b", "title": "Minimal GA over Rule Graphs", "status": "not_started", "description": "GA on rule graphs. Fitness signal: given a fixed label, minimize variance in subgraph structures produced across different images with that label. Library entry is byproduct of convergence. Fixed GA primitives — self-evolution deferred.", "rationale": "Load-bearing for empirical library. Without rule improvement, label-conditioned reproducibility is not achievable.", "exit_condition": "Rule quality improves across generations. Library entries stabilize.", "open_decision": "Initial rule set for burn-in before GA activates not yet defined." },
+      { "id": "p6", "title": "First Test and Decision Gates", "status": "not_started", "description": "Run on MNIST training subset, evaluate on test subset. Measure accuracy, library size, matching cost. Inspect failure modes for q_07 and q_09 signals. Make hyperedge decision based on evidence.", "exit_condition": "A number exists and q_07 has a documented empirical answer." }
+    ],
+    "known_risks": [
+      "Isomorphism cost — must be profiled in Phase 6.",
+      "Quantization design is load-bearing — poor encoding limits discoverability.",
+      "GA cold start — burn-in pass with random rules likely needed before fitness signal is meaningful."
+    ]
+  }
+}
