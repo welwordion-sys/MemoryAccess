@@ -1,1 +1,11 @@
-{ "_index": "research.open_questions", "items": ["q_01: Topology of representation space", "q_02: Compression criterion for library entry", "q_03: Invariant retention mechanism", "q_04: Rewrite system self-evolution fitness signal", "q_05: Evolvable vs fixed GA primitives", "q_06: Approximate vs exact GI for recognition cascade"] }
+{
+  "_index": "research.open_questions",
+  "items": [
+    { "id": "q_01", "label": "Topology of representation space", "importance": "high", "last_updated": "2026-04-28", "tags": ["representation", "theory"] },
+    { "id": "q_02", "label": "Compression criterion for library entry", "importance": "high", "last_updated": "2026-04-28", "tags": ["library", "compression"] },
+    { "id": "q_03", "label": "Invariant retention mechanism", "importance": "high", "last_updated": "2026-04-28", "tags": ["invariants", "rules"] },
+    { "id": "q_04", "label": "Rewrite system self-evolution fitness signal", "importance": "high", "last_updated": "2026-04-28", "tags": ["evolution", "rules"] },
+    { "id": "q_05", "label": "Evolvable vs fixed GA primitives", "importance": "medium", "last_updated": "2026-04-28", "tags": ["evolution", "ga"] },
+    { "id": "q_06", "label": "Approximate vs exact GI for recognition cascade", "importance": "medium", "last_updated": "2026-04-28", "tags": ["graph", "isomorphism"] }
+  ]
+}

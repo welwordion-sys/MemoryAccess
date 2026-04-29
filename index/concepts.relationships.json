@@ -1,1 +1,4 @@
-{ "_index": "concepts.relationships", "items": ["Data System owns Library", "Rewrite System improves Data System", "Rewrite System reads Library", "Translation opposes Innovation", "Layer Fusion derives_from Translation", "Empirical Library grounds Reasoned Library", "Rule-Invariant Pair composes Library", "Genetic Algorithm operates_on Rewrite System"] }
+{
+  "_index": "concepts.relationships",
+  "items": []
+}

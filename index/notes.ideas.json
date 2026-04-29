@@ -1,1 +1,9 @@
-{ "_index": "notes.ideas", "items": ["i_01: Photo recognition as first test domain", "i_02: GA operating on rule graphs", "i_03: Grammar over rule space", "i_04: Dataset recommendation — MNIST then CIFAR-10, clean labels required"] }
+{
+  "_index": "notes.ideas",
+  "items": [
+    { "id": "i_01", "label": "Photo recognition as first test domain", "importance": "high", "last_updated": "2026-04-28", "tags": ["testing", "vision"] },
+    { "id": "i_02", "label": "GA operating on rule graphs", "importance": "high", "last_updated": "2026-04-28", "tags": ["evolution", "rules"] },
+    { "id": "i_03", "label": "Grammar over rule space", "importance": "medium", "last_updated": "2026-04-28", "tags": ["rules", "grammar"] },
+    { "id": "i_04", "label": "Dataset recommendation — MNIST then CIFAR-10, clean labels required", "importance": "medium", "last_updated": "2026-04-28", "tags": ["testing", "datasets"] }
+  ]
+}

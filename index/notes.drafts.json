@@ -1,1 +1,6 @@
-{ "_index": "notes.drafts", "items": ["d_01: Comparative Analysis — Memory Solutions for Claude"] }
+{
+  "_index": "notes.drafts",
+  "items": [
+    { "id": "d_01", "label": "Comparative Analysis — Memory Solutions for Claude", "importance": "high", "last_updated": "2026-04-29", "tags": ["memory", "architecture", "meta"] }
+  ]
+}

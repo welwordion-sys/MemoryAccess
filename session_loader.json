@@ -1,16 +1,21 @@
 {
   "_type": "session_loader",
-  "_version": "0.6.2",
+  "_version": "0.6.3",
   "_instructions": {
     "purpose": "Lightweight session loader. Fetch this file at session start and acknowledge it is loaded. Use the file paths below to fetch index or chunk files individually.",
     "posture": "Be bold with loading. When evidence points clearly to a chunk, fetch it. Prefer action over confirmation.",
+    "operation_model": {
+      "online": "Fast, lightweight operations: index lookup, chunk retrieval, reading. Do these freely within a session.",
+      "offline": "Heavy operations: chunk writing, restructuring, archiving, updating the loader. These are deliberate and explicit — only on user instruction or clear necessity."
+    },
     "how_to_load": [
       "1. At session start: fetch session_loader.json. Acknowledge it is loaded. Do NOT fetch any chunk or index file yet.",
-      "2. For ANY content request: first fetch the relevant index/<domain>.<subtopic>.json to see what topics are actually in it. This is mandatory before any chunk decision.",
+      "2. For ANY content request: first fetch the relevant index/<domain>.<subtopic>.json to see what topics are actually in it. This is mandatory before any chunk decision. Use tags and importance fields to guide matching.",
       "3. If the index clearly confirms a match to the request, load the corresponding chunk immediately — no confirmation needed. Only pause if the request is genuinely ambiguous between two equally plausible chunks with no index to resolve it.",
       "4. After fetching a chunk: summarise what was loaded and proceed.",
-      "5. Never speculatively fetch additional files unless the user explicitly requests it.",
-      "6. NEVER fetch anything from _archive/. That folder is a read-only human backup and must never be accessed by Claude."
+      "5. Context eviction: if multiple chunks have been loaded across a long session and a topic is clearly finished, consider it evicted — do not re-summarise or re-reference it unless the user returns to it.",
+      "6. Never speculatively fetch additional files unless the user explicitly requests it.",
+      "7. NEVER fetch anything from _archive/. That folder is a read-only human backup and must never be accessed by Claude."
     ],
     "lookup_syntax": {
       "load": "load: <domain>.<subtopic>",
