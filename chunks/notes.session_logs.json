@@ -1,49 +1,35 @@
 {
   "_chunk": "notes.session_logs",
   "_last_updated": "2026-04-29",
-  "data": {
-    "sessions": [
-      {
-        "id": "s_07",
-        "date": "2026-04-29",
-        "title": "Substrate Architecture, Hypergraphs, and Modular Design",
-        "summary": "Session focused on graph formalism decisions for the Data Transformation System. Key decisions made and recorded.",
-        "decisions": [
-          "Hybrid representation model (leaf attributes) rejected — counter to design philosophy. Complexity absorbed upward through hierarchy.",
-          "Base substrate: directed graphs, binary edge types (structural/operational), no node typing, no weights in prototype.",
-          "Binary edge typing accepted: two types only, globally fixed. Structural edges define patterns, operational edges define transformations. Does not clutter rule space. Reduces isomorphism complexity via regime-separated matching.",
-          "Modular substrate approach adopted: start with base graphs as prototype, upgrade paths (hyperedges, weights) evaluated empirically against measured failures.",
-          "Substrate upgrades are manual researcher decisions at training start — not automated.",
-          "Two-level evaluation principle: every substrate decision evaluated for both the traveler (object level) and the second system (meta level).",
-          "Second system explicitly noted: represents traveler as graph, evolves it via graph rewriting, uses same substrate and interface. Design deliberately deferred.",
-          "Graph Operation Interface defined: five operation groups — structural query, transformation, compression evaluation, library interaction, substrate introspection."
-        ],
-        "open_questions_updated": ["q_06 expanded to hypergraphs and rule firing", "q_07 hypergraphs as minimum requirement", "q_08 maximum hyperedge arity k", "q_09 layer hierarchy compensation for isomorphism cost"],
-        "risk_assessment": "Isomorphism cost is the primary technical risk. Second system stability is the primary design risk. Scope management is the primary execution risk. User's expectations calibrated — high risk, high reward, modular approach is correct mitigation.",
-        "memory_system_updates": "session_loader upgraded to v0.6.3 with bold loading, online/offline model, context eviction. All index files updated with metadata (importance, tags, last_updated). Comparative memory solutions documented in notes.drafts d_01 with open-source optimization candidates.",
-        "project_setup": "Project Perspective claude.ai project instructions drafted for future session entry point."
-      },
-      {
-        "id": "s_08",
-        "date": "2026-04-29",
-        "title": "Layer Structure Correction, GA Fitness Signal, and Prototype Roadmap",
-        "summary": "Session corrected a documentation error in the layer structure framing, established the GA fitness signal, resolved q_02 and q_04, reframed q_07-q_09 as empirical decision gates, and produced the first prototype roadmap.",
-        "decisions": [
-          "Layer structure framing corrected: layer identity is determined by representational scale (what a node represents), not by operation type. Reversibility is a system-wide constraint of the Data Transformation System, not a property distinguishing layers from each other. Previous framing (middle layers = reversible, upper layers = subgraph replacement) was a neural network projection error — not derived from the design.",
-          "Layer boundary definition established: a subgraph from layer N becomes a node at layer N+1 when the GA has converged on rules that consistently produce that subgraph for a given label. Boundaries are earned through convergence, not assigned.",
-          "GA is load-bearing for the prototype: without rule improvement, label-conditioned reproducibility of subgraph production is not achievable. The empirical library cannot populate meaningfully from fixed rules.",
-          "Fitness signal defined: given a fixed label, minimize variance in subgraph structures produced across different images with that label. Lower variance = higher fitness. Library entry is a byproduct of GA convergence — not a prerequisite for it. Cold start circularity resolved.",
-          "q_02 resolved: compression criterion is label-conditioned reproducibility under converged rules.",
-          "q_04 partially resolved: fitness signal for GA defined. Self-evolution mechanism deferred to second system.",
-          "q_07, q_08, q_09 reframed: not pre-roadmap blockers. They are empirical decision gates answered by Phase 6 of the prototype roadmap.",
-          "Prototype roadmap created (d_02): 6 phases plus Phase 5b for minimal GA. Scope bounded to MNIST base prototype."
-        ],
-        "contamination_check": "Full knowledge base scan performed. Neural network layer framing was not persisted in any chunk — it was a live generation error only. No repair needed beyond the frameworks chunk correction made this session.",
-        "open_decisions_flagged": [
-          "Quantization scheme for pixel-to-graph encoding (Phase 2 of roadmap).",
-          "Initial rule set for burn-in before GA activates (Phase 5b of roadmap)."
-        ]
-      }
-    ]
-  }
+  "_format": "Two-tier. Tier 1 (decisions): architectural and design decisions per session — decision, rationale, affected chunk. Tier 2 (implementation): short entries during implementation — attempted, outcome, decided. No narrative prose in either tier.",
+  "decisions": [
+    {
+      "session": "s_07",
+      "date": "2026-04-29",
+      "entries": [
+        { "decision": "Hybrid representation model rejected", "rationale": "Leaf attributes counter to design philosophy — complexity absorbed upward through hierarchy", "affects": "concepts.frameworks" },
+        { "decision": "Base substrate: directed graphs, binary edge types, no node typing, no weights", "rationale": "Minimal base; richer substrates as empirical upgrade paths", "affects": "concepts.frameworks" },
+        { "decision": "Binary edge typing fixed at two globally: structural and operational", "rationale": "Reduces isomorphism complexity via regime-separated matching; does not clutter rule space", "affects": "concepts.frameworks" },
+        { "decision": "Substrate upgrades are manual researcher decisions at training start", "rationale": "Automation not warranted at this level", "affects": "concepts.frameworks" },
+        { "decision": "Two-level evaluation principle adopted", "rationale": "Every substrate decision must hold for both traveler and second system", "affects": "concepts.frameworks" },
+        { "decision": "Second system design deferred", "rationale": "Traveler behavior should inform second system design, not the reverse", "affects": "concepts.frameworks" },
+        { "decision": "Graph Operation Interface defined with five operation groups", "rationale": "Abstraction layer enables substrate swapping without touching core logic", "affects": "concepts.frameworks" },
+        { "decision": "q_07-q_09 added as critical open questions", "rationale": "Hypergraph necessity and isomorphism cost unresolved — empirical decision gates", "affects": "research.open_questions" }
+      ]
+    },
+    {
+      "session": "s_08",
+      "date": "2026-04-29",
+      "entries": [
+        { "decision": "Layer structure framing corrected", "rationale": "Layer identity is representational scale, not operation type. Reversibility is system-wide, not layer-specific. Previous framing was neural network projection error.", "affects": "concepts.frameworks" },
+        { "decision": "Layer boundary definition: earned through GA convergence, not assigned", "rationale": "Subgraph becomes upper-layer node when GA converges on consistent production for a given label", "affects": "concepts.frameworks" },
+        { "decision": "GA is load-bearing for prototype", "rationale": "Fixed rules cannot achieve label-conditioned reproducibility across images", "affects": "concepts.frameworks, notes.drafts" },
+        { "decision": "Fitness signal: label-conditioned reproducibility (minimize variance in subgraph output per label)", "rationale": "Resolves q_02 and q_04; eliminates cold start circularity", "affects": "research.open_questions, concepts.frameworks" },
+        { "decision": "q_07-q_09 reframed as empirical decision gates", "rationale": "Not pre-roadmap blockers — answered by Phase 6 test results", "affects": "research.open_questions" },
+        { "decision": "Prototype roadmap created (d_02), 6 phases plus 5b", "rationale": "Scope bounded to MNIST base prototype with GA included", "affects": "notes.drafts" },
+        { "decision": "Session log restructured to two-tier format", "rationale": "Narrative logs do not scale into implementation phase", "affects": "notes.session_logs, session_loader.json" }
+      ]
+    }
+  ],
+  "implementation": []
 }
