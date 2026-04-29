@@ -1,6 +1,6 @@
 {
   "_chunk": "research.open_questions",
-  "_last_updated": "2026-04-28",
+  "_last_updated": "2026-04-29",
   "data": {
     "questions": [
       { "id": "q_01", "question": "What defines the topology of representation space? How do you know you are moving toward a simpler or more recognisable encoding without already having a pattern to compare against?", "priority": "high", "related_chunks": ["concepts.frameworks", "concepts.definitions"] },
@@ -8,8 +8,11 @@
       { "id": "q_03", "question": "How does the data system decide which candidate invariants to retain vs discard without an explicit confirmation step?", "priority": "high", "related_chunks": ["concepts.frameworks"] },
       { "id": "q_04", "question": "How does the rewrite system evolve itself — same feedback loop, but what is the fitness signal for its own logic?", "priority": "high", "related_chunks": ["concepts.frameworks"] },
       { "id": "q_05", "question": "Should genetic operations (mutation, crossover) be fixed primitives or should they also be representable as graph rewrites and therefore evolvable?", "priority": "medium", "related_chunks": ["concepts.frameworks"] },
-      { "id": "q_06", "question": "Is exact graph isomorphism needed or is approximate similarity sufficient for the recognition cascade?", "priority": "medium", "related_chunks": ["research.findings"] }
+      { "id": "q_06", "question": "Is exact (hyper)graph isomorphism needed or is approximate similarity sufficient — for both library lookup AND rule application matching? The k-WL algorithm extends to hypergraphs but remains approximate. Must be resolved for both the recognition cascade and the transformation rule firing mechanism.", "priority": "high", "related_chunks": ["research.findings", "research.open_questions"] },
+      { "id": "q_07", "question": "Are hypergraphs a minimum requirement for the representation? Standard graphs may fundamentally limit the representations discoverable — discrete systems have fragmented search spaces with unreachable configurations, as demonstrated by cellular automata rule evolution. Hyperedges allow multi-way structural relationships but raise isomorphism cost significantly.", "priority": "critical", "related_chunks": ["concepts.frameworks", "research.findings"] },
+      { "id": "q_08", "question": "What is the maximum hyperedge arity k? This is the primary architectural lever controlling the tradeoff between representational expressiveness and isomorphism tractability. Every rule application pays the matching cost — bounding k is necessary for the traveler to operate at runtime. Candidate constraint: k <= 3 or k <= 4 as a starting point.", "priority": "critical", "related_chunks": ["concepts.frameworks"] },
+      { "id": "q_09", "question": "Does the layer hierarchy sufficiently compensate for the isomorphism cost of hypergraph matching? Higher layers compress structure and reduce graph size, but the per-node isomorphism problem remains regardless of layer depth. Is compression enough to keep rule firing tractable, or does the system need an additional mechanism — e.g. cached partial matches, bounded search, or approximate firing?", "priority": "critical", "related_chunks": ["concepts.frameworks", "research.findings"] }
     ]
   },
-  "notes": "Unresolved questions as of session 6."
+  "notes": "q_06 expanded to cover hypergraphs and rule firing. q_07-q_09 added session 7 — flagged as primary refinement and decision-making focus going forward."
 }
