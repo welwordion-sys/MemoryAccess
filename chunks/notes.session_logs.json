@@ -22,6 +22,27 @@
         "risk_assessment": "Isomorphism cost is the primary technical risk. Second system stability is the primary design risk. Scope management is the primary execution risk. User's expectations calibrated — high risk, high reward, modular approach is correct mitigation.",
         "memory_system_updates": "session_loader upgraded to v0.6.3 with bold loading, online/offline model, context eviction. All index files updated with metadata (importance, tags, last_updated). Comparative memory solutions documented in notes.drafts d_01 with open-source optimization candidates.",
         "project_setup": "Project Perspective claude.ai project instructions drafted for future session entry point."
+      },
+      {
+        "id": "s_08",
+        "date": "2026-04-29",
+        "title": "Layer Structure Correction, GA Fitness Signal, and Prototype Roadmap",
+        "summary": "Session corrected a documentation error in the layer structure framing, established the GA fitness signal, resolved q_02 and q_04, reframed q_07-q_09 as empirical decision gates, and produced the first prototype roadmap.",
+        "decisions": [
+          "Layer structure framing corrected: layer identity is determined by representational scale (what a node represents), not by operation type. Reversibility is a system-wide constraint of the Data Transformation System, not a property distinguishing layers from each other. Previous framing (middle layers = reversible, upper layers = subgraph replacement) was a neural network projection error — not derived from the design.",
+          "Layer boundary definition established: a subgraph from layer N becomes a node at layer N+1 when the GA has converged on rules that consistently produce that subgraph for a given label. Boundaries are earned through convergence, not assigned.",
+          "GA is load-bearing for the prototype: without rule improvement, label-conditioned reproducibility of subgraph production is not achievable. The empirical library cannot populate meaningfully from fixed rules.",
+          "Fitness signal defined: given a fixed label, minimize variance in subgraph structures produced across different images with that label. Lower variance = higher fitness. Library entry is a byproduct of GA convergence — not a prerequisite for it. Cold start circularity resolved.",
+          "q_02 resolved: compression criterion is label-conditioned reproducibility under converged rules.",
+          "q_04 partially resolved: fitness signal for GA defined. Self-evolution mechanism deferred to second system.",
+          "q_07, q_08, q_09 reframed: not pre-roadmap blockers. They are empirical decision gates answered by Phase 6 of the prototype roadmap.",
+          "Prototype roadmap created (d_02): 6 phases plus Phase 5b for minimal GA. Scope bounded to MNIST base prototype."
+        ],
+        "contamination_check": "Full knowledge base scan performed. Neural network layer framing was not persisted in any chunk — it was a live generation error only. No repair needed beyond the frameworks chunk correction made this session.",
+        "open_decisions_flagged": [
+          "Quantization scheme for pixel-to-graph encoding (Phase 2 of roadmap).",
+          "Initial rule set for burn-in before GA activates (Phase 5b of roadmap)."
+        ]
       }
     ]
   }
