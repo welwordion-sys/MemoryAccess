@@ -1,6 +1,6 @@
 {
   "_type": "session_loader",
-  "_version": "0.7.0",
+  "_version": "0.8.0",
   "_instructions": {
     "purpose": "Lightweight session loader. Fetch this file at session start and acknowledge it is loaded. Use the file paths below to fetch index or chunk files individually.",
     "posture": "Be bold with loading. When evidence points clearly to a chunk, fetch it. Prefer action over confirmation.",
@@ -10,12 +10,12 @@
     },
     "how_to_load": [
       "1. At session start: fetch session_loader.json. Acknowledge it is loaded. Do NOT fetch any chunk or index file yet.",
-      "2. For ANY content request: first fetch the relevant index/<domain>.<subtopic>.json to see what topics are actually in it. This is mandatory before any chunk decision. Use tags and importance fields to guide matching.",
-      "3. If the index clearly confirms a match to the request, load the corresponding chunk immediately — no confirmation needed. Only pause if the request is genuinely ambiguous between two equally plausible chunks with no index to resolve it.",
+      "2. For ANY content request: first fetch the relevant index/<domain>.<subtopic>.json to see what topics are actually in it. This is mandatory before any chunk decision.",
+      "3. If the index clearly confirms a match, load the corresponding chunk immediately — no confirmation needed.",
       "4. After fetching a chunk: summarise what was loaded and proceed.",
-      "5. Context eviction: if multiple chunks have been loaded across a long session and a topic is clearly finished, consider it evicted — do not re-summarise or re-reference it unless the user returns to it.",
+      "5. Context eviction: if multiple chunks have been loaded and a topic is clearly finished, consider it evicted — do not re-reference unless the user returns to it.",
       "6. Never speculatively fetch additional files unless the user explicitly requests it.",
-      "7. NEVER fetch anything from _archive/. That folder is a read-only human backup and must never be accessed by Claude."
+      "7. NEVER fetch anything from _archive/. That folder is a read-only human backup."
     ],
     "lookup_syntax": {
       "load": "load: <domain>.<subtopic>",
@@ -24,9 +24,9 @@
       "new": "new chunk: <domain>.<subtopic>"
     },
     "logging_format": {
-      "description": "Two-tier format. Use the correct tier when writing session log entries.",
-      "tier_1_decisions": "Architectural and design decisions. Fields: decision (what was decided), rationale (one sentence why), affects (chunk name). Written at end of session under decisions[session_id].",
-      "tier_2_implementation": "Implementation-phase entries. Fields: attempted (what was tried), outcome (what happened), decided (what was concluded). Written during implementation sessions under implementation[]."
+      "description": "Two-tier format.",
+      "tier_1_decisions": "Architectural and design decisions. Fields: decision, rationale (one sentence), affects (chunk name). Tag with project if project-specific. Written at end of session under decisions[session_id].",
+      "tier_2_implementation": "Implementation-phase entries. Fields: attempted, outcome, decided. Tag with project. Written during implementation sessions under implementation[]."
     },
     "github": {
       "owner": "welwordion-sys",
@@ -38,28 +38,31 @@
   },
   "domain_map": {
     "meta": {
-      "_summary": "Project-level metadata: author, dates, versioning, global tags.",
+      "_scope": "general",
+      "_summary": "Memory system metadata: versioning, global tags, system info.",
       "_subtopics": ["project_info", "versioning", "global_tags"]
     },
-    "research": {
-      "_summary": "Core research areas, sources, and findings.",
-      "_subtopics": ["sources", "findings", "open_questions", "methodology"]
-    },
-    "concepts": {
-      "_summary": "Key terms, definitions, and conceptual frameworks.",
-      "_subtopics": ["definitions", "frameworks", "relationships"]
+    "notes": {
+      "_scope": "general",
+      "_summary": "General working notes, memory system drafts, session logs (cross-project). Project-specific notes live under projects.<name>.*",
+      "_subtopics": ["session_logs", "drafts", "ideas"]
     },
     "entities": {
-      "_summary": "Named entities: people, organizations, locations, artifacts.",
+      "_scope": "general",
+      "_summary": "Named entities not tied to a specific project: people, organizations, artifacts.",
       "_subtopics": ["people", "organizations", "locations", "artifacts"]
     },
-    "timeline": {
-      "_summary": "Chronological events and milestones.",
-      "_subtopics": ["events", "milestones", "periods"]
-    },
-    "notes": {
-      "_summary": "Working notes, drafts, session logs, and ideas.",
-      "_subtopics": ["session_logs", "drafts", "ideas"]
+    "projects": {
+      "_scope": "project-specific",
+      "_summary": "All project-specific content. Each project has its own subtopic namespace.",
+      "_projects": {
+        "perspective": {
+          "_summary": "Representation Space Traversal AI — a novel architecture where traversal of data representation space is the primary computational mechanism.",
+          "_status": "active",
+          "_subtopics": ["frameworks", "definitions", "relationships", "findings", "open_questions", "methodology", "sources", "timeline", "roadmap"],
+          "_note": "Project findings may eventually inform the MemoryAccess memory architecture itself."
+        }
+      }
     }
   }
 }
