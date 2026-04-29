@@ -1,0 +1,77 @@
+{
+  "_chunk": "notes.drafts",
+  "_version": "0.1.0",
+  "entries": [
+    {
+      "id": "d_01",
+      "title": "Comparative Analysis — Memory Solutions for Claude",
+      "status": "draft",
+      "summary": "A survey of memory architectures available for or applied to Claude, their design philosophies, tradeoffs, and how the MemoryAccess GitHub-based system fits within the landscape.",
+      "solutions": [
+        {
+          "name": "Claude Native Memory (claude.ai)",
+          "type": "Platform-managed, summarization-based",
+          "mechanism": "Automatically scans chat history and generates a synthesized summary every 24 hours. Also supports explicit 'remember this' commands for immediate updates. Implemented as two tool calls: conversation_search and recent_chats, operating over raw chat history rather than AI-compressed profiles.",
+          "scope": "Personal/user-level. Projects get separate memory spaces. Enterprise admins can disable org-wide.",
+          "tradeoffs": {
+            "strengths": ["Zero setup", "Available to all tiers as of March 2026", "Portable/exportable", "Project-scoped isolation"],
+            "weaknesses": ["24hr synthesis delay", "Shallow profile — captures who you are, not what you are building", "Claude-platform locked", "Not structured or queryable", "Cannot be version-controlled"]
+          }
+        },
+        {
+          "name": "Claude Code — CLAUDE.md + Auto Memory",
+          "type": "File-based, inspectable, user-controlled",
+          "mechanism": "Two complementary systems loaded at session start. CLAUDE.md: user-written instruction files per project, stored in version control. Auto Memory: Claude writes notes to ~/.claude/projects/<project>/memory/ based on what it deems worth retaining — build commands, architecture notes, debugging insights. Subagents maintain their own auto memory.",
+          "scope": "Project-scoped, git-repo-bound. Shared via version control for teams.",
+          "design_principle": "Inspectability and auditability over expressiveness. Every instruction Claude sees is readable, editable, and committable by the user.",
+          "tradeoffs": {
+            "strengths": ["Fully transparent", "Version-controllable", "Editable by user", "Team-shareable via git", "No opaque summaries"],
+            "weaknesses": ["Manual curation burden for CLAUDE.md", "Auto memory is flat-file, not structured", "No semantic retrieval", "Context window still finite"]
+          }
+        },
+        {
+          "name": "Anthropic Memory Tool (API)",
+          "type": "Client-side file-based memory via tool calls",
+          "mechanism": "Claude makes tool calls (create/read/update/delete) on a /memories directory. The application executes operations locally. Claude checks memory before starting tasks. Designed as a just-in-time context retrieval primitive — load what is relevant, not everything.",
+          "scope": "Developer-controlled. Infrastructure is user-owned.",
+          "tradeoffs": {
+            "strengths": ["Full user control", "No vendor lock-in on storage", "Just-in-time loading keeps context lean", "Suitable for long-running agent workflows"],
+            "weaknesses": ["Requires developer setup", "No built-in semantic retrieval", "Flat file structure unless user builds hierarchy"]
+          }
+        },
+        {
+          "name": "MCP-based External Memory (e.g. Pieces, XTrace)",
+          "type": "External structured memory via MCP connectors",
+          "mechanism": "Memory stored in external systems, exposed to Claude via MCP tool calls (e.g. ask_pieces_ltm, create_pieces_memory). Real-time capture rather than delayed synthesis. Pieces captures activity across apps on-device. XTrace stores decisions, artifacts, and facts as typed linked objects.",
+          "scope": "Cross-platform, portable across AI tools, not tied to Claude.",
+          "tradeoffs": {
+            "strengths": ["Real-time capture", "Structured and queryable", "Cross-AI portable", "Rich context (what you built, why, where you left off)"],
+            "weaknesses": ["Third-party dependency", "Setup overhead", "Privacy considerations with external storage", "Vendor risk"]
+          }
+        },
+        {
+          "name": "claude-mem (Claude Code plugin)",
+          "type": "Session-capture and injection plugin",
+          "mechanism": "Captures everything Claude does during coding sessions, compresses with AI, injects relevant context into future sessions. Beta: Endless Mode uses a biomimetic memory architecture for extended sessions.",
+          "scope": "Claude Code sessions.",
+          "tradeoffs": {
+            "strengths": ["Automatic capture", "AI compression", "Web viewer UI"],
+            "weaknesses": ["Third-party, early-stage", "Lossy compression risk", "Opaque to user inspection"]
+          }
+        },
+        {
+          "name": "MemoryAccess — GitHub-based Structured Knowledge Base (this system)",
+          "type": "Version-controlled, domain-partitioned, on-demand chunk loading",
+          "mechanism": "Knowledge stored as JSON chunks in a GitHub repo, organized by domain and subtopic. Session loader fetched at session start. Index files consulted before any chunk load. Chunks fetched on demand — only what is relevant to the current conversation. Claude writes and updates chunks explicitly.",
+          "scope": "Project/research-level. User-owned. Platform-agnostic in principle.",
+          "design_principle": "Deliberate access over ambient loading. The user and Claude co-author the knowledge base. Structure is explicit, not inferred. Context is loaded intentionally, not speculatively.",
+          "tradeoffs": {
+            "strengths": ["Full user control and ownership", "Version-controlled history", "Structured and domain-organized", "Minimal context overhead — load only what is needed", "Human-readable and editable", "No third-party dependency beyond GitHub", "Scales via index design"],
+            "weaknesses": ["Manual curation required", "No automatic capture — must be explicitly written", "Retrieval is keyword/index-guided not semantic", "GitHub API latency per fetch", "Index can bloat at scale (future optimization needed)"]
+          }
+        }
+      ],
+      "positioning_notes": "MemoryAccess sits closest to Claude Code's CLAUDE.md philosophy — inspectable, version-controlled, user-authored — but extends it with explicit domain structure, on-demand loading, and a session loader protocol. It trades automatic capture for deliberate curation, which suits research and conceptual work better than workflow/coding memory. The main gap relative to MCP-based solutions is the absence of semantic retrieval; the index lookup system is a lightweight substitute that works well at current scale."
+    }
+  ]
+}
