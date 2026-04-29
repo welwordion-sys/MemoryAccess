@@ -5,7 +5,10 @@
     { "id": "Data Transformation System", "importance": "high", "last_updated": "2026-04-28", "tags": ["architecture", "traversal", "core"] },
     { "id": "Logic Rewriting System", "importance": "high", "last_updated": "2026-04-28", "tags": ["architecture", "evolution", "core"] },
     { "id": "Hierarchical Graph Layer Structure", "importance": "high", "last_updated": "2026-04-28", "tags": ["architecture", "graph"] },
-    { "id": "Hybrid Representation Model", "importance": "medium", "last_updated": "2026-04-28", "tags": ["representation", "graph"] },
-    { "id": "Human Capability Threshold Gate", "importance": "medium", "last_updated": "2026-04-28", "tags": ["safety", "evaluation"] }
+    { "id": "Hybrid Representation Model", "importance": "low", "last_updated": "2026-04-29", "tags": ["rejected"] },
+    { "id": "Human Capability Threshold Gate", "importance": "medium", "last_updated": "2026-04-28", "tags": ["safety", "evaluation"] },
+    { "id": "Base Substrate Architecture", "importance": "high", "last_updated": "2026-04-29", "tags": ["substrate", "architecture", "decisions", "core"] },
+    { "id": "Graph Operation Interface", "importance": "high", "last_updated": "2026-04-29", "tags": ["interface", "substrate", "architecture"] },
+    { "id": "Second System (Meta-level)", "importance": "high", "last_updated": "2026-04-29", "tags": ["meta", "evolution", "architecture", "open"] }
   ]
 }

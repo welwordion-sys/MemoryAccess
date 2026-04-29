@@ -1,16 +1,28 @@
 {
   "_chunk": "notes.session_logs",
-  "_last_updated": "2026-04-28",
+  "_last_updated": "2026-04-29",
   "data": {
     "sessions": [
-      { "date": "2026-04-28", "summary": "Session 1: Core idea introduced. Representation space traversal as primary mechanism. Analogy to math problem solving and GAs. Key concerns: discrete graph limits, primitive bloat, GI cost.", "open_threads": ["topology of representation space", "learned vs rule-driven similarity metric"] },
-      { "date": "2026-04-28", "summary": "Session 2: Hybrid representation decided. Hierarchical layer architecture proposed. Translator as compression function. Unbounded parameter growth identified as core problem.", "open_threads": ["compression criterion for library entry"] },
-      { "date": "2026-04-28", "summary": "Session 3: Graph rewriting + genetic algorithms introduced. Misunderstandings flagged by user — self-modifying recursive interpretation was off-base.", "open_threads": ["clarify GA role — corrected in session 4"] },
-      { "date": "2026-04-28", "summary": "Session 4: Two transformation types defined (translation/innovation). Two-system architecture established. Layer fusion/splitting introduced.", "open_threads": ["fusion/splitting ownership — resolved in session 5"] },
-      { "date": "2026-04-28", "summary": "Session 5: Fusion/splitting assigned to data system. Rewrite system feedback loop defined. Library introduced as shared structure.", "open_threads": ["invariant retention formalisation", "rewrite system fitness signal"] },
-      { "date": "2026-04-28", "summary": "Session 6: Library corrected to rule-invariant pairs. Two-layer library established (empirical + reasoned). Human capability threshold gate defined.", "open_threads": ["invariant retention formalisation", "rewrite system fitness signal"] },
-      { "date": "2026-04-28", "summary": "Session 7: KB restructured into chunks/ and index/ for efficient retrieval. session_loader updated to v0.6.0.", "open_threads": [] }
+      {
+        "id": "s_07",
+        "date": "2026-04-29",
+        "title": "Substrate Architecture, Hypergraphs, and Modular Design",
+        "summary": "Session focused on graph formalism decisions for the Data Transformation System. Key decisions made and recorded.",
+        "decisions": [
+          "Hybrid representation model (leaf attributes) rejected — counter to design philosophy. Complexity absorbed upward through hierarchy.",
+          "Base substrate: directed graphs, binary edge types (structural/operational), no node typing, no weights in prototype.",
+          "Binary edge typing accepted: two types only, globally fixed. Structural edges define patterns, operational edges define transformations. Does not clutter rule space. Reduces isomorphism complexity via regime-separated matching.",
+          "Modular substrate approach adopted: start with base graphs as prototype, upgrade paths (hyperedges, weights) evaluated empirically against measured failures.",
+          "Substrate upgrades are manual researcher decisions at training start — not automated.",
+          "Two-level evaluation principle: every substrate decision evaluated for both the traveler (object level) and the second system (meta level).",
+          "Second system explicitly noted: represents traveler as graph, evolves it via graph rewriting, uses same substrate and interface. Design deliberately deferred.",
+          "Graph Operation Interface defined: five operation groups — structural query, transformation, compression evaluation, library interaction, substrate introspection."
+        ],
+        "open_questions_updated": ["q_06 expanded to hypergraphs and rule firing", "q_07 hypergraphs as minimum requirement", "q_08 maximum hyperedge arity k", "q_09 layer hierarchy compensation for isomorphism cost"],
+        "risk_assessment": "Isomorphism cost is the primary technical risk. Second system stability is the primary design risk. Scope management is the primary execution risk. User's expectations calibrated — high risk, high reward, modular approach is correct mitigation.",
+        "memory_system_updates": "session_loader upgraded to v0.6.3 with bold loading, online/offline model, context eviction. All index files updated with metadata (importance, tags, last_updated). Comparative memory solutions documented in notes.drafts d_01 with open-source optimization candidates.",
+        "project_setup": "Project Perspective claude.ai project instructions drafted for future session entry point."
+      }
     ]
-  },
-  "notes": ""
+  }
 }

@@ -1,6 +1,6 @@
 {
   "_chunk": "concepts.frameworks",
-  "_last_updated": "2026-04-28",
+  "_last_updated": "2026-04-29",
   "data": {
     "frameworks": [
       {
@@ -15,7 +15,7 @@
       },
       {
         "name": "Logic Rewriting System",
-        "description": "Improves the travel logic of the data system. Operates irreversibly on rules (innovation permitted). Evolves itself by the same mechanism using match quality as fitness signal. No write access to either library layer or data.",
+        "description": "Improves the travel logic of the data system. Operates irreversibly on rules (innovation permitted). Evolves itself by the same mechanism using match quality as fitness signal. No write access to either library layer or data. Represented as a graph and operated on by the second system.",
         "components": ["Rule graph rewriter", "Self-evolution mechanism", "Match quality fitness signal"]
       },
       {
@@ -25,15 +25,64 @@
       },
       {
         "name": "Hybrid Representation Model",
-        "description": "Graph structure serves as the structural backbone; primitive values (numbers, raw data) are stored as node/edge attributes at leaves. Avoids bloating graph structure with primitive encodings while retaining full graph expressiveness.",
-        "components": ["Graph backbone", "Primitive leaf attributes", "Lazy expansion policy (unfold to graph only when needed)"]
+        "description": "Previously considered — rejected. Leaf attributes are counter to design philosophy. Complexity is absorbed upward through the layer hierarchy into compressed subgraph nodes, not stored as primitive attributes. Continuous-to-discrete boundary handled at input layer via quantization.",
+        "status": "rejected",
+        "replaced_by": "Base Substrate Architecture"
       },
       {
         "name": "Human Capability Threshold Gate",
         "description": "Human evaluates system readiness before unlocking the Reasoned Library. Threshold is NOT delegated to the system. Candidate criteria: accuracy across minimum distinct tasks, generalisation outside training distribution, internal consistency of logic-derived entries validated against labels.",
         "components": ["Success rate surface by system", "Human evaluation step", "Empirical library backup (permanent reference)"]
+      },
+      {
+        "name": "Base Substrate Architecture",
+        "description": "The graph formalism used by both the Data Transformation System and the second meta-level system. Modular and scalable — base prototype uses directed graphs with binary edge typing. Richer substrates are named upgrade paths evaluated empirically against measured limitations of the base.",
+        "decisions": {
+          "directionality": "Directed — all edges are directed. Encodes causality, transformation order, and hierarchy direction.",
+          "edge_types": "Exactly two types, globally fixed, no extensions permitted at this level. Type 1: structural — defines what a pattern is. Type 2: operational — defines transformations between patterns. Reduces isomorphism complexity by allowing regime-separated matching. Binary typing does not clutter rule space.",
+          "node_typing": "None. Typing complicates rule space. Identity emerges from structural relationships and library compression, not labels.",
+          "weights": "Not in base prototype. Named upgrade path — to be evaluated empirically.",
+          "hyperedges": "Not in base prototype. Named upgrade path — motivated by CA-derived insight that discrete systems have fragmented representation spaces with unreachable configurations. To be evaluated empirically.",
+          "automation": "Substrate upgrade decisions are made manually by the researcher at the start of a training run, not automated at runtime."
+        },
+        "two_level_principle": "Every substrate decision must be evaluated twice — once for the traveler operating on data, once for the second system operating on the traveler. Features that only serve one level do not belong in the shared base.",
+        "upgrade_paths": ["hyperedges (bounded arity k)", "edge weights", "multigraph (edge multiplicity)"]
+      },
+      {
+        "name": "Graph Operation Interface",
+        "description": "Abstraction layer over graph operations. The traveler and second system interact with graphs only through this interface — no substrate assumptions above it. Enables substrate swapping without touching core logic.",
+        "operation_groups": {
+          "structural_query": {
+            "description": "Pattern existence and similarity queries.",
+            "operations": ["match(pattern, graph) -> list of matches", "contains(substructure, graph) -> bool", "similarity(graph_a, graph_b) -> score"]
+          },
+          "transformation": {
+            "description": "Rule application and reversal.",
+            "operations": ["apply(rule, match, graph) -> graph", "revert(rule, match, graph) -> graph"],
+            "note": "Reversibility guaranteed at interface level regardless of substrate."
+          },
+          "compression_evaluation": {
+            "description": "Representation complexity comparison.",
+            "operations": ["complexity(graph) -> score", "compare(graph_a, graph_b) -> delta"]
+          },
+          "library_interaction": {
+            "description": "Library lookup and registration.",
+            "operations": ["lookup(subgraph, library) -> entry or null", "candidate(subgraph, graph) -> bool", "register(subgraph, library) -> entry"]
+          },
+          "substrate_introspection": {
+            "description": "Capability reporting only — upgrade decisions are manual.",
+            "operations": ["capabilities() -> feature flags"],
+            "feature_flags": ["hyperedges: bool", "edge_weights: bool", "node_weights: bool", "max_arity: int"]
+          }
+        }
+      },
+      {
+        "name": "Second System (Meta-level)",
+        "description": "Represents the traveler as a graph and evolves it using graph rewriting — the same substrate and interface as the object level. Currently open in design. Uses the same graph operation interface as the Data Transformation System.",
+        "status": "open",
+        "notes": "Design deliberately deferred. The traveler's actual behavior should inform the second system's design rather than prescribing it upfront. Self-similarity across levels is a goal — same formalism at both object and meta level."
       }
     ]
   },
-  "notes": "Main architectural frameworks as of session 6."
+  "notes": "Updated session 7. Hybrid representation model rejected. Base Substrate Architecture, Graph Operation Interface, and Second System added. Two-level evaluation principle established."
 }

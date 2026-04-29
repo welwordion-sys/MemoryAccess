@@ -1,1 +1,6 @@
-{ "_index": "notes.session_logs", "items": ["Session 1: Core idea", "Session 2: Hybrid representation", "Session 3: GA introduction", "Session 4: Translation/innovation distinction", "Session 5: Fusion ownership + library", "Session 6: Rule-invariant pairs + two-layer library", "Session 7: KB restructure"] }
+{
+  "_index": "notes.session_logs",
+  "items": [
+    { "id": "s_07", "label": "Session 7 — Substrate Architecture, Hypergraphs, Modular Design", "importance": "high", "last_updated": "2026-04-29", "tags": ["substrate", "hypergraph", "architecture", "decisions"] }
+  ]
+}
