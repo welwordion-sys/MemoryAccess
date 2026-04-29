@@ -1,0 +1,13 @@
+{
+  "_index": "projects.perspective.methodology",
+  "_project": "perspective",
+  "_last_updated": "2026-04-30",
+  "items": [
+    { "id": "m_approach", "label": "Theoretical architecture design via iterative conversation", "tags": ["process"] },
+    { "id": "m_test", "label": "MNIST digit recognition as primary test domain", "tags": ["mnist", "benchmark"] },
+    { "id": "m_substrate", "label": "Modular substrate — base prototype, upgrade paths evaluated against measured failures", "tags": ["architecture", "substrate"] },
+    { "id": "m_c1", "label": "Constraint: no hyperedges, weights, or second system in base prototype", "tags": ["constraint"] },
+    { "id": "m_c2", "label": "Constraint: GI cost profiled in Phase 6", "tags": ["constraint", "GI"] },
+    { "id": "m_c3", "label": "Constraint: substrate upgrade decisions are manual researcher decisions at training start", "tags": ["constraint"] }
+  ]
+}

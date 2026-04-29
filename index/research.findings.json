@@ -1,12 +1,6 @@
 {
   "_index": "research.findings",
-  "items": [
-    { "id": "f_01", "label": "Data structures as directed graphs", "importance": "high", "last_updated": "2026-04-28", "tags": ["graph", "representation"] },
-    { "id": "f_02", "label": "Representation-dependent problem difficulty", "importance": "high", "last_updated": "2026-04-28", "tags": ["representation", "core"] },
-    { "id": "f_03", "label": "Approximate vs exact graph isomorphism", "importance": "medium", "last_updated": "2026-04-28", "tags": ["graph", "isomorphism"] },
-    { "id": "f_04", "label": "Hybrid representation model", "importance": "high", "last_updated": "2026-04-28", "tags": ["representation", "graph"] },
-    { "id": "f_05", "label": "Rule space vs data space bloat", "importance": "medium", "last_updated": "2026-04-28", "tags": ["rules", "scalability"] },
-    { "id": "f_06", "label": "Rule-invariant pairs", "importance": "medium", "last_updated": "2026-04-28", "tags": ["rules", "invariants"] },
-    { "id": "f_07", "label": "Label-correlation as library entry criterion", "importance": "high", "last_updated": "2026-04-28", "tags": ["library", "criteria"] }
-  ]
+  "_status": "tombstoned",
+  "_note": "Content migrated to projects.perspective.findings as of 2026-04-29. This index is retained only for reference.",
+  "items": []
 }

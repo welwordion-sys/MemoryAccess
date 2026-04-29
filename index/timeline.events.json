@@ -1,1 +1,6 @@
-{ "_index": "timeline.events", "items": ["e_01: Project inception", "e_02: Hybrid representation decided", "e_03: Two-system architecture established", "e_04: Two-layer library architecture established", "e_05: GitHub MCP connected", "e_06: KB restructured into chunks/ and index/"] }
+{
+  "_index": "timeline.events",
+  "_status": "tombstoned",
+  "_note": "Content migrated to projects.perspective.timeline as of 2026-04-29. This index is retained only for reference.",
+  "items": []
+}

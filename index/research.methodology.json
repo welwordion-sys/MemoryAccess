@@ -1,8 +1,6 @@
 {
   "_index": "research.methodology",
-  "items": [
-    { "id": "approach", "label": "Research approach", "importance": "medium", "last_updated": "2026-04-28", "tags": ["meta"] },
-    { "id": "tools", "label": "Tools in use", "importance": "low", "last_updated": "2026-04-28", "tags": ["meta"] },
-    { "id": "constraints", "label": "Known constraints", "importance": "medium", "last_updated": "2026-04-28", "tags": ["meta"] }
-  ]
+  "_status": "tombstoned",
+  "_note": "Content migrated to projects.perspective.methodology as of 2026-04-29. This index is retained only for reference.",
+  "items": []
 }

@@ -1,1 +1,6 @@
-{ "_index": "timeline.milestones", "items": ["m_01: Architecture design phase complete (v0.1) — reached", "m_02: Formalise invariant retention criterion — planned", "m_03: Formalise rewrite system fitness signal — planned", "m_04: First implementation prototype — planned"] }
+{
+  "_index": "timeline.milestones",
+  "_status": "tombstoned",
+  "_note": "Content migrated to projects.perspective.timeline as of 2026-04-29. This index is retained only for reference.",
+  "items": []
+}

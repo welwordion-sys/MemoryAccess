@@ -1,0 +1,15 @@
+{
+  "_index": "projects.perspective.relationships",
+  "_project": "perspective",
+  "_last_updated": "2026-04-30",
+  "items": [
+    { "id": "r_01", "label": "Data System owns Library", "tags": ["ownership"] },
+    { "id": "r_02", "label": "Rewrite System improves Data System", "tags": ["dependency"] },
+    { "id": "r_03", "label": "Rewrite System reads Library (no write)", "tags": ["access"] },
+    { "id": "r_04", "label": "Translation opposes Innovation", "tags": ["contrast"] },
+    { "id": "r_05", "label": "Layer Fusion derives from Translation", "tags": ["derivation"] },
+    { "id": "r_06", "label": "Empirical Library grounds Reasoned Library", "tags": ["grounding"] },
+    { "id": "r_07", "label": "Rule-Invariant Pair composes Library", "tags": ["composition"] },
+    { "id": "r_08", "label": "Genetic Algorithm operates on Rewrite System", "tags": ["mechanism"] }
+  ]
+}

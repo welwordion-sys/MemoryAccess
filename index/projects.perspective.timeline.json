@@ -1,0 +1,21 @@
+{
+  "_index": "projects.perspective.timeline",
+  "_project": "perspective",
+  "_last_updated": "2026-04-30",
+  "items": [
+    { "id": "e_01", "label": "Project inception", "date": "2026-04-28", "tags": ["event"] },
+    { "id": "e_02", "label": "Hybrid representation considered and rejected", "date": "2026-04-28", "tags": ["event", "decision"] },
+    { "id": "e_03", "label": "Two-system architecture established", "date": "2026-04-28", "tags": ["event", "architecture"] },
+    { "id": "e_04", "label": "Two-layer library architecture established", "date": "2026-04-28", "tags": ["event", "architecture"] },
+    { "id": "e_05", "label": "GitHub MCP connected", "date": "2026-04-28", "tags": ["event", "infrastructure"] },
+    { "id": "e_06", "label": "KB restructured into chunks/ and index/", "date": "2026-04-28", "tags": ["event", "infrastructure"] },
+    { "id": "e_07", "label": "Base substrate architecture finalised", "date": "2026-04-29", "tags": ["event", "architecture"] },
+    { "id": "e_08", "label": "Layer structure corrected and GA fitness signal established", "date": "2026-04-29", "tags": ["event", "architecture"] },
+    { "id": "e_09", "label": "Prototype roadmap created", "date": "2026-04-29", "tags": ["event", "roadmap"] },
+    { "id": "e_10", "label": "KB refactored to general memory system", "date": "2026-04-29", "tags": ["event", "infrastructure"] },
+    { "id": "m_01", "label": "Architecture design phase complete (v0.1)", "date": "2026-04-28", "status": "reached", "tags": ["milestone"] },
+    { "id": "m_02", "label": "Invariant retention criterion formalised", "date": "2026-04-29", "status": "reached", "tags": ["milestone"] },
+    { "id": "m_03", "label": "Rewrite system fitness signal formalised", "date": "2026-04-29", "status": "reached", "tags": ["milestone"] },
+    { "id": "m_04", "label": "First implementation prototype", "date": "", "status": "planned", "tags": ["milestone"] }
+  ]
+}

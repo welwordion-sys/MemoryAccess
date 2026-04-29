@@ -1,13 +1,6 @@
 {
   "_index": "research.sources",
-  "items": [
-    { "id": "src_01", "label": "Kolmogorov Complexity", "importance": "high", "last_updated": "2026-04-28", "tags": ["complexity", "theory"] },
-    { "id": "src_02", "label": "Solomonoff Induction", "importance": "high", "last_updated": "2026-04-28", "tags": ["induction", "theory"] },
-    { "id": "src_03", "label": "Weisfeiler-Leman Graph Isomorphism Algorithm", "importance": "high", "last_updated": "2026-04-28", "tags": ["graph", "isomorphism"] },
-    { "id": "src_04", "label": "Graph Neural Networks", "importance": "medium", "last_updated": "2026-04-28", "tags": ["graph", "ml"] },
-    { "id": "src_05", "label": "Minimum Description Length (MDL) Principle", "importance": "high", "last_updated": "2026-04-28", "tags": ["compression", "theory"] },
-    { "id": "src_06", "label": "Cognitive Chunking Theory", "importance": "medium", "last_updated": "2026-04-28", "tags": ["cognition", "memory"] },
-    { "id": "src_07", "label": "Hierarchical Temporal Memory (HTM)", "importance": "medium", "last_updated": "2026-04-28", "tags": ["memory", "hierarchy"] },
-    { "id": "src_08", "label": "Category Theory", "importance": "high", "last_updated": "2026-04-28", "tags": ["theory", "structure"] }
-  ]
+  "_status": "tombstoned",
+  "_note": "Content migrated to projects.perspective.sources as of 2026-04-29. This index is retained only for reference.",
+  "items": []
 }

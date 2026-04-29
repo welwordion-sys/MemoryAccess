@@ -1,0 +1,14 @@
+{
+  "_index": "projects.perspective.findings",
+  "_project": "perspective",
+  "_last_updated": "2026-04-30",
+  "items": [
+    { "id": "f_01", "label": "Most data structures reduce to directed graphs + traversal rules", "confidence": "high", "tags": ["graph-theory", "data-structures"] },
+    { "id": "f_02", "label": "Problem difficulty is often a function of representation, not inherent complexity", "confidence": "high", "tags": ["representation-learning"] },
+    { "id": "f_03", "label": "Approximate GI (WL, graph kernels) may suffice for pattern recognition", "confidence": "high", "tags": ["graph-theory", "GI"] },
+    { "id": "f_04", "label": "Hybrid representation rejected — complexity absorbed upward through layer hierarchy", "confidence": "high", "status": "superseded", "tags": ["representation-learning", "graph-theory"] },
+    { "id": "f_05", "label": "Rule space bloat is lesser evil than data space bloat", "confidence": "medium", "tags": ["architecture"] },
+    { "id": "f_06", "label": "Library entries must be rule-invariant pairs, not standalone subgraphs", "confidence": "high", "tags": ["library", "invariants"] },
+    { "id": "f_07", "label": "Library entry requires label-correlated GA-convergent production, not mere frequency", "confidence": "high", "tags": ["library", "labelling", "GA"] }
+  ]
+}

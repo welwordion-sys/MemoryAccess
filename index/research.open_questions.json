@@ -1,5 +1,7 @@
 {
   "_index": "research.open_questions",
+  "_status": "tombstoned",
+  "_note": "Content migrated to projects.perspective.open_questions as of 2026-04-29. NOTE: chunk not yet created — open questions currently exist only in this index. Migrate before removing.",
   "items": [
     { "id": "q_01", "label": "Topology of representation space", "importance": "high", "last_updated": "2026-04-28", "tags": ["representation", "theory"] },
     { "id": "q_02", "label": "Compression criterion for library entry", "importance": "high", "last_updated": "2026-04-28", "tags": ["library", "compression"] },

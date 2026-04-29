@@ -1,0 +1,16 @@
+{
+  "_index": "projects.perspective.definitions",
+  "_project": "perspective",
+  "_last_updated": "2026-04-30",
+  "items": [
+    { "id": "t_01", "label": "Translation", "tags": ["core-concept"], "aliases": ["reversible transformation"] },
+    { "id": "t_02", "label": "Innovation", "tags": ["core-concept"], "aliases": ["irreversible transformation"] },
+    { "id": "t_03", "label": "Library", "tags": ["core-concept"], "aliases": ["shared library", "invariant library"] },
+    { "id": "t_04", "label": "Rule-Invariant Pair", "tags": ["core-concept"] },
+    { "id": "t_05", "label": "Empirical Library", "tags": ["core-concept"] },
+    { "id": "t_06", "label": "Reasoned Library", "tags": ["core-concept"] },
+    { "id": "t_07", "label": "Layer Fusion", "tags": ["architecture"], "aliases": ["fusion"] },
+    { "id": "t_08", "label": "Layer Splitting", "tags": ["architecture"], "aliases": ["splitting"] },
+    { "id": "t_09", "label": "Recognition Cascade", "tags": ["mechanism"] }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "_index": "projects.perspective.sources",
+  "_project": "perspective",
+  "_last_updated": "2026-04-30",
+  "items": [
+    { "id": "src_01", "label": "Kolmogorov Complexity", "tags": ["compression", "library"] },
+    { "id": "src_02", "label": "Solomonoff Induction", "tags": ["traversal", "rule-space"] },
+    { "id": "src_03", "label": "Weisfeiler-Leman Graph Isomorphism Algorithm", "tags": ["GI", "approximation"] },
+    { "id": "src_04", "label": "Graph Neural Networks", "tags": ["GI", "pattern-matching"] },
+    { "id": "src_05", "label": "Minimum Description Length (MDL) Principle", "tags": ["compression", "library"] },
+    { "id": "src_06", "label": "Cognitive Chunking Theory", "tags": ["library", "compression"] },
+    { "id": "src_07", "label": "Hierarchical Temporal Memory (HTM)", "tags": ["architecture", "hierarchy"] },
+    { "id": "src_08", "label": "Category Theory", "tags": ["translation", "structure-preserving"] }
+  ]
+}
