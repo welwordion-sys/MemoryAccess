@@ -1,0 +1,17 @@
+{
+  "_chunk": "projects.perspective.methodology",
+  "_project": "perspective",
+  "_last_updated": "2026-04-29",
+  "data": {
+    "approach": "Theoretical architecture design through iterative conversation. Ideas developed session by session, corrections applied when misunderstandings identified. Photo recognition (MNIST) used as concrete test case. Modular substrate approach: start with base prototype, upgrade paths evaluated empirically against measured failures.",
+    "tools": ["Claude AI (sessions 1-8)", "GitHub MCP for persistent memory"],
+    "constraints": [
+      "Base prototype only — no hyperedges, no weights, no second system yet",
+      "Graph isomorphism computational cost is a known concern — profiled in Phase 6",
+      "Unbounded parameter growth in hierarchy is a known concern",
+      "Substrate upgrade decisions are manual researcher decisions at training start"
+    ],
+    "test_domain": "MNIST digit recognition — chosen as well-understood benchmark with labels, manageable scale, and clear success metric"
+  },
+  "notes": "Migrated from research.methodology s_08. Updated to reflect MNIST decision and modular substrate approach."
+}
