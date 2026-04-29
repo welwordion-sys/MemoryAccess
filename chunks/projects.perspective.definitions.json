@@ -1,0 +1,19 @@
+{
+  "_chunk": "projects.perspective.definitions",
+  "_project": "perspective",
+  "_last_updated": "2026-04-29",
+  "data": {
+    "terms": [
+      { "term": "Translation", "definition": "Reversible graph transformation. Same data viewed in a different representation. No information lost. Can always be undone. Primary operation of the data transformation system.", "aliases": ["reversible transformation"], "related_terms": ["Innovation", "Data System"], "tags": ["core-concept"] },
+      { "term": "Innovation", "definition": "Irreversible transformation. Information is destroyed or genuinely created. New structure emerges that cannot be walked back. Permitted only in the logic rewriting system.", "aliases": ["irreversible transformation"], "related_terms": ["Translation", "Rewrite System"], "tags": ["core-concept"] },
+      { "term": "Library", "definition": "Shared store of rule-invariant pairs discovered through labelled training. Has two layers: empirical (label-correlated, permanent) and reasoned (logic-derived, requires human approval to unlock). Read by both systems, written only by the data system (empirical layer).", "aliases": ["shared library", "invariant library"], "related_terms": ["Empirical Library", "Reasoned Library", "Rule-Invariant Pair"], "tags": ["core-concept"] },
+      { "term": "Rule-Invariant Pair", "definition": "A library entry consisting of a subgraph paired with the rule context that produced it during traversal. A subgraph alone has no diagnostic value — the rule context is required.", "aliases": [], "related_terms": ["Library"], "tags": ["core-concept"] },
+      { "term": "Empirical Library", "definition": "Layer 1 of the shared library. Contains only label-correlated entries. Permanent — never overwritten. Serves as ground truth anchor for the whole system.", "aliases": [], "related_terms": ["Library", "Reasoned Library"], "tags": ["core-concept"] },
+      { "term": "Reasoned Library", "definition": "Layer 2 of the shared library. Contains logic-derived entries. Only unlocked after human approval of capability threshold. Can be audited and diffed against empirical library.", "aliases": [], "related_terms": ["Library", "Empirical Library"], "tags": ["core-concept"] },
+      { "term": "Layer Fusion", "definition": "Collapsing subgraphs upward — compressing two layers into one. A perspective change, not terrain restructuring. Governed by the data system.", "aliases": ["fusion"], "related_terms": ["Layer Splitting", "Data System"], "tags": ["architecture"] },
+      { "term": "Layer Splitting", "definition": "Expanding subgraphs downward — decomposing one layer into two. Governed by the data system.", "aliases": ["splitting"], "related_terms": ["Layer Fusion", "Data System"], "tags": ["architecture"] },
+      { "term": "Recognition Cascade", "definition": "Recognition is not one test but a cascade of partial matches climbing layers until a threshold is met. E.g. pixel layer: no pattern; edge layer: partial structure; object layer: isomorphism fires.", "aliases": [], "related_terms": ["Library", "Translation"], "tags": ["mechanism"] }
+    ]
+  },
+  "notes": "Migrated from concepts.definitions s_08. Core terms established sessions 1-6."
+}
