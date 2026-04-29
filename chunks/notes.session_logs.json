@@ -6,28 +6,41 @@
     {
       "session": "s_07",
       "date": "2026-04-29",
+      "project": "perspective",
       "entries": [
-        { "decision": "Hybrid representation model rejected", "rationale": "Leaf attributes counter to design philosophy — complexity absorbed upward through hierarchy", "affects": "concepts.frameworks" },
-        { "decision": "Base substrate: directed graphs, binary edge types, no node typing, no weights", "rationale": "Minimal base; richer substrates as empirical upgrade paths", "affects": "concepts.frameworks" },
-        { "decision": "Binary edge typing fixed at two globally: structural and operational", "rationale": "Reduces isomorphism complexity via regime-separated matching; does not clutter rule space", "affects": "concepts.frameworks" },
-        { "decision": "Substrate upgrades are manual researcher decisions at training start", "rationale": "Automation not warranted at this level", "affects": "concepts.frameworks" },
-        { "decision": "Two-level evaluation principle adopted", "rationale": "Every substrate decision must hold for both traveler and second system", "affects": "concepts.frameworks" },
-        { "decision": "Second system design deferred", "rationale": "Traveler behavior should inform second system design, not the reverse", "affects": "concepts.frameworks" },
-        { "decision": "Graph Operation Interface defined with five operation groups", "rationale": "Abstraction layer enables substrate swapping without touching core logic", "affects": "concepts.frameworks" },
-        { "decision": "q_07-q_09 added as critical open questions", "rationale": "Hypergraph necessity and isomorphism cost unresolved — empirical decision gates", "affects": "research.open_questions" }
+        { "decision": "Hybrid representation model rejected", "rationale": "Leaf attributes counter to design philosophy — complexity absorbed upward through hierarchy", "affects": "projects.perspective.frameworks" },
+        { "decision": "Base substrate: directed graphs, binary edge types, no node typing, no weights", "rationale": "Minimal base; richer substrates as empirical upgrade paths", "affects": "projects.perspective.frameworks" },
+        { "decision": "Binary edge typing fixed at two globally: structural and operational", "rationale": "Reduces isomorphism complexity via regime-separated matching; does not clutter rule space", "affects": "projects.perspective.frameworks" },
+        { "decision": "Substrate upgrades are manual researcher decisions at training start", "rationale": "Automation not warranted at this level", "affects": "projects.perspective.frameworks" },
+        { "decision": "Two-level evaluation principle adopted", "rationale": "Every substrate decision must hold for both traveler and second system", "affects": "projects.perspective.frameworks" },
+        { "decision": "Second system design deferred", "rationale": "Traveler behavior should inform second system design, not the reverse", "affects": "projects.perspective.frameworks" },
+        { "decision": "Graph Operation Interface defined with five operation groups", "rationale": "Abstraction layer enables substrate swapping without touching core logic", "affects": "projects.perspective.frameworks" },
+        { "decision": "q_07-q_09 added as critical open questions", "rationale": "Hypergraph necessity and isomorphism cost unresolved — empirical decision gates", "affects": "projects.perspective.open_questions" }
       ]
     },
     {
       "session": "s_08",
       "date": "2026-04-29",
+      "project": "perspective",
       "entries": [
-        { "decision": "Layer structure framing corrected", "rationale": "Layer identity is representational scale, not operation type. Reversibility is system-wide, not layer-specific. Previous framing was neural network projection error.", "affects": "concepts.frameworks" },
-        { "decision": "Layer boundary definition: earned through GA convergence, not assigned", "rationale": "Subgraph becomes upper-layer node when GA converges on consistent production for a given label", "affects": "concepts.frameworks" },
-        { "decision": "GA is load-bearing for prototype", "rationale": "Fixed rules cannot achieve label-conditioned reproducibility across images", "affects": "concepts.frameworks, notes.drafts" },
-        { "decision": "Fitness signal: label-conditioned reproducibility (minimize variance in subgraph output per label)", "rationale": "Resolves q_02 and q_04; eliminates cold start circularity", "affects": "research.open_questions, concepts.frameworks" },
-        { "decision": "q_07-q_09 reframed as empirical decision gates", "rationale": "Not pre-roadmap blockers — answered by Phase 6 test results", "affects": "research.open_questions" },
-        { "decision": "Prototype roadmap created (d_02), 6 phases plus 5b", "rationale": "Scope bounded to MNIST base prototype with GA included", "affects": "notes.drafts" },
+        { "decision": "Layer structure framing corrected", "rationale": "Layer identity is representational scale, not operation type. Reversibility is system-wide, not layer-specific. Previous framing was neural network projection error.", "affects": "projects.perspective.frameworks" },
+        { "decision": "Layer boundary definition: earned through GA convergence, not assigned", "rationale": "Subgraph becomes upper-layer node when GA converges on consistent production for a given label", "affects": "projects.perspective.frameworks" },
+        { "decision": "GA is load-bearing for prototype", "rationale": "Fixed rules cannot achieve label-conditioned reproducibility across images", "affects": "projects.perspective.frameworks, projects.perspective.roadmap" },
+        { "decision": "Fitness signal: label-conditioned reproducibility (minimize variance in subgraph output per label)", "rationale": "Resolves q_02 and q_04; eliminates cold start circularity", "affects": "projects.perspective.open_questions, projects.perspective.frameworks" },
+        { "decision": "q_07-q_09 reframed as empirical decision gates", "rationale": "Not pre-roadmap blockers — answered by Phase 6 test results", "affects": "projects.perspective.open_questions" },
+        { "decision": "Prototype roadmap created, 6 phases plus 5b", "rationale": "Scope bounded to MNIST base prototype with GA included", "affects": "projects.perspective.roadmap" },
         { "decision": "Session log restructured to two-tier format", "rationale": "Narrative logs do not scale into implementation phase", "affects": "notes.session_logs, session_loader.json" }
+      ]
+    },
+    {
+      "session": "s_08",
+      "date": "2026-04-29",
+      "project": "general",
+      "entries": [
+        { "decision": "MemoryAccess restructured as general memory system with projects namespace", "rationale": "Knowledge base is not project-specific — must support multiple projects and potentially feed back into its own architecture", "affects": "session_loader.json" },
+        { "decision": "Project Perspective content migrated to projects.perspective.* namespace", "rationale": "Separates project-specific content from general memory domains", "affects": "projects.perspective.*" },
+        { "decision": "General domains kept clean: meta, notes, entities", "rationale": "Cross-project knowledge must not be entangled with any single project", "affects": "notes.drafts, meta.*, entities.*" },
+        { "decision": "Project named perspective, not traveler", "rationale": "Correct project name from session 7 project setup", "affects": "session_loader.json, projects.perspective.*" }
       ]
     }
   ],
