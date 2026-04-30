@@ -1,16 +1,6 @@
 {
   "_index": "research.open_questions",
   "_status": "tombstoned",
-  "_note": "Content migrated to projects.perspective.open_questions as of 2026-04-29. NOTE: chunk not yet created — open questions currently exist only in this index. Migrate before removing.",
-  "items": [
-    { "id": "q_01", "label": "Topology of representation space", "importance": "high", "last_updated": "2026-04-28", "tags": ["representation", "theory"] },
-    { "id": "q_02", "label": "Compression criterion for library entry", "importance": "high", "last_updated": "2026-04-28", "tags": ["library", "compression"] },
-    { "id": "q_03", "label": "Invariant retention mechanism", "importance": "high", "last_updated": "2026-04-28", "tags": ["invariants", "rules"] },
-    { "id": "q_04", "label": "Rewrite system self-evolution fitness signal", "importance": "high", "last_updated": "2026-04-28", "tags": ["evolution", "rules"] },
-    { "id": "q_05", "label": "Evolvable vs fixed GA primitives", "importance": "medium", "last_updated": "2026-04-28", "tags": ["evolution", "ga"] },
-    { "id": "q_06", "label": "Approximate vs exact GI for recognition cascade and rule firing — extended to hypergraphs", "importance": "high", "last_updated": "2026-04-29", "tags": ["graph", "isomorphism", "hypergraph", "rules"] },
-    { "id": "q_07", "label": "Hypergraphs as minimum requirement for representation", "importance": "critical", "last_updated": "2026-04-29", "tags": ["hypergraph", "representation", "discrete", "ca"] },
-    { "id": "q_08", "label": "Maximum hyperedge arity k — expressiveness vs tractability tradeoff", "importance": "critical", "last_updated": "2026-04-29", "tags": ["hypergraph", "isomorphism", "architecture"] },
-    { "id": "q_09", "label": "Layer hierarchy compensation for hypergraph isomorphism cost", "importance": "critical", "last_updated": "2026-04-29", "tags": ["hypergraph", "isomorphism", "hierarchy", "architecture"] }
-  ]
+  "_note": "Content migrated to projects.perspective.open_questions (chunk + index) as of 2026-04-30. This index is retained only for reference.",
+  "items": []
 }

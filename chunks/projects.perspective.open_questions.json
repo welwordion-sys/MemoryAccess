@@ -1,0 +1,85 @@
+{
+  "_chunk": "projects.perspective.open_questions",
+  "_project": "perspective",
+  "_last_updated": "2026-04-30",
+  "data": {
+    "open_questions": [
+      {
+        "id": "q_01",
+        "question": "What is the topology of representation space? Is it discrete, continuous, or mixed?",
+        "importance": "high",
+        "status": "open",
+        "last_updated": "2026-04-28",
+        "tags": ["representation", "theory"]
+      },
+      {
+        "id": "q_02",
+        "question": "What is the compression criterion for a subgraph to earn a library entry? MDL, frequency-under-convergence, or other?",
+        "importance": "high",
+        "status": "open",
+        "last_updated": "2026-04-28",
+        "tags": ["library", "compression"]
+      },
+      {
+        "id": "q_03",
+        "question": "What is the invariant retention mechanism? How does the system decide what to keep vs evict from the library?",
+        "importance": "high",
+        "status": "open",
+        "last_updated": "2026-04-28",
+        "tags": ["invariants", "rules"]
+      },
+      {
+        "id": "q_04",
+        "question": "What is the correct fitness signal for rewrite system self-evolution? Currently: minimize variance in subgraph output per label across images.",
+        "importance": "high",
+        "status": "partially_resolved",
+        "resolution_note": "Label-conditioned reproducibility adopted as working fitness signal for prototype. Not yet validated empirically.",
+        "last_updated": "2026-04-29",
+        "tags": ["evolution", "rules", "GA"]
+      },
+      {
+        "id": "q_05",
+        "question": "Should GA primitives (mutation, crossover operators) be fixed or themselves evolvable?",
+        "importance": "medium",
+        "status": "deferred",
+        "resolution_note": "Fixed primitives for prototype. Revisit after Phase 5b.",
+        "last_updated": "2026-04-28",
+        "tags": ["evolution", "GA"]
+      },
+      {
+        "id": "q_06",
+        "question": "Should graph isomorphism be exact or approximate (WL, graph kernels) for recognition cascade and rule firing? Does the answer change if hyperedges are adopted?",
+        "importance": "high",
+        "status": "open",
+        "last_updated": "2026-04-29",
+        "tags": ["graph", "isomorphism", "hypergraph", "rules"]
+      },
+      {
+        "id": "q_07",
+        "question": "Are hyperedges a minimum requirement for adequate representation, or is the directed graph substrate sufficient?",
+        "importance": "critical",
+        "status": "open",
+        "resolution_note": "Decision gate in Phase 6. If yes, significant rework of P1-P5 is required. This risk is currently implicit in the roadmap — should be made explicit.",
+        "last_updated": "2026-04-29",
+        "tags": ["hypergraph", "representation", "substrate", "roadmap"]
+      },
+      {
+        "id": "q_08",
+        "question": "If hyperedges are adopted, what is the maximum arity k? What is the expressiveness vs tractability tradeoff at each k?",
+        "importance": "critical",
+        "status": "open",
+        "last_updated": "2026-04-29",
+        "tags": ["hypergraph", "isomorphism", "architecture"]
+      },
+      {
+        "id": "q_09",
+        "question": "Can layer hierarchy compensate for hypergraph isomorphism cost — i.e. does operating at higher abstraction layers reduce the effective arity of comparisons enough to remain tractable?",
+        "importance": "critical",
+        "status": "open",
+        "last_updated": "2026-04-29",
+        "tags": ["hypergraph", "isomorphism", "hierarchy", "architecture"]
+      }
+    ]
+  },
+  "notes": "Migrated from research.open_questions index (was never a chunk). q_04 and q_05 have partial resolutions noted."
+}
