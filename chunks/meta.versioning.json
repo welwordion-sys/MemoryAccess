@@ -1,12 +1,13 @@
 {
   "_chunk": "meta.versioning",
-  "_last_updated": "2026-04-28",
+  "_last_updated": "2026-04-30",
   "data": {
     "schema_version": "0.1.0",
     "changelog": [
       { "date": "2026-04-28", "change": "Initial population from sessions 1-6" },
       { "date": "2026-04-28", "change": "v0.5.0 session_loader: tighter retrieval discipline" },
-      { "date": "2026-04-28", "change": "v0.6.0 restructure: split into chunks/ and index/ files" }
+      { "date": "2026-04-28", "change": "v0.6.0 restructure: split into chunks/ and index/ files" },
+      { "date": "2026-04-30", "change": "v0.9.0 session 9: KB cleanup completed, all missing indexes created, tombstones deleted, frameworks chunk created from archive. Roadmap problems resolved — P5b/P5 reordered, P3 exit condition corrected, risks assigned to phases, P6 binary gate declared, test domain changed from MNIST to arithmetic/equations, input encoding decided (binary tree per value node, seed rule bootstrap). behaviour_personality, workflow, session_lock chunks added. Framing bias and premature recommendation failure patterns documented. Context governance framework established with soft ceilings and lock protocol." }
     ]
   },
   "notes": "Add changelog entries as: { \"date\": \"YYYY-MM-DD\", \"change\": \"description\" }"

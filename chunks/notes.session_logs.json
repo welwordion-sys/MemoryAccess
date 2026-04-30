@@ -1,6 +1,6 @@
 {
   "_chunk": "notes.session_logs",
-  "_last_updated": "2026-04-29",
+  "_last_updated": "2026-04-30",
   "_format": "Two-tier. Tier 1 (decisions): architectural and design decisions per session — decision, rationale, affected chunk. Tier 2 (implementation): short entries during implementation — attempted, outcome, decided. No narrative prose in either tier.",
   "decisions": [
     {
@@ -23,12 +23,12 @@
       "date": "2026-04-29",
       "project": "perspective",
       "entries": [
-        { "decision": "Layer structure framing corrected", "rationale": "Layer identity is representational scale, not operation type. Reversibility is system-wide, not layer-specific. Previous framing was neural network projection error.", "affects": "projects.perspective.frameworks" },
+        { "decision": "Layer structure framing corrected", "rationale": "Layer identity is representational scale, not operation type. Reversibility is system-wide, not layer-specific.", "affects": "projects.perspective.frameworks" },
         { "decision": "Layer boundary definition: earned through GA convergence, not assigned", "rationale": "Subgraph becomes upper-layer node when GA converges on consistent production for a given label", "affects": "projects.perspective.frameworks" },
-        { "decision": "GA is load-bearing for prototype", "rationale": "Fixed rules cannot achieve label-conditioned reproducibility across images", "affects": "projects.perspective.frameworks, projects.perspective.roadmap" },
+        { "decision": "GA is load-bearing for prototype", "rationale": "Fixed rules cannot achieve label-conditioned reproducibility across expressions", "affects": "projects.perspective.frameworks, projects.perspective.roadmap" },
         { "decision": "Fitness signal: label-conditioned reproducibility (minimize variance in subgraph output per label)", "rationale": "Resolves q_02 and q_04; eliminates cold start circularity", "affects": "projects.perspective.open_questions, projects.perspective.frameworks" },
         { "decision": "q_07-q_09 reframed as empirical decision gates", "rationale": "Not pre-roadmap blockers — answered by Phase 6 test results", "affects": "projects.perspective.open_questions" },
-        { "decision": "Prototype roadmap created, 6 phases plus 5b", "rationale": "Scope bounded to MNIST base prototype with GA included", "affects": "projects.perspective.roadmap" },
+        { "decision": "Prototype roadmap created, 6 phases plus 5b", "rationale": "Scope bounded to base prototype with GA included", "affects": "projects.perspective.roadmap" },
         { "decision": "Session log restructured to two-tier format", "rationale": "Narrative logs do not scale into implementation phase", "affects": "notes.session_logs, session_loader.json" }
       ]
     },
@@ -37,10 +37,42 @@
       "date": "2026-04-29",
       "project": "general",
       "entries": [
-        { "decision": "MemoryAccess restructured as general memory system with projects namespace", "rationale": "Knowledge base is not project-specific — must support multiple projects and potentially feed back into its own architecture", "affects": "session_loader.json" },
+        { "decision": "MemoryAccess restructured as general memory system with projects namespace", "rationale": "Knowledge base is not project-specific", "affects": "session_loader.json" },
         { "decision": "Project Perspective content migrated to projects.perspective.* namespace", "rationale": "Separates project-specific content from general memory domains", "affects": "projects.perspective.*" },
         { "decision": "General domains kept clean: meta, notes, entities", "rationale": "Cross-project knowledge must not be entangled with any single project", "affects": "notes.drafts, meta.*, entities.*" },
         { "decision": "Project named perspective, not traveler", "rationale": "Correct project name from session 7 project setup", "affects": "session_loader.json, projects.perspective.*" }
+      ]
+    },
+    {
+      "session": "s_09",
+      "date": "2026-04-30",
+      "project": "perspective",
+      "entries": [
+        { "decision": "P5b precedes P5", "rationale": "Traversal loop requires converged rules to produce meaningful output", "affects": "projects.perspective.roadmap" },
+        { "decision": "P3 exit condition: placeholder boundaries as explicit scaffold", "rationale": "GA not yet running at P3 — boundaries earned through convergence is a P5b success signal", "affects": "projects.perspective.roadmap" },
+        { "decision": "Risks assigned to phases: burn-in at P5b, GI cost at P5, parameter growth at P3", "rationale": "Floating risks without phase assignments are discovered during implementation, not anticipated", "affects": "projects.perspective.roadmap" },
+        { "decision": "P6 reframed as binary gate with explicit pass/fail", "rationale": "Implicit treatment of hyperedge fail as unlikely was not declared — both outcomes acceptable and should be stated", "affects": "projects.perspective.roadmap" },
+        { "decision": "P6 fail path is additive — k=2 recycles as hypergraph seed", "rationale": "Directed graph is hypergraph at k=2; fail does not invalidate P1-P5 work", "affects": "projects.perspective.roadmap, projects.perspective.open_questions" },
+        { "decision": "Test domain changed from MNIST to arithmetic expressions and linear equations", "rationale": "Clean ground truth, verifiable reversibility, auditable rule paths, natural complexity ladder", "affects": "projects.perspective.roadmap" },
+        { "decision": "Input encoding: binary tree per value node, no node attributes", "rationale": "Consistent with no-attribute substrate; identity emerges from structure", "affects": "projects.perspective.roadmap" },
+        { "decision": "Seed rules as bootstrap scaffold with defined lifecycle", "rationale": "Library empty at training start; seed displacement is the success signal", "affects": "projects.perspective.roadmap" },
+        { "decision": "Label format: terminal value for arithmetic, solved form graph for equations", "rationale": "Allows library to learn value nodes and solved forms at appropriate layers independently", "affects": "projects.perspective.roadmap" },
+        { "decision": "x = 3 is irreducible; x = x collapses to x", "rationale": "Both sides of x = 3 are distinct — equality is not redundant", "affects": "projects.perspective.roadmap" }
+      ]
+    },
+    {
+      "session": "s_09",
+      "date": "2026-04-30",
+      "project": "general",
+      "entries": [
+        { "decision": "behaviour_personality chunk added as auto-load", "rationale": "Authoritative version of communication rules with conditions, failure patterns, bidirectional discipline", "affects": "meta.behaviour_personality, session_loader.json" },
+        { "decision": "workflow chunk added as on-demand", "rationale": "General coding workflow not project-bound; load explicitly at implementation session start", "affects": "meta.workflow" },
+        { "decision": "session_lock chunk added", "rationale": "Systematic data collection for ceiling calibration; triggered by user-reported erratic behavior", "affects": "meta.session_lock" },
+        { "decision": "Soft ceilings: 3 auto-load chunks, 12 total session chunks", "rationale": "Conservative starting points; revisable after 5 lock events provide calibration data", "affects": "meta.behaviour_personality, session_loader.json" },
+        { "decision": "KB review sessions exempt from session chunk ceiling", "rationale": "Full KB load during review is intentional, not accumulation drift", "affects": "session_loader.json, meta.behaviour_personality" },
+        { "decision": "Framing bias documented as failure pattern", "rationale": "Live example session 9: 'was this right?' vs 'correct or not?' produced different reliability", "affects": "meta.behaviour_personality" },
+        { "decision": "Premature recommendation documented as failure pattern", "rationale": "Live example session 9: workflow/rationale split stated confidently then reversed", "affects": "meta.behaviour_personality" },
+        { "decision": "Workflow instructions embed conditions, not rationale", "rationale": "Conditions define when rules apply; justifications are noise at retrieval time", "affects": "meta.workflow" }
       ]
     }
   ],

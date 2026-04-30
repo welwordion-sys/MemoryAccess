@@ -17,7 +17,7 @@
         "question": "What compression criterion governs when a subgraph earns its own upper-layer node / library entry?",
         "importance": "high",
         "status": "resolved",
-        "resolution": "Library entry is a byproduct of GA convergence. The GA fitness signal is label-conditioned reproducibility: given a fixed label, minimize variance in subgraph structures produced across different images with that label. Subgraphs that consistently appear under converged rules for a given label earn library entry. Frequency and MDL candidates superseded by this definition.",
+        "resolution": "Library entry is a byproduct of GA convergence. The GA fitness signal is label-conditioned reproducibility: given a fixed label, minimize variance in subgraph structures produced across different expressions with that label. Subgraphs that consistently appear under converged rules for a given label earn library entry. Frequency and MDL candidates superseded by this definition.",
         "last_updated": "2026-04-29",
         "tags": ["library", "compression", "GA"]
       },
@@ -34,7 +34,7 @@
         "question": "How does the rewrite system evolve itself — same feedback loop, but what is the fitness signal for its own logic?",
         "importance": "high",
         "status": "partially_resolved",
-        "resolution": "Fitness signal for the GA over rule graphs: given a fixed label, measure variance in subgraph structures produced across different images with that label. Lower variance = higher fitness. GA drives rules toward label-conditioned reproducibility. Full self-evolution mechanism (second system operating on rewrite system) remains deferred.",
+        "resolution": "Fitness signal for the GA over rule graphs: given a fixed label, measure variance in subgraph structures produced across different expressions with that label. Lower variance = higher fitness. GA drives rules toward label-conditioned reproducibility. Full self-evolution mechanism (second system operating on rewrite system) remains deferred.",
         "last_updated": "2026-04-29",
         "tags": ["evolution", "rules", "GA"]
       },
@@ -60,8 +60,8 @@
         "question": "Are hypergraphs a minimum requirement for the representation? Standard graphs may fundamentally limit the representations discoverable — discrete systems have fragmented search spaces with unreachable configurations, as demonstrated by cellular automata rule evolution. Hyperedges allow multi-way structural relationships but raise isomorphism cost significantly.",
         "importance": "critical",
         "status": "open",
-        "resolution_path": "Run base prototype on MNIST, inspect failure modes for representation fragmentation signal.",
-        "last_updated": "2026-04-29",
+        "resolution_path": "Run base prototype on arithmetic/equation expressions, inspect failure modes for representation fragmentation signal. Note: directed graph is hypergraph at k=2 — fail outcome is additive, not branching. k=2 prototype recycles as seed for hypergraph upgrade: GOI, layer hierarchy, library structure, GA mechanics, fitness signal, and seed rules all transfer. Matching engine and rule representations need extension, not replacement.",
+        "last_updated": "2026-04-30",
         "tags": ["hypergraph", "representation", "substrate", "roadmap"]
       },
       {
@@ -84,5 +84,5 @@
       }
     ]
   },
-  "notes": "Corrected from initial migration — q_02 was incorrectly marked open; it is resolved per _archive/research.open_questions.json. Full question text restored from archive. Frameworks content migrated to separate projects.perspective.frameworks chunk."
+  "notes": "q_07 resolution path updated session 9 — k=2 recycling argument added, fail path is additive not branching. Test domain updated from MNIST to arithmetic/equation expressions."
 }

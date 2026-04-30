@@ -4,11 +4,11 @@
   "_last_updated": "2026-04-30",
   "items": [
     { "id": "p1", "label": "Graph Substrate and Operations", "status": "not_started", "tags": ["graph", "substrate", "operations"] },
-    { "id": "p2", "label": "Input Layer and Quantization", "status": "not_started", "tags": ["input", "quantization", "encoding"], "open_decision": true },
-    { "id": "p3", "label": "Layer Structure and Compression", "status": "not_started", "tags": ["layers", "compression", "ga"] },
+    { "id": "p2", "label": "Input Layer and Encoding", "status": "not_started", "tags": ["input", "encoding", "binary-tree", "seed-rules"] },
+    { "id": "p3", "label": "Layer Structure and Compression", "status": "not_started", "tags": ["layers", "compression", "placeholder"] },
     { "id": "p4", "label": "Empirical Library", "status": "not_started", "tags": ["library", "recognition", "cascade"] },
-    { "id": "p5", "label": "Traversal Loop", "status": "not_started", "tags": ["traversal", "rules", "library"] },
-    { "id": "p5b", "label": "Minimal GA over Rule Graphs", "status": "not_started", "tags": ["ga", "rules", "evolution", "fitness"] },
-    { "id": "p6", "label": "First Test and Decision Gates", "status": "not_started", "tags": ["test", "mnist", "hypergraph", "isomorphism"] }
+    { "id": "p5b", "label": "Minimal GA over Rule Graphs", "status": "not_started", "tags": ["ga", "rules", "evolution", "fitness"], "note": "Precedes P5" },
+    { "id": "p5", "label": "Traversal Loop", "status": "not_started", "tags": ["traversal", "rules", "library"], "note": "Follows P5b" },
+    { "id": "p6", "label": "First Test and Decision Gates", "status": "not_started", "tags": ["test", "binary-gate", "hypergraph", "isomorphism"] }
   ]
 }

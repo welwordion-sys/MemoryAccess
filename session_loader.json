@@ -1,6 +1,6 @@
 {
   "_type": "session_loader",
-  "_version": "0.8.0",
+  "_version": "0.9.0",
   "_instructions": {
     "purpose": "Lightweight session loader. Fetch this file at session start and acknowledge it is loaded. Use the file paths below to fetch index or chunk files individually.",
     "posture": "Be bold with loading. When evidence points clearly to a chunk, fetch it. Prefer action over confirmation.",
@@ -9,7 +9,8 @@
       "offline": "Heavy operations: chunk writing, restructuring, archiving, updating the loader. These are deliberate and explicit — only on user instruction or clear necessity."
     },
     "how_to_load": [
-      "1. At session start: fetch session_loader.json. Acknowledge it is loaded. Do NOT fetch any chunk or index file yet.",
+      "0. At session start: check for session intent declaration. Recognized intents: 'kb review', 'knowledge base review', 'memory review', 'database review'. KB = Knowledge Base. If declared, acknowledge it, suspend session chunk ceiling, proceed. Do not ask for clarification — recognize and act.",
+      "1. At session start: fetch session_loader.json. After loading, also fetch and apply chunks/meta.behaviour_personality.json (auto-load). Report auto-load count and approximate token total as part of acknowledgement.",
       "2. For ANY content request: first fetch the relevant index/<domain>.<subtopic>.json to see what topics are actually in it. This is mandatory before any chunk decision.",
       "3. If the index clearly confirms a match, load the corresponding chunk immediately — no confirmation needed.",
       "4. After fetching a chunk: summarise what was loaded and proceed.",
@@ -39,8 +40,18 @@
   "domain_map": {
     "meta": {
       "_scope": "general",
-      "_summary": "Memory system metadata: versioning, global tags, system info.",
-      "_subtopics": ["project_info", "versioning", "global_tags"]
+      "_summary": "Memory system metadata: versioning, global tags, system info, behaviour rules, workflow, session lock data.",
+      "_subtopics": ["project_info", "versioning", "global_tags", "behaviour_personality", "workflow", "session_lock"],
+      "_auto_loads": ["behaviour_personality"],
+      "auto_load_governance": {
+        "auto_load_ceiling": 3,
+        "auto_load_ceiling_note": "Maximum auto-load chunks beyond session_loader. Currently using 1 (behaviour_personality). Headroom for 2 more before warning triggers. Soft ceiling — Claude warns, user decides, decision logged in versioning.",
+        "session_chunk_ceiling": 12,
+        "session_chunk_ceiling_note": "Maximum total chunks loaded in a single session. At 16 total chunks in KB, loading 12 in one session indicates either full KB review (declare intent) or unintentional accumulation. Soft ceiling — Claude warns, user decides.",
+        "kb_review_exemption": "Declaring session intent as KB review suspends the session chunk ceiling for that session. Auto-load ceiling still applies. Lock protocol still available if erratic behavior flagged.",
+        "kb_definition": "KB = Knowledge Base. The structured memory system stored in this repository.",
+        "kb_review_synonyms": ["kb review", "knowledge base review", "memory review", "database review"]
+      }
     },
     "notes": {
       "_scope": "general",
