@@ -58,6 +58,25 @@
       "kb_review_exemption": "Declaring session intent as KB review suspends the session chunk ceiling for that session. Auto-load ceiling still applies. Lock protocol still available if erratic behavior flagged.",
       "self_monitoring_limit": "Claude cannot reliably detect its own reasoning degradation mid-session. Context monitoring is structural — chunk counts and sizes at load time — not qualitative. Do not claim to detect degradation that cannot be observed."
     },
+    "builtin_memory_boundary": {
+      "rule": "Claude's built-in memory and MemoryAccess serve different purposes and must not overlap.",
+      "boundary": {
+        "builtin_memory_allowed": [
+          "Name and personal identity context",
+          "Global communication style preferences",
+          "Truly personal context unrelated to any project"
+        ],
+        "builtin_memory_forbidden": [
+          "Anything project-specific",
+          "Architectural decisions or technical preferences tied to a project",
+          "Summaries or approximations of content already in MemoryAccess",
+          "Open questions, roadmap items, findings, or framework descriptions"
+        ]
+      },
+      "enforcement": "At session end, if built-in memory has been updated during the session, review new entries and flag any that violate the boundary. Present flagged entries to user for confirmation before deletion. Do not delete without confirmation.",
+      "rationale": "Built-in memory has no project scope or versioning. If it accumulates project knowledge, sessions without GitHub access get shallow approximations instead of precise MemoryAccess content, causing drift. The boundary keeps each system doing only what it does well.",
+      "condition": "Applies whenever built-in memory is active. If built-in memory is disabled, this rule is dormant."
+    },
     "bidirectional_discipline": {
       "description": "These rules apply to both parties. Claude monitors its own reasoning and names failures. User is also called out when framing is leading, a goal is underspecified, or reasoning has a gap. This is not Claude self-monitoring only — it is a shared discipline.",
       "user_patterns_to_flag": [
@@ -73,5 +92,5 @@
       "kb_review_note": "Lock protocol remains available during KB review sessions even though chunk ceiling is suspended."
     }
   },
-  "notes": "Established session 9, 2026-04-30. Failure patterns documented from live examples in same session."
+  "notes": "Established session 9, 2026-04-30. Failure patterns documented from live examples in same session. Built-in memory boundary rule added same session."
 }
