@@ -1,0 +1,14 @@
+{
+  "_index": "meta.global_tags",
+  "_last_updated": "2026-04-30",
+  "items": [
+    { "id": "tag_01", "label": "graph-theory" },
+    { "id": "tag_02", "label": "representation-learning" },
+    { "id": "tag_03", "label": "genetic-algorithms" },
+    { "id": "tag_04", "label": "graph-rewriting" },
+    { "id": "tag_05", "label": "AI-architecture" },
+    { "id": "tag_06", "label": "traversal" },
+    { "id": "tag_07", "label": "innovation" },
+    { "id": "tag_08", "label": "translation" }
+  ]
+}

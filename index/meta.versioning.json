@@ -1,0 +1,10 @@
+{
+  "_index": "meta.versioning",
+  "_last_updated": "2026-04-30",
+  "items": [
+    { "id": "v_01", "label": "schema_version 0.1.0", "tags": ["versioning"] },
+    { "id": "v_02", "label": "2026-04-28: Initial population from sessions 1-6", "tags": ["changelog"] },
+    { "id": "v_03", "label": "2026-04-28: v0.5.0 session_loader tighter retrieval discipline", "tags": ["changelog"] },
+    { "id": "v_04", "label": "2026-04-28: v0.6.0 restructure into chunks/ and index/", "tags": ["changelog"] }
+  ]
+}

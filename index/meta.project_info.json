@@ -1,0 +1,10 @@
+{
+  "_index": "meta.project_info",
+  "_last_updated": "2026-04-30",
+  "items": [
+    { "id": "pi_01", "label": "Project name: Representation Space Traversal AI", "tags": ["meta"] },
+    { "id": "pi_02", "label": "Author: welwordion-sys", "tags": ["meta"] },
+    { "id": "pi_03", "label": "Status: active", "tags": ["meta"] },
+    { "id": "pi_04", "label": "Core idea: find the representation in which the answer becomes obvious", "tags": ["meta", "philosophy"] }
+  ]
+}
