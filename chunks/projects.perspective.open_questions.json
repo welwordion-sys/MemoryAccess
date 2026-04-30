@@ -6,7 +6,7 @@
     "open_questions": [
       {
         "id": "q_01",
-        "question": "What is the topology of representation space? Is it discrete, continuous, or mixed?",
+        "question": "What defines the topology of representation space? How do you know you are moving toward a simpler or more recognisable encoding without already having a pattern to compare against?",
         "importance": "high",
         "status": "open",
         "last_updated": "2026-04-28",
@@ -14,15 +14,16 @@
       },
       {
         "id": "q_02",
-        "question": "What is the compression criterion for a subgraph to earn a library entry? MDL, frequency-under-convergence, or other?",
+        "question": "What compression criterion governs when a subgraph earns its own upper-layer node / library entry?",
         "importance": "high",
-        "status": "open",
-        "last_updated": "2026-04-28",
-        "tags": ["library", "compression"]
+        "status": "resolved",
+        "resolution": "Library entry is a byproduct of GA convergence. The GA fitness signal is label-conditioned reproducibility: given a fixed label, minimize variance in subgraph structures produced across different images with that label. Subgraphs that consistently appear under converged rules for a given label earn library entry. Frequency and MDL candidates superseded by this definition.",
+        "last_updated": "2026-04-29",
+        "tags": ["library", "compression", "GA"]
       },
       {
         "id": "q_03",
-        "question": "What is the invariant retention mechanism? How does the system decide what to keep vs evict from the library?",
+        "question": "How does the data system decide which candidate invariants to retain vs discard without an explicit confirmation step?",
         "importance": "high",
         "status": "open",
         "last_updated": "2026-04-28",
@@ -30,25 +31,25 @@
       },
       {
         "id": "q_04",
-        "question": "What is the correct fitness signal for rewrite system self-evolution? Currently: minimize variance in subgraph output per label across images.",
+        "question": "How does the rewrite system evolve itself — same feedback loop, but what is the fitness signal for its own logic?",
         "importance": "high",
         "status": "partially_resolved",
-        "resolution_note": "Label-conditioned reproducibility adopted as working fitness signal for prototype. Not yet validated empirically.",
+        "resolution": "Fitness signal for the GA over rule graphs: given a fixed label, measure variance in subgraph structures produced across different images with that label. Lower variance = higher fitness. GA drives rules toward label-conditioned reproducibility. Full self-evolution mechanism (second system operating on rewrite system) remains deferred.",
         "last_updated": "2026-04-29",
         "tags": ["evolution", "rules", "GA"]
       },
       {
         "id": "q_05",
-        "question": "Should GA primitives (mutation, crossover operators) be fixed or themselves evolvable?",
+        "question": "Should genetic operations (mutation, crossover) be fixed primitives or should they also be representable as graph rewrites and therefore evolvable?",
         "importance": "medium",
         "status": "deferred",
-        "resolution_note": "Fixed primitives for prototype. Revisit after Phase 5b.",
+        "resolution": "Fixed primitives for prototype. Revisit after Phase 5b.",
         "last_updated": "2026-04-28",
         "tags": ["evolution", "GA"]
       },
       {
         "id": "q_06",
-        "question": "Should graph isomorphism be exact or approximate (WL, graph kernels) for recognition cascade and rule firing? Does the answer change if hyperedges are adopted?",
+        "question": "Is exact (hyper)graph isomorphism needed or is approximate similarity sufficient — for both library lookup AND rule application matching? The k-WL algorithm extends to hypergraphs but remains approximate. Must be resolved for both the recognition cascade and the transformation rule firing mechanism. Note: binary edge typing reduces isomorphism cost via regime-separated matching but does not fully resolve this question.",
         "importance": "high",
         "status": "open",
         "last_updated": "2026-04-29",
@@ -56,30 +57,32 @@
       },
       {
         "id": "q_07",
-        "question": "Are hyperedges a minimum requirement for adequate representation, or is the directed graph substrate sufficient?",
+        "question": "Are hypergraphs a minimum requirement for the representation? Standard graphs may fundamentally limit the representations discoverable — discrete systems have fragmented search spaces with unreachable configurations, as demonstrated by cellular automata rule evolution. Hyperedges allow multi-way structural relationships but raise isomorphism cost significantly.",
         "importance": "critical",
         "status": "open",
-        "resolution_note": "Decision gate in Phase 6. If yes, significant rework of P1-P5 is required. This risk is currently implicit in the roadmap — should be made explicit.",
+        "resolution_path": "Run base prototype on MNIST, inspect failure modes for representation fragmentation signal.",
         "last_updated": "2026-04-29",
         "tags": ["hypergraph", "representation", "substrate", "roadmap"]
       },
       {
         "id": "q_08",
-        "question": "If hyperedges are adopted, what is the maximum arity k? What is the expressiveness vs tractability tradeoff at each k?",
+        "question": "What is the maximum hyperedge arity k? This is the primary architectural lever controlling the tradeoff between representational expressiveness and isomorphism tractability. Every rule application pays the matching cost — bounding k is necessary for the traveler to operate at runtime. Candidate constraint: k <= 3 or k <= 4 as a starting point.",
         "importance": "critical",
         "status": "open",
+        "resolution_path": "Contingent on q_07 — only relevant if hyperedges are warranted by empirical evidence.",
         "last_updated": "2026-04-29",
         "tags": ["hypergraph", "isomorphism", "architecture"]
       },
       {
         "id": "q_09",
-        "question": "Can layer hierarchy compensate for hypergraph isomorphism cost — i.e. does operating at higher abstraction layers reduce the effective arity of comparisons enough to remain tractable?",
+        "question": "Does the layer hierarchy sufficiently compensate for the isomorphism cost of hypergraph matching? Higher layers compress structure and reduce graph size, but the per-node isomorphism problem remains regardless of layer depth. Is compression enough to keep rule firing tractable, or does the system need an additional mechanism — e.g. cached partial matches, bounded search, or approximate firing?",
         "importance": "critical",
         "status": "open",
+        "resolution_path": "Contingent on q_07 — measure matching cost profile in Phase 6 of prototype roadmap.",
         "last_updated": "2026-04-29",
         "tags": ["hypergraph", "isomorphism", "hierarchy", "architecture"]
       }
     ]
   },
-  "notes": "Migrated from research.open_questions index (was never a chunk). q_04 and q_05 have partial resolutions noted."
+  "notes": "Corrected from initial migration — q_02 was incorrectly marked open; it is resolved per _archive/research.open_questions.json. Full question text restored from archive. Frameworks content migrated to separate projects.perspective.frameworks chunk."
 }

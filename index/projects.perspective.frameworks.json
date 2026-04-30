@@ -1,0 +1,16 @@
+{
+  "_index": "projects.perspective.frameworks",
+  "_project": "perspective",
+  "_last_updated": "2026-04-30",
+  "items": [
+    { "id": "fw_01", "label": "Representation Space Traversal Architecture", "tags": ["architecture", "overview"] },
+    { "id": "fw_02", "label": "Data Transformation System", "tags": ["architecture", "data", "GA", "fitness"] },
+    { "id": "fw_03", "label": "Logic Rewriting System", "tags": ["architecture", "rules", "GA", "rewrite"] },
+    { "id": "fw_04", "label": "Hierarchical Graph Layer Structure", "tags": ["architecture", "layers", "hierarchy", "convergence"] },
+    { "id": "fw_05", "label": "Hybrid Representation Model", "status": "rejected", "tags": ["rejected", "history"] },
+    { "id": "fw_06", "label": "Human Capability Threshold Gate", "tags": ["safety", "library", "reasoned"] },
+    { "id": "fw_07", "label": "Base Substrate Architecture", "tags": ["substrate", "graph", "edge-types", "upgrade-paths"] },
+    { "id": "fw_08", "label": "Graph Operation Interface", "tags": ["interface", "substrate", "abstraction"] },
+    { "id": "fw_09", "label": "Second System (Meta-level)", "status": "open", "tags": ["meta", "second-system", "deferred"] }
+  ]
+}
