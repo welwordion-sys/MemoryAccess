@@ -1,6 +1,0 @@
-{
-  "_index": "timeline.events",
-  "_status": "tombstoned",
-  "_note": "Content migrated to projects.perspective.timeline as of 2026-04-29. This index is retained only for reference.",
-  "items": []
-}
