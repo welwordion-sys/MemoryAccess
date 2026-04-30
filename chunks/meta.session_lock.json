@@ -1,0 +1,20 @@
+{
+  "_chunk": "meta.session_lock",
+  "_last_updated": "2026-04-30",
+  "_auto_load": false,
+  "data": {
+    "purpose": "Records session lock events. A lock is triggered when user reports erratic behavior or unexpected output quality. Data collected here is used to calibrate context ceilings over time. User is not expected to trigger this frequently — each observation is valuable precisely because it is not routine.",
+    "lock_events": []
+  },
+  "lock_event_schema": {
+    "date": "YYYY-MM-DD",
+    "session_topic": "brief description of what the session was working on",
+    "chunks_loaded_at_lock": ["list of chunk names loaded at time of flag"],
+    "session_position": "early / mid / late — approximate point in session",
+    "described_behavior": "what the user observed that prompted the flag",
+    "action_taken": "what was decided — ceiling raised, chunk demoted, session ended, no change",
+    "notes": "any additional context"
+  },
+  "ceiling_review_trigger": "After 5 lock events, review the data and assess whether ceilings need recalibration. Do not raise ceilings based on fewer observations.",
+  "notes": "Established session 9, 2026-04-30. No lock events yet — chunk created in anticipation."
+}

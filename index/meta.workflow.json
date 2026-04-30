@@ -1,0 +1,13 @@
+{
+  "_index": "meta.workflow",
+  "_last_updated": "2026-04-30",
+  "_auto_load": false,
+  "items": [
+    { "id": "wf_01", "label": "User background: C# and Java, transitioning to Python", "tags": ["context", "background"] },
+    { "id": "wf_02", "label": "Claude produces all code", "tags": ["session-structure"] },
+    { "id": "wf_03", "label": "Line-by-line walkthrough, resolve before moving on", "tags": ["session-structure"] },
+    { "id": "wf_04", "label": "Shift to targeted review as familiarity grows", "tags": ["session-structure"] },
+    { "id": "wf_05", "label": "Conceptual mistakes — intent misalignment and unsurfaced assumptions", "tags": ["quality"] },
+    { "id": "wf_06", "label": "Two active projects — Python in progress, one in planning", "tags": ["projects"] }
+  ]
+}

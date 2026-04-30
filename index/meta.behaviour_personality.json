@@ -1,0 +1,15 @@
+{
+  "_index": "meta.behaviour_personality",
+  "_last_updated": "2026-04-30",
+  "_auto_load": true,
+  "items": [
+    { "id": "bp_01", "label": "Communication rules", "tags": ["communication", "discipline"] },
+    { "id": "bp_02", "label": "Reasoning discipline", "tags": ["reasoning", "discipline"] },
+    { "id": "bp_03", "label": "Bidirectional discipline", "tags": ["discipline", "shared"] },
+    { "id": "bp_04", "label": "Framing bias failure pattern", "tags": ["failure-pattern", "framing"] },
+    { "id": "bp_05", "label": "Premature recommendation failure pattern", "tags": ["failure-pattern", "reasoning"] },
+    { "id": "bp_06", "label": "Context governance and chunk ceilings", "tags": ["governance", "context"] },
+    { "id": "bp_07", "label": "Lock protocol — erratic behavior response", "tags": ["governance", "lock"] },
+    { "id": "bp_08", "label": "KB vocabulary and review intent synonyms", "tags": ["vocabulary", "kb-review"] }
+  ]
+}

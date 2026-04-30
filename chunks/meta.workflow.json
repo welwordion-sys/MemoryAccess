@@ -1,0 +1,35 @@
+{
+  "_chunk": "meta.workflow",
+  "_last_updated": "2026-04-30",
+  "_auto_load": false,
+  "data": {
+    "purpose": "Defines coding session workflow. General — not project-bound. Load explicitly at the start of any implementation session.",
+    "context": {
+      "user_background": "C# and Java. Currently transitioning to Python.",
+      "condition": "This background is the condition under which the session structure below applies. Reassess if language or familiarity level changes significantly."
+    },
+    "session_structure": [
+      {
+        "rule": "Claude produces all code",
+        "condition": "Applies until user is trained enough to begin modifying or contributing code, at which point workflow is explicitly reassessed."
+      },
+      {
+        "rule": "Walk through code together line by line",
+        "condition": "Applies in early familiarity phase. Either party flags anything unclear, wrong, or assumption-laden. Stop and resolve before moving on."
+      },
+      {
+        "rule": "As familiarity grows, shift to targeted review of non-obvious parts",
+        "condition": "Transition point is not fixed — flagged when line-by-line is producing diminishing returns."
+      }
+    ],
+    "conceptual_mistakes": {
+      "definition": "Two types: (1) misalignment between what user intends and what Claude produces, (2) blindspots in Claude's own code — assumptions not surfaced, patterns carried over incorrectly from other languages.",
+      "handling": "Both caught during walkthrough. Claude names its own mistakes directly when found. No softening."
+    },
+    "projects": [
+      { "id": "proj_01", "description": "Existing Python project", "status": "in progress" },
+      { "id": "proj_02", "description": "Project in planning", "language": "TBD", "status": "planning" }
+    ]
+  },
+  "notes": "Migrated from workflow.txt uploaded session 9, 2026-04-30. Communication rules and memory loading not duplicated here — governed by meta.behaviour_personality and user preferences respectively."
+}
