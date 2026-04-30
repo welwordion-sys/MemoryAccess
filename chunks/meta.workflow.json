@@ -27,9 +27,35 @@
       "handling": "Both caught during walkthrough. Claude names its own mistakes directly when found. No softening."
     },
     "projects": [
-      { "id": "proj_01", "description": "Existing Python project", "status": "in progress" },
-      { "id": "proj_02", "description": "Project in planning", "language": "TBD", "status": "planning" }
+      {
+        "id": "proj_01",
+        "description": "Existing Python project",
+        "status": "in progress"
+      },
+      {
+        "id": "proj_02",
+        "description": "Project Perspective — Representation Space Traversal AI",
+        "language": "Python 3.12",
+        "status": "active",
+        "repo": "https://github.com/welwordion-sys/perspective",
+        "local_path": "D:\\Projects\\perspective",
+        "environment": {
+          "manager": "uv",
+          "venv": ".venv (named perspective)",
+          "python": "3.12.11",
+          "key_packages": [
+            "torch==2.5.1+cu121",
+            "torch-geometric==2.7.0",
+            "torch-scatter==2.1.2+pt25cu121",
+            "torch-sparse==0.6.18+pt25cu121"
+          ],
+          "gpu": "NVIDIA RTX 4060 Ti 16GB, CUDA 12.1",
+          "activate": ".venv\\Scripts\\activate"
+        },
+        "current_phase": "P1 — Graph Substrate and Operations",
+        "note": "DGL rejected due to broken Windows packaging for PyTorch 2.5. PyTorch Geometric selected as graph compute backend."
+      }
     ]
   },
-  "notes": "Migrated from workflow.txt uploaded session 9, 2026-04-30. Communication rules and memory loading not duplicated here — governed by meta.behaviour_personality and user preferences respectively."
+  "notes": "Migrated from workflow.txt uploaded session 9, 2026-04-30. Updated session 9 end: perspective environment set up, repo created, P1 ready to start."
 }
