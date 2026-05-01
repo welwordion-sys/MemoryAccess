@@ -1,6 +1,6 @@
 {
   "_chunk": "meta.workflow",
-  "_last_updated": "2026-04-30",
+  "_last_updated": "2026-05-01",
   "_auto_load": false,
   "data": {
     "purpose": "Defines coding session workflow. General — not project-bound. Load explicitly at the start of any implementation session.",
@@ -20,6 +20,10 @@
       {
         "rule": "As familiarity grows, shift to targeted review of non-obvious parts",
         "condition": "Transition point is not fixed — flagged when line-by-line is producing diminishing returns."
+      },
+      {
+        "rule": "Code presentation format: chunk then explanation, interleaved. Never dump the full file followed by a wall of explanation.",
+        "condition": "Applies always. One logical unit at a time — code chunk first, explanation immediately after, then next chunk. Logical unit sizing is Claude's judgment: imports, result types, a single function group. Never larger than what fits on one screen without scrolling."
       }
     ],
     "conceptual_mistakes": {
@@ -57,5 +61,5 @@
       }
     ]
   },
-  "notes": "Migrated from workflow.txt uploaded session 9, 2026-04-30. Updated session 9 end: perspective environment set up, repo created, P1 ready to start."
+  "notes": "Migrated from workflow.txt uploaded session 9, 2026-04-30. Updated session 9 end: perspective environment set up, repo created, P1 ready to start. Updated session 10, 2026-05-01: added code presentation format rule."
 }
