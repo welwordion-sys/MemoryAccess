@@ -1,7 +1,7 @@
 {
   "_chunk": "projects.perspective.roadmap",
   "_project": "perspective",
-  "_last_updated": "2026-04-30",
+  "_last_updated": "2026-05-01",
   "data": {
     "id": "d_02",
     "title": "Prototype Roadmap — Base System to First Testable Version",
@@ -14,7 +14,7 @@
         "title": "Graph Substrate and Operations",
         "status": "complete",
         "completed": "2026-05-01",
-        "notes": "PerspectiveGraph, operations module, 9 passing tests. restore() method added to PerspectiveGraph for clean revert encapsulation."
+        "notes": "PerspectiveGraph, operations module, 9 passing tests. restore() method added to PerspectiveGraph for clean revert encapsulation.",
         "description": "Implement directed graph structure with binary edge typing (structural / operational). Implement the Graph Operation Interface: match, apply, revert, complexity, lookup, register. Unit test each operation group on hand-constructed graphs. No layer structure yet — flat graphs only.",
         "exit_condition": "All five operation groups work correctly on hand-constructed test graphs."
       },
