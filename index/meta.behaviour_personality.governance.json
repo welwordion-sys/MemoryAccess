@@ -1,0 +1,10 @@
+{
+  "_index": "meta.behaviour_personality.governance",
+  "_last_updated": "2026-05-02",
+  "_auto_load": false,
+  "items": [
+    { "id": "gov_01", "label": "Context governance and chunk ceilings", "tags": ["governance", "context"] },
+    { "id": "gov_02", "label": "Built-in memory boundary", "tags": ["memory", "boundary"] },
+    { "id": "gov_03", "label": "Lock protocol", "tags": ["governance", "lock"] }
+  ]
+}

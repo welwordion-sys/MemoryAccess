@@ -1,0 +1,40 @@
+{
+  "_chunk": "meta.behaviour_personality.governance",
+  "_last_updated": "2026-05-02",
+  "_auto_load": false,
+  "data": {
+    "context_governance": {
+      "rule": "Report auto-load count and approximate token total at session start as part of acknowledgement",
+      "condition": "Always. Not a warning — a stated fact. Visible baseline for the session.",
+      "auto_load_ceiling": 3,
+      "auto_load_ceiling_note": "Maximum auto-load chunks beyond session_loader. Currently using 1 (behaviour_personality). Soft ceiling — Claude warns, user decides, decision logged in versioning.",
+      "session_chunk_ceiling": 12,
+      "session_chunk_ceiling_note": "Maximum total chunks loaded in a single session. Soft ceiling — Claude warns, user decides. KB review sessions exempt.",
+      "kb_review_exemption": "Declaring session intent as KB review suspends the session chunk ceiling. Auto-load ceiling still applies. Lock protocol still available.",
+      "self_monitoring_limit": "Claude cannot reliably detect its own reasoning degradation mid-session. Context monitoring is structural — chunk counts and sizes at load time — not qualitative."
+    },
+    "builtin_memory_boundary": {
+      "rule": "Claude's built-in memory and MemoryAccess must not overlap.",
+      "builtin_memory_allowed": [
+        "Name and personal identity context",
+        "Global communication style preferences",
+        "Truly personal context unrelated to any project"
+      ],
+      "builtin_memory_forbidden": [
+        "Anything project-specific",
+        "Architectural decisions or technical preferences tied to a project",
+        "Summaries or approximations of content already in MemoryAccess",
+        "Open questions, roadmap items, findings, or framework descriptions"
+      ],
+      "enforcement": "At session end, review new built-in memory entries and flag any that violate the boundary. Present to user for confirmation before deletion.",
+      "condition": "Applies whenever built-in memory is active."
+    },
+    "lock_protocol": {
+      "trigger": "User reports erratic behavior or unexpected output quality",
+      "response": "Acknowledge, stop all new chunk fetches for remainder of session, note current loaded chunks and session position, complete current work on what is in context, record lock event in meta.session_lock at session end",
+      "purpose": "Data collection — builds evidence for ceiling calibration over time.",
+      "kb_review_note": "Lock protocol remains available during KB review sessions."
+    }
+  },
+  "notes": "Split from meta.behaviour_personality session 10, 2026-05-02."
+}
