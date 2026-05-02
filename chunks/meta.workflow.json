@@ -1,6 +1,6 @@
 {
   "_chunk": "meta.workflow",
-  "_last_updated": "2026-05-01",
+  "_last_updated": "2026-05-02",
   "_auto_load": false,
   "data": {
     "purpose": "Defines coding session workflow. General — not project-bound. Load explicitly at the start of any implementation session.",
@@ -24,15 +24,20 @@
       {
         "rule": "Code presentation format: chunk then explanation, interleaved. Never dump the full file followed by a wall of explanation.",
         "condition": "Applies always. One logical unit at a time — code chunk first, explanation immediately after, then next chunk. Logical unit sizing is Claude's judgment: imports, result types, a single function group. Never larger than what fits on one screen without scrolling."
-      },
-      {
-        "rule": "Code presentation format: chunk then explanation, interleaved. Never dump the full file followed by a wall of explanation.",
-        "condition": "Applies always. One logical unit at a time — code chunk first, explanation immediately after, then next chunk. Logical unit sizing is Claude's judgment: imports, result types, a single function group. Never larger than what fits on one screen without scrolling."
       }
     ],
     "conceptual_mistakes": {
       "definition": "Two types: (1) misalignment between what user intends and what Claude produces, (2) blindspots in Claude's own code — assumptions not surfaced, patterns carried over incorrectly from other languages.",
       "handling": "Both caught during walkthrough. Claude names its own mistakes directly when found. No softening."
+    },
+    "mobile_briefing": {
+      "rule": "BRIEFING.md in the perspective repo is the mobile session briefing file. Update it at the end of every PC session where progress was made.",
+      "location": "github.com/welwordion-sys/perspective/blob/main/BRIEFING.md",
+      "local_path": "D:\\Projects\\perspective\\BRIEFING.md",
+      "update_trigger": "Any of: phase status change, new architectural decision, new open question, environment change.",
+      "update_content": "Current phase and status, what exists, next task, any decisions made this session that affect mobile work.",
+      "condition": "Applies to all PC sessions on project perspective. Stale briefing file = wasted mobile session time.",
+      "mobile_session_prompt": "Paste BRIEFING.md content and add: 'No GitHub access. Mobile session. [your question or task]'"
     },
     "projects": [
       {
@@ -60,10 +65,11 @@
           "gpu": "NVIDIA RTX 4060 Ti 16GB, CUDA 12.1",
           "activate": ".venv\\Scripts\\activate"
         },
-        "current_phase": "P1 — Graph Substrate and Operations",
+        "current_phase": "P2 — Input Layer and Encoding",
+        "completed_phases": ["P1 — Graph Substrate and Operations (2026-05-01)"],
         "note": "DGL rejected due to broken Windows packaging for PyTorch 2.5. PyTorch Geometric selected as graph compute backend."
       }
     ]
   },
-  "notes": "Migrated from workflow.txt uploaded session 9, 2026-04-30. Updated session 9 end: perspective environment set up, repo created, P1 ready to start. Updated session 10, 2026-05-01: added code presentation format rule."
+  "notes": "Migrated from workflow.txt session 9. Updated session 10, 2026-05-01: added code presentation format rule. Updated session 10, 2026-05-02: removed duplicate rule, added mobile briefing maintenance rule, updated current phase to P2."
 }
