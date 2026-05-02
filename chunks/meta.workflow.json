@@ -24,6 +24,10 @@
       {
         "rule": "Code presentation format: chunk then explanation, interleaved. Never dump the full file followed by a wall of explanation.",
         "condition": "Applies always. One logical unit at a time — code chunk first, explanation immediately after, then next chunk. Logical unit sizing is Claude's judgment: imports, result types, a single function group. Never larger than what fits on one screen without scrolling."
+      },
+      {
+        "rule": "Code presentation format: chunk then explanation, interleaved. Never dump the full file followed by a wall of explanation.",
+        "condition": "Applies always. One logical unit at a time — code chunk first, explanation immediately after, then next chunk. Logical unit sizing is Claude's judgment: imports, result types, a single function group. Never larger than what fits on one screen without scrolling."
       }
     ],
     "conceptual_mistakes": {
