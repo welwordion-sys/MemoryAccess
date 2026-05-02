@@ -1,86 +1,22 @@
 {
   "_chunk": "projects.perspective.roadmap",
   "_project": "perspective",
-  "_last_updated": "2026-05-01",
+  "_last_updated": "2026-05-02",
+  "_structure": "Split into per-phase chunks. This file is the manifest. Load phase chunks individually as needed.",
   "data": {
     "id": "d_02",
     "title": "Prototype Roadmap — Base System to First Testable Version",
     "status": "active",
     "created": "2026-04-29",
     "scope": "Base prototype on arithmetic expressions and simple linear equations to first measurable test result. Excludes: reasoned library, second meta-level system, weighted graphs, hyperedges (unless Phase 6 forces it), full self-evolving rewrite system.",
-    "phases": [
-      {
-        "id": "p1",
-        "title": "Graph Substrate and Operations",
-        "status": "complete",
-        "completed": "2026-05-01",
-        "notes": "PerspectiveGraph, operations module, 9 passing tests. restore() method added to PerspectiveGraph for clean revert encapsulation.",
-        "description": "Implement directed graph structure with binary edge typing (structural / operational). Implement the Graph Operation Interface: match, apply, revert, complexity, lookup, register. Unit test each operation group on hand-constructed graphs. No layer structure yet — flat graphs only.",
-        "exit_condition": "All five operation groups work correctly on hand-constructed test graphs."
-      },
-      {
-        "id": "p2",
-        "title": "Input Layer and Encoding",
-        "status": "not_started",
-        "description": "Encode arithmetic expressions and linear equations as directed graphs. Each constant value encoded as a binary tree rooted at its node — no node attributes, identity emerges from structure. Operators and equality as internal nodes. Variable x as anonymous structural node. Input layer immutable. Seed rules provided as bootstrap scaffold — present at generation zero, full GA mutability from generation zero. Seed rule displacement by library-informed rules is the success signal.",
-        "exit_condition": "Expressions reliably converted to base graphs. Sample manually inspected and encoding confirmed sane.",
-        "label_format": {
-          "arithmetic": "Terminal value node only — e.g. 7. No wrapper.",
-          "equations": "Solved form graph — e.g. x = 3. Irreducible — x = 3 does not collapse to 3.",
-          "collapse_rule": "x = x collapses to x. 3 = 3 collapses to 3. x = 3 does not collapse — both sides are distinct."
-        },
-        "complexity_ladder": [
-          "Level 1: Pure arithmetic — e.g. 3 + 4, label: 7",
-          "Level 2: One-step solving — e.g. x + 4 = 7, label: x = 3",
-          "Level 3: Two-step solving — e.g. 2x + 4 = 10, label: x = 3",
-          "Level 4: Variable on both sides — e.g. 2x + 4 = 3x - 1, label: x = 5"
-        ]
-      },
-      {
-        "id": "p3",
-        "title": "Layer Structure and Compression",
-        "status": "not_started",
-        "description": "Implement multi-layer structure. Layer identity is representational scale, not operation type. Implement layer fusion and splitting. Implement per-layer rulesets.",
-        "exit_condition": "Placeholder layer boundaries manually assigned and documented as stubs. Replacement by GA-converged boundaries is the P5b success signal, not a P3 deliverable.",
-        "risk": "Unbounded parameter growth — monitor here."
-      },
-      {
-        "id": "p4",
-        "title": "Empirical Library",
-        "status": "not_started",
-        "description": "Implement rule-invariant pair storage. Implement label-correlation filter. Implement library lookup. Implement recognition cascade.",
-        "exit_condition": "After exposure to a subset of training expressions, library contains non-trivial entries. Lookup on a new expression returns matches."
-      },
-      {
-        "id": "p5b",
-        "title": "Minimal GA over Rule Graphs",
-        "status": "not_started",
-        "description": "GA on rule graphs. Fitness signal: given a fixed label, minimize variance in subgraph structures produced across different expressions with that label. Library entry is byproduct of convergence. Fixed GA primitives — self-evolution deferred. Start GA from generation zero with seed rules as initial population.",
-        "rationale": "Load-bearing for empirical library. Without rule improvement, label-conditioned reproducibility is not achievable. Must precede traversal loop.",
-        "exit_condition": "Rule quality improves across generations. Library entries stabilize. Seed rules begin to be displaced by library-informed rules.",
-        "risk": "Burn-in cold start — empirical library is empty at training start, seed rules are the only available bootstrap."
-      },
-      {
-        "id": "p5",
-        "title": "Traversal Loop",
-        "status": "not_started",
-        "description": "Implement traversal loop: apply rules, evaluate compression, update library, repeat. Reversibility enforced. Requires P5b-converged rules to produce meaningful output.",
-        "exit_condition": "System traverses a batch of training expressions, builds a library, can be queried.",
-        "risk": "GI cost at rule firing scale — profile before P6."
-      },
-      {
-        "id": "p6",
-        "title": "First Test and Decision Gates",
-        "status": "not_started",
-        "description": "Run on training subset, evaluate on test subset. Measure accuracy, library size, matching cost. Inspect failure modes for q_07 and q_09 signals. Make hyperedge decision based on evidence.",
-        "exit_condition": "A number exists and q_07 has a documented empirical answer.",
-        "gate": {
-          "type": "binary",
-          "pass": "Base directed graph substrate is sufficient. Prototype is valid.",
-          "fail": "Substrate is insufficient. Hyperedge upgrade path warranted.",
-          "fail_note": "Fail is not throwaway work. Directed graph is hypergraph at k=2. On fail: GOI, layer hierarchy, library structure, GA mechanics, fitness signal, and seed rules all recycle. Seed rules are valid k=2 hypergraph rules — remain valid starting points when substrate is upgraded. Matching engine and rule representations need extension, not replacement."
-        }
-      }
+    "phase_index": [
+      { "id": "p1", "title": "Graph Substrate and Operations", "status": "complete", "chunk": "projects.perspective.roadmap.p1" },
+      { "id": "p2", "title": "Input Layer and Encoding", "status": "not_started", "chunk": "projects.perspective.roadmap.p2" },
+      { "id": "p3", "title": "Layer Structure and Compression", "status": "not_started", "chunk": "projects.perspective.roadmap.p3" },
+      { "id": "p4", "title": "Empirical Library", "status": "not_started", "chunk": "projects.perspective.roadmap.p4" },
+      { "id": "p5b", "title": "Minimal GA over Rule Graphs", "status": "not_started", "chunk": "projects.perspective.roadmap.p5b" },
+      { "id": "p5", "title": "Traversal Loop", "status": "not_started", "chunk": "projects.perspective.roadmap.p5" },
+      { "id": "p6", "title": "First Test and Decision Gates", "status": "not_started", "chunk": "projects.perspective.roadmap.p6" }
     ],
     "known_risks": [
       { "risk": "GI cost at rule firing scale", "phase": "p5", "note": "Profile in Phase 6." },

@@ -1,0 +1,18 @@
+{
+  "_chunk": "projects.perspective.roadmap.p6",
+  "_project": "perspective",
+  "_last_updated": "2026-04-30",
+  "data": {
+    "id": "p6",
+    "title": "First Test and Decision Gates",
+    "status": "not_started",
+    "description": "Run on training subset, evaluate on test subset. Measure accuracy, library size, matching cost. Inspect failure modes for q_07 and q_09 signals. Make hyperedge decision based on evidence.",
+    "exit_condition": "A number exists and q_07 has a documented empirical answer.",
+    "gate": {
+      "type": "binary",
+      "pass": "Base directed graph substrate is sufficient. Prototype is valid.",
+      "fail": "Substrate is insufficient. Hyperedge upgrade path warranted.",
+      "fail_note": "Fail is not throwaway work. Directed graph is hypergraph at k=2. On fail: GOI, layer hierarchy, library structure, GA mechanics, fitness signal, and seed rules all recycle. Seed rules are valid k=2 hypergraph rules — remain valid starting points when substrate is upgraded. Matching engine and rule representations need extension, not replacement."
+    }
+  }
+}

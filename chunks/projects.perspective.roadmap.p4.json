@@ -1,0 +1,12 @@
+{
+  "_chunk": "projects.perspective.roadmap.p4",
+  "_project": "perspective",
+  "_last_updated": "2026-04-30",
+  "data": {
+    "id": "p4",
+    "title": "Empirical Library",
+    "status": "not_started",
+    "description": "Implement rule-invariant pair storage. Implement label-correlation filter. Implement library lookup. Implement recognition cascade.",
+    "exit_condition": "After exposure to a subset of training expressions, library contains non-trivial entries. Lookup on a new expression returns matches."
+  }
+}

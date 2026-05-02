@@ -1,0 +1,13 @@
+{
+  "_chunk": "projects.perspective.roadmap.p3",
+  "_project": "perspective",
+  "_last_updated": "2026-04-30",
+  "data": {
+    "id": "p3",
+    "title": "Layer Structure and Compression",
+    "status": "not_started",
+    "description": "Implement multi-layer structure. Layer identity is representational scale, not operation type. Implement layer fusion and splitting. Implement per-layer rulesets.",
+    "exit_condition": "Placeholder layer boundaries manually assigned and documented as stubs. Replacement by GA-converged boundaries is the P5b success signal, not a P3 deliverable.",
+    "risk": "Unbounded parameter growth — monitor here."
+  }
+}

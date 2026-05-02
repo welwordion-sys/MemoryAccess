@@ -1,0 +1,14 @@
+{
+  "_chunk": "projects.perspective.roadmap.p5b",
+  "_project": "perspective",
+  "_last_updated": "2026-04-30",
+  "data": {
+    "id": "p5b",
+    "title": "Minimal GA over Rule Graphs",
+    "status": "not_started",
+    "description": "GA on rule graphs. Fitness signal: given a fixed label, minimize variance in subgraph structures produced across different expressions with that label. Library entry is byproduct of convergence. Fixed GA primitives — self-evolution deferred. Start GA from generation zero with seed rules as initial population.",
+    "rationale": "Load-bearing for empirical library. Without rule improvement, label-conditioned reproducibility is not achievable. Must precede traversal loop.",
+    "exit_condition": "Rule quality improves across generations. Library entries stabilize. Seed rules begin to be displaced by library-informed rules.",
+    "risk": "Burn-in cold start — empirical library is empty at training start, seed rules are the only available bootstrap."
+  }
+}

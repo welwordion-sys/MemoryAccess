@@ -1,0 +1,13 @@
+{
+  "_chunk": "projects.perspective.roadmap.p5",
+  "_project": "perspective",
+  "_last_updated": "2026-04-30",
+  "data": {
+    "id": "p5",
+    "title": "Traversal Loop",
+    "status": "not_started",
+    "description": "Implement traversal loop: apply rules, evaluate compression, update library, repeat. Reversibility enforced. Requires P5b-converged rules to produce meaningful output.",
+    "exit_condition": "System traverses a batch of training expressions, builds a library, can be queried.",
+    "risk": "GI cost at rule firing scale — profile before P6."
+  }
+}

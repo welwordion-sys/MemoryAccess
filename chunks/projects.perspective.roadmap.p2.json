@@ -1,0 +1,23 @@
+{
+  "_chunk": "projects.perspective.roadmap.p2",
+  "_project": "perspective",
+  "_last_updated": "2026-04-30",
+  "data": {
+    "id": "p2",
+    "title": "Input Layer and Encoding",
+    "status": "not_started",
+    "description": "Encode arithmetic expressions and linear equations as directed graphs. Each constant value encoded as a binary tree rooted at its node — no node attributes, identity emerges from structure. Operators and equality as internal nodes. Variable x as anonymous structural node. Input layer immutable. Seed rules provided as bootstrap scaffold — present at generation zero, full GA mutability from generation zero. Seed rule displacement by library-informed rules is the success signal.",
+    "exit_condition": "Expressions reliably converted to base graphs. Sample manually inspected and encoding confirmed sane.",
+    "label_format": {
+      "arithmetic": "Terminal value node only — e.g. 7. No wrapper.",
+      "equations": "Solved form graph — e.g. x = 3. Irreducible — x = 3 does not collapse to 3.",
+      "collapse_rule": "x = x collapses to x. 3 = 3 collapses to 3. x = 3 does not collapse — both sides are distinct."
+    },
+    "complexity_ladder": [
+      "Level 1: Pure arithmetic — e.g. 3 + 4, label: 7",
+      "Level 2: One-step solving — e.g. x + 4 = 7, label: x = 3",
+      "Level 3: Two-step solving — e.g. 2x + 4 = 10, label: x = 3",
+      "Level 4: Variable on both sides — e.g. 2x + 4 = 3x - 1, label: x = 5"
+    ]
+  }
+}
