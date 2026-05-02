@@ -74,7 +74,19 @@
         { "decision": "Premature recommendation documented as failure pattern", "rationale": "Live example session 9: workflow/rationale split stated confidently then reversed", "affects": "meta.behaviour_personality" },
         { "decision": "Workflow instructions embed conditions, not rationale", "rationale": "Conditions define when rules apply; justifications are noise at retrieval time", "affects": "meta.workflow" }
       ]
-    }
+    },
+    {
+    "session": "s_10",
+    "date": "2026-05-01",
+    "project": "perspective",
+    "entries": [
+      { "decision": "restore() method added to PerspectiveGraph", "rationale": "revert() in operations.py requires access to private state — encapsulating in a method prevents silent breakage when internal state grows", "affects": "basic_machinery/graph.py" },
+      { "decision": "VS Code adopted as mandatory editor", "rationale": "Notepad mixed tabs and spaces causing TabError — VS Code handles indentation correctly by default", "affects": "meta.workflow" },
+      { "decision": "from __future__ import annotations required in graph.py", "rationale": "Self-referential type hint in restore() caused NameError without deferred annotation evaluation", "affects": "basic_machinery/graph.py" },
+      { "decision": "perspective repo made public", "rationale": "MCP token lacked private repo read scope; non-commercial project intended for sharing", "affects": "projects.perspective" },
+      { "decision": "Code presentation format rule added to meta.workflow", "rationale": "Chunk-then-explanation interleaved format established — full file dumps followed by wall of explanation are not usable", "affects": "meta.workflow" }
+    ]
+  }
   ],
   "implementation": []
 }
