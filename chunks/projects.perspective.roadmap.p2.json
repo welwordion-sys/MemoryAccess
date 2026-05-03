@@ -1,23 +1,35 @@
 {
   "_chunk": "projects.perspective.roadmap.p2",
   "_project": "perspective",
-  "_last_updated": "2026-04-30",
+  "_last_updated": "2026-05-03",
   "data": {
     "id": "p2",
     "title": "Input Layer and Encoding",
-    "status": "not_started",
-    "description": "Encode arithmetic expressions and linear equations as directed graphs. Each constant value encoded as a binary tree rooted at its node — no node attributes, identity emerges from structure. Operators and equality as internal nodes. Variable x as anonymous structural node. Input layer immutable. Seed rules provided as bootstrap scaffold — present at generation zero, full GA mutability from generation zero. Seed rule displacement by library-informed rules is the success signal.",
+    "status": "in_progress",
+    "description": "Encode arithmetic expressions and linear equations as directed graphs. No node attributes — identity emerges from structure. Input layer immutable. Seed rules provided as bootstrap scaffold.",
     "exit_condition": "Expressions reliably converted to base graphs. Sample manually inspected and encoding confirmed sane.",
+    "encoding": {
+      "numbers": "Minimal binary trees. Open-length — depth determined by the number, no fixed bitwidth, no padding. Each number has exactly one structural representation. Internal edges are structural.",
+      "operators": "Internal nodes with distinct arbitrary structural shapes — no node typing. Connect to operand subtree roots via operational edges. Four initial operators: +, -, *, /. New operators added as needed.",
+      "equality": "Root node of equation expression tree. Distinct structural shape from arithmetic operators.",
+      "variable_x": "Anonymous structural node with a distinct shape. Belongs to parameter structural family (separate from operand family). No special rule treatment — arithmetic rules simply do not match it.",
+      "structural_families": "Three families: numbers (binary trees), operators (distinct shapes per operator), parameters (x and future variables). Families are structurally distinguishable to prevent accidental rule matches.",
+      "expression_tree": "Operators as internal nodes, numbers and variables as leaves. Tree topology encodes evaluation order — deeper nodes resolve first. No explicit bracket nodes needed.",
+      "carry_propagation": "Operational edge from operator to current bit position acts as cursor. Rule detaches and reattaches edge to next bit node. No extra marker node required."
+    },
     "label_format": {
       "arithmetic": "Terminal value node only — e.g. 7. No wrapper.",
       "equations": "Solved form graph — e.g. x = 3. Irreducible — x = 3 does not collapse to 3.",
-      "collapse_rule": "x = x collapses to x. 3 = 3 collapses to 3. x = 3 does not collapse — both sides are distinct."
+      "collapse_rule": "x = x collapses to x. 3 = 3 collapses to 3. x = 3 does not collapse — both sides are structurally distinct."
     },
     "complexity_ladder": [
       "Level 1: Pure arithmetic — e.g. 3 + 4, label: 7",
       "Level 2: One-step solving — e.g. x + 4 = 7, label: x = 3",
       "Level 3: Two-step solving — e.g. 2x + 4 = 10, label: x = 3",
       "Level 4: Variable on both sides — e.g. 2x + 4 = 3x - 1, label: x = 5"
+    ],
+    "open_design_questions": [
+      "Concrete structural shapes for operator nodes, parameter nodes, and carry marker — to be designed at PC implementation start"
     ]
   }
 }

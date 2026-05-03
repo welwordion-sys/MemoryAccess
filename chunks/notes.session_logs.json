@@ -1,6 +1,6 @@
 {
   "_chunk": "notes.session_logs",
-  "_last_updated": "2026-04-30",
+  "_last_updated": "2026-05-03",
   "_format": "Two-tier. Tier 1 (decisions): architectural and design decisions per session — decision, rationale, affected chunk. Tier 2 (implementation): short entries during implementation — attempted, outcome, decided. No narrative prose in either tier.",
   "decisions": [
     {
@@ -85,6 +85,24 @@
         { "decision": "from __future__ import annotations required in graph.py", "rationale": "Self-referential type hint in restore() caused NameError without deferred annotation evaluation", "affects": "basic_machinery/graph.py" },
         { "decision": "perspective repo made public", "rationale": "MCP token lacked private repo read scope; non-commercial project intended for sharing", "affects": "projects.perspective" },
         { "decision": "Code presentation format rule added to meta.workflow", "rationale": "Chunk-then-explanation interleaved format established — full file dumps followed by wall of explanation are not usable", "affects": "meta.workflow" }
+      ]
+    },
+    {
+      "session": "s_11",
+      "date": "2026-05-03",
+      "project": "perspective",
+      "entries": [
+        { "decision": "Number encoding: minimal binary trees, open-length, no fixed bitwidth", "rationale": "Each number has exactly one structural representation — its minimal binary form. No padding, no ambiguity.", "affects": "projects.perspective.roadmap.p2, projects.perspective.frameworks" },
+        { "decision": "Number subtrees use structural edges internally; operators connect to operand subtree roots via operational edges", "rationale": "Structural edges inside numbers keep identity clean. Operational edges at operator-to-operand interface prevent structural contamination during subgraph matching.", "affects": "projects.perspective.roadmap.p2, projects.perspective.frameworks" },
+        { "decision": "Carry propagation via marker-as-edge: the operational edge from operator to current bit position is the cursor", "rationale": "No extra node needed. Edge presence and attachment point encode state. Rule detaches and reattaches to next bit node.", "affects": "projects.perspective.roadmap.p2, projects.perspective.frameworks" },
+        { "decision": "Rule representation: two-graph schema — Graph 1 (mixed, for matching), Graph 2 (single edge type, for transition)", "rationale": "Keeps GA operating on single graphs. Mixed matching handled at pre-processing step; transition operates on cleaned graph.", "affects": "projects.perspective.frameworks" },
+        { "decision": "Rule firing sequence: (1) match mixed graph, (2) strip one edge type, (3) apply transition graph, (4) reattach stripped edges via node mapping", "rationale": "Reattachment is required — stripped edges connect the matched subgraph to the rest of the graph and must reconnect to output nodes.", "affects": "projects.perspective.frameworks" },
+        { "decision": "Edge role swap in rules: when input is operational graph, structural edges function as node pointers in the rule", "rationale": "Roles are symmetric and positional, not fundamental. Swap is handled at match time by interpreter, not baked into rule structure.", "affects": "projects.perspective.frameworks" },
+        { "decision": "Expression tree structure encodes evaluation order — no explicit bracket nodes needed", "rationale": "Deeper nodes resolve first naturally. Bracket notation is a display artifact, not a structural requirement in graph encoding.", "affects": "projects.perspective.roadmap.p2, projects.perspective.frameworks" },
+        { "decision": "Operators have distinct arbitrary internal structural shapes; parameters and operands belong to distinct structural families", "rationale": "No node typing — identity from structure. Separate families for parameters vs operands prevent accidental rule matches across categories.", "affects": "projects.perspective.roadmap.p2" },
+        { "decision": "= is root node of equation expression tree", "rationale": "Equation solving rules operate from the root downward; = anchors the structure.", "affects": "projects.perspective.roadmap.p2" },
+        { "decision": "Arithmetic operations are within-layer transformations, not layer transitions", "rationale": "3+4 and 7 contain the same information at the same abstraction level — representational switch, not abstraction change.", "affects": "projects.perspective.frameworks" },
+        { "decision": "Layer transitions defined as abstraction level changes; within-layer transformations switch representation without changing abstraction", "rationale": "Clarifies the boundary between transformation types without requiring new mechanisms.", "affects": "projects.perspective.frameworks" }
       ]
     }
   ],

@@ -1,7 +1,7 @@
 {
   "_chunk": "projects.perspective.frameworks",
   "_project": "perspective",
-  "_last_updated": "2026-04-30",
+  "_last_updated": "2026-05-03",
   "data": {
     "frameworks": [
       {
@@ -24,7 +24,11 @@
         "name": "Hierarchical Graph Layer Structure",
         "description": "Multi-layer graph hierarchy where lower layers hold raw structure and primitives, and upper layers hold nodes that represent compressed subgraphs from below. What a node IS defines what layer it belongs to — layer identity is determined by representational scale, not by operation type. Each layer has its own ruleset. Layers can fuse or split. Input layer is immutable. Reversibility is a property of the Data Transformation System as a whole, not a distinguishing property of any particular layer.",
         "components": ["Input layer (immutable)", "Layer nodes (each upper-layer node represents a subgraph from the layer below)", "Per-layer rulesets", "Fusion and splitting (governed by data system)"],
-        "layer_boundary_definition": "A subgraph from layer N becomes a node at layer N+1 when the GA has converged on rules that consistently produce that subgraph for a given label. The boundary is earned through convergence, not assigned by design."
+        "layer_boundary_definition": "A subgraph from layer N becomes a node at layer N+1 when the GA has converged on rules that consistently produce that subgraph for a given label. The boundary is earned through convergence, not assigned by design.",
+        "transformation_types": {
+          "within_layer": "Switches representation of information without changing abstraction level. Example: 3+4 and 7 contain the same information — arithmetic operations are within-layer transformations.",
+          "layer_transition": "Changes abstraction level — collapses local detail into higher-level structure. Example: full expression tree collapsed into a single result node."
+        }
       },
       {
         "name": "Hybrid Representation Model",
@@ -42,7 +46,7 @@
         "description": "The graph formalism used by both the Data Transformation System and the second meta-level system. Modular and scalable — base prototype uses directed graphs with binary edge typing. Richer substrates are named upgrade paths evaluated empirically against measured limitations of the base.",
         "decisions": {
           "directionality": "Directed — all edges are directed. Encodes causality, transformation order, and hierarchy direction.",
-          "edge_types": "Exactly two types, globally fixed, no extensions permitted at this level. Type 1: structural — defines what a pattern is. Type 2: operational — defines transformations between patterns. Reduces isomorphism complexity by allowing regime-separated matching. Binary typing does not clutter rule space.",
+          "edge_types": "Exactly two types, globally fixed, no extensions permitted at this level. Type 1: structural — defines what a pattern is (composition, identity). Type 2: operational — defines transformations between patterns, and serves as cursor/pointer in rule firing. Reduces isomorphism complexity by allowing regime-separated matching. Binary typing does not clutter rule space.",
           "node_typing": "None. Typing complicates rule space. Identity emerges from structural relationships and library compression, not labels.",
           "weights": "Not in base prototype. Named upgrade path — to be evaluated empirically.",
           "hyperedges": "Not in base prototype. Named upgrade path — motivated by CA-derived insight that discrete systems have fragmented representation spaces with unreachable configurations. To be evaluated empirically via Phase 6 of prototype roadmap.",
@@ -50,6 +54,19 @@
         },
         "two_level_principle": "Every substrate decision must be evaluated twice — once for the traveler operating on data, once for the second system operating on the traveler. Features that only serve one level do not belong in the shared base.",
         "upgrade_paths": ["hyperedges (bounded arity k)", "edge weights", "multigraph (edge multiplicity)"]
+      },
+      {
+        "name": "Graph Rewrite Rule Representation",
+        "description": "Rules are represented as pairs of graphs. Graph 1 (match graph): mixed edge types, used for pattern matching against target. Graph 2 (transition graph): single edge type, specifies the transformation after the matched edge type is stripped. Output is always clean — no mixed edges in output.",
+        "rule_firing_sequence": [
+          "1. Match Graph 1 (mixed) against target graph",
+          "2. Strip one edge type from the matched subgraph (clean)",
+          "3. Apply Graph 2 (transition) to the cleaned subgraph",
+          "4. Reattach stripped edges to output nodes via node mapping"
+        ],
+        "node_mapping": "Explicit mapping from input nodes to output nodes in the rule. Required for reattachment of stripped edges. Operational edges serve as node pointers in the rule — when input is an operational graph, structural edges take the pointer role instead (role swap handled at match time by interpreter).",
+        "edge_role_symmetry": "Structural and operational edge roles are symmetric and positional, not fundamental. Role swap is an interpreter convention, not a change to rule structure. GA operates on single rule graphs without needing to know which role each edge type plays.",
+        "ga_compatibility": "Two-graph schema keeps each graph uniform for GA operations. Mutation and crossover operate on Graph 1 and Graph 2 independently. No pairing complexity at GA level."
       },
       {
         "name": "Graph Operation Interface",
@@ -87,5 +104,5 @@
       }
     ]
   },
-  "notes": "Migrated from _archive/concepts.frameworks.json. Full content preserved. Session 8 notes: Data Transformation System updated with GA requirement and fitness signal. Layer identity corrected to representational scale. Layer boundary definition added."
+  "notes": "Migrated from _archive/concepts.frameworks.json. Full content preserved. Session 8 notes: Data Transformation System updated with GA requirement and fitness signal. Layer identity corrected to representational scale. Layer boundary definition added. Session 11 notes: Graph Rewrite Rule Representation framework added. Layer transformation types clarified (within-layer vs layer transition). Edge type descriptions updated with cursor/pointer role."
 }
