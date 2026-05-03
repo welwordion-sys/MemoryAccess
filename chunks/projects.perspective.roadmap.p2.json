@@ -23,6 +23,20 @@
       "collapse_rule": "x = x collapses to x. 3 = 3 handled by finished equality recognition, not a rewrite rule. x = 3 does not collapse — both sides are structurally distinct."
     },
     "seed_rules": {
+      "scope": "Arithmetic reduction only. Equation solving rules (parameter isolation, term movement across equality) are deliberately withheld. The system is taught the alphabet of arithmetic but not how to solve for unknowns. Parameter isolation is the primary discovery target.",
+      "taught": [
+        "Structural encoding — all shape constructors",
+        "Neutral element collapses: x + 0 -> x, x - 0 -> x, x * 1 -> x, x / 1 -> x",
+        "Zero product collapse: x * 0 -> 0",
+        "Arithmetic reduction rules for +, -, *, / on concrete numbers (to be written in P2)",
+        "Finished/unfinished equality transition"
+      ],
+      "withheld": [
+        "Parameter isolation: moving x to one side of equality",
+        "Term transposition across equality",
+        "Any rule that operates on the equality node to rebalance the equation"
+      ],
+      "discovery_experiment": "Once arithmetic reduction works with full seed rules, ablation is planned — selectively remove rules and observe whether the system discovers them independently. This tests the boundary between bootstrapping threshold and self-discovery.",
       "neutral_element_collapses": [
         "add_zero_collapse: x + 0 -> x (pattern matches + node with one operational edge to zero; surviving operand recovered dynamically)",
         "sub_zero_collapse: x - 0 -> x",
