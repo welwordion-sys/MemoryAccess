@@ -1,0 +1,153 @@
+{
+  "_chunk": "projects.children_of_battle.gamestate",
+  "_project": "children_of_battle",
+  "_last_updated": "2026-05-04",
+  "_structure": "Game state data model. Defines all persistent and transient state required for the core loop. Organized by scope: global (across runs), run-state (per roguelike run), character-state (per unit).",
+  "data": {
+    "scope_global": {
+      "description": "Persists across runs. Meta-game progression.",
+      "fields": {
+        "roster": {
+          "description": "All characters ever created. Includes dead characters for genealogy.",
+          "fields": {
+            "id": "unique character identifier",
+            "name": "character name",
+            "generation": "N (increments per breeding cycle)",
+            "mother_id": "parent reference",
+            "father_id": "parent reference",
+            "birth_campaign": "when character was born (campaign number)",
+            "age": "current age in years",
+            "retired": "boolean (true if age >= max_age)",
+            "dead": "boolean (true if permadeath triggered)",
+            "death_campaign": "campaign number when death occurred",
+            "genes": {
+              "description": "Inherited genetic traits. Determines base card pool.",
+              "structure": "array of gene objects",
+              "gene_object": {
+                "trait_id": "unique gene identifier (e.g. 'fire_affinity', 'swift_reflexes')",
+                "potency": "0-100 (strength of expression)"
+              }
+            }
+          }
+        },
+        "unlocked_training_options": {
+          "description": "Global pool of trainings discovered in any run. Persists when teacher retires.",
+          "fields": {
+            "training_id": "unique identifier",
+            "name": "training name",
+            "discovery_campaign": "when first unlocked",
+            "cards_unlocked": "array of card IDs this training grants"
+          }
+        },
+        "global_resources": {
+          "description": "Currency and materials shared across runs. Spent on full childrearing.",
+          "fields": {
+            "gold": "primary resource from campaigns",
+            "rare_materials": "optional, if special breeding unlocks exist"
+          }
+        }
+      }
+    },
+    "scope_run": {
+      "description": "Resets when a roguelike run ends (either victory or total extinction). Tracks current campaign state.",
+      "fields": {
+        "run_id": "unique run identifier",
+        "campaign_number": "1-N within the run",
+        "active_roster": {
+          "description": "Characters currently alive and available. Subset of global roster.",
+          "references": "array of character IDs"
+        },
+        "run_resources": {
+          "description": "Accumulated during this run, spent on repairs/breeding/training.",
+          "fields": {
+            "gold_this_run": "campaign income",
+            "mates_encountered": "array of mate objects available for breeding this run"
+          }
+        },
+        "breeding_queue": {
+          "description": "Children scheduled to be born and trained before next campaign.",
+          "fields": {
+            "child_id": "temporary ID",
+            "mother_id": "parent reference",
+            "father_id": "parent reference (may be encountered mate)",
+            "breeding_type": "full or cheap",
+            "training_plan": "array of training IDs to teach during growing-up",
+            "status": "pending|in_growth|ready_for_campaign"
+          }
+        },
+        "equipment_state": {
+          "description": "Each character's current gear and durability.",
+          "fields": {
+            "character_id": "reference",
+            "equipped_items": "array of item objects",
+            "item_object": {
+              "item_id": "unique item identifier",
+              "durability": "0-100 (100 = full repair)",
+              "cost_to_repair": "gold required"
+            }
+          }
+        }
+      }
+    },
+    "scope_character": {
+      "description": "Per-unit state. Combination of persistent (roster) and transient (in-campaign).",
+      "fields": {
+        "card_pool": {
+          "description": "Combat cards available for deck drawing. Built from: genes + training + equipment.",
+          "fields": {
+            "gene_cards": "array of card IDs from inherited genes (full child has all parent genes, cheap child has subset)",
+            "training_cards": "array of card IDs from received training",
+            "equipment_cards": "array of card IDs from equipped items (temporary, changes with loadout)"
+          }
+        },
+        "deck": {
+          "description": "Active deck in combat. Subset of card_pool, drawn at battle start.",
+          "fields": {
+            "current_deck": "array of card IDs in shuffled order",
+            "hand": "array of 5 drawn cards",
+            "discard_pile": "array of played cards",
+            "reshuffle_threshold": "when discard_pile size reaches this, reshuffle (e.g., 70% of deck)"
+          }
+        },
+        "teacher_status": {
+          "description": "If appointed as teacher, tracks which training they can teach and to whom.",
+          "fields": {
+            "is_teacher": "boolean",
+            "taught_training_ids": "array of training IDs they know (can teach to children)",
+            "current_student_ids": "array of children currently being taught"
+          }
+        }
+      }
+    },
+    "scope_combat": {
+      "description": "Ephemeral state during a single battle. Discarded after battle ends.",
+      "fields": {
+        "battle_state": "array of unit states (position, HP, status effects, etc.)",
+        "round_number": "current round",
+        "turn_order": "initiative order for this battle"
+      }
+    }
+  },
+  "design_decisions": [
+    {
+      "decision": "Cheap childrearing produces subset of parent genes",
+      "rationale": "Creates meaningful breeding strategy: do I invest gold for full genetic expression, or breed cheap for roster depth?",
+      "affects": "character.card_pool"
+    },
+    {
+      "decision": "Teachers are appointments, not magical inheritance",
+      "rationale": "Preserves trained population under permadeath pressure. Teachers can retire but still teach until death.",
+      "affects": "scope_global.unlocked_training_options, character.teacher_status"
+    },
+    {
+      "decision": "Equipment durability persists per character",
+      "rationale": "Makes equipment a resource sink competing with breeding/training. Encourages rotating active roster.",
+      "affects": "scope_run.equipment_state"
+    }
+  ],
+  "open_questions": [
+    "How are genes numerically inherited? (Both parents → blend? One parent dominant per trait? Random draw?)",
+    "Does cheap childrearing reduce gene *count* or gene *potency*? (e.g., 50% of genes vs. 100% at half strength)",
+    "What's the max_age at retirement? (Should scale with roguelike difficulty?)"
+  ]
+}
