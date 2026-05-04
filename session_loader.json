@@ -35,7 +35,7 @@
       "branch": "main",
       "index_path": "index/<domain>.<subtopic>.json",
       "chunk_path": "chunks/<domain>.<subtopic>.json",
-      "raw_base": "https://raw.githubusercontent.com/welwordion-sys/MemoryAccess/main/",
+      "raw_base": "https://raw.githubusercontent.com/welwordion-sys/MemoryAccess/refs/heads/main/",
       "fallback": "If GitHub MCP is unavailable, construct fetch URLs as raw_base + index_path or raw_base + chunk_path and use web_fetch. Example: raw_base + 'chunks/meta.behaviour_personality.json'."
     }
   },
