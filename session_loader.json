@@ -10,7 +10,7 @@
     },
     "how_to_load": [
       "0. At session start: check for session intent declaration. Recognized intents: 'kb review', 'knowledge base review', 'memory review', 'database review'. KB = Knowledge Base. If declared, acknowledge it, suspend session chunk ceiling, proceed. Do not ask for clarification — recognize and act.",
-      "1. At session start: fetch session_loader.json via GitHub MCP if available. If unavailable, use web_fetch with raw_base (see github block). After loading, also fetch and apply chunks/meta.behaviour_personality.json (auto-load). Report auto-load count and approximate token total as part of acknowledgement.",
+      "1. At session start: fetch session_loader.json via GitHub MCP if available. If unavailable, use web_fetch with the URL the user provides. After loading, auto-load chunks/meta.behaviour_personality.json — the user must provide its raw URL explicitly: https://raw.githubusercontent.com/welwordion-sys/MemoryAccess/refs/heads/main/chunks/meta.behaviour_personality.json. Report auto-load count and approximate token total as part of acknowledgement."
       "2. For ANY content request: first fetch the relevant index/<domain>.<subtopic>.json to see what topics are actually in it. This is mandatory before any chunk decision.",
       "3. If the index clearly confirms a match, load the corresponding chunk immediately — no confirmation needed.",
       "4. After fetching a chunk: summarise what was loaded and proceed.",
