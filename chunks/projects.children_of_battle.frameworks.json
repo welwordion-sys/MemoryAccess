@@ -1,0 +1,53 @@
+{
+  "_chunk": "projects.children_of_battle.frameworks",
+  "_project": "children_of_battle",
+  "_last_updated": "2026-05-04",
+  "_structure": "Manifest chunk. Contains project overview, core loop, and key constraints. Detailed design for each framework lives in sub-chunks: gamestate, breeding, campaign, technical.",
+  "project_summary": {
+    "title": "Children of Battle",
+    "tagline": "Mobile tactical roguelike with generational breeding, deck-building combat, and permadeath",
+    "core_inspiration": "Final Fantasy Tactics + Fire Emblem + Mewgenics + Knights of Ages",
+    "status": "early design"
+  },
+  "core_loop": {
+    "sequence": [
+      "1. Campaign: 3-6 tactical battles + events (2-4 per campaign)",
+      "2. Character age post-campaign; permadeath mechanic active (2 revives max, unless skill triggers)",
+      "3. Events: encounter potential mates, unlock resources, unlock temporary training options",
+      "4. Breeding: produce full children (resource cost) or cheap children (free)",
+      "5. Growing-up: character ages through training phase with teacher, then becomes adult",
+      "6. Equipment: decay over campaigns, requires repair (resource cost)",
+      "7. Rest/Skip: optional loop exit—age characters without combat, zero income, zero tactical risk"
+    ],
+    "exit_conditions": [
+      "— Full campaign (3-6 battles)",
+      "— Early abort (1-2 battles, survivors age)",
+      "— Rest/skip years (age without combat)"
+    ]
+  },
+  "key_constraints": {
+    "permadeath": "Up to 2 revives per campaign. If revive skill (phoenix blood, undead form) triggers first, revive consumed by skill, not revive pool.",
+    "character_lifespan": "Characters age each campaign or rest cycle. Retirement after max age, then death.",
+    "training_scarcity": "Limited training window per character lifespan. Teachers = trained characters appointed to children. Knowledge must be passed generationally.",
+    "resources": "Gold (from campaigns), breeding partners (from events), training window (character lifespan). Gold gates breeding and equipment repair.",
+    "childrearing_modes": [
+      "Full: resource cost, child inherits all gene-based cards from parents, unlocks all training-based cards",
+      "Cheap: free, child inherits reduced gene-based cards, training unlocks fewer cards. Cheap children provide roster depth without extinction risk."
+    ],
+    "roster_population": "Max 4 characters per campaign. Cheap children free allows sustainable population despite permadeath."
+  },
+  "sub_chunks": {
+    "gamestate": "complete data model by scope (global, run, character, combat)",
+    "breeding": "gene inheritance model, full-vs-cheap mechanics, mate compatibility",
+    "campaign": "difficulty scaling, battle structure, event types, reward tables",
+    "technical": "mobile architecture, save system, roguelike run structure, deck mechanics"
+  },
+  "open_questions": [
+    "Gene inheritance: both parents blend? One dominant? Random draw?",
+    "Cheap vs. full: gene count reduction or gene potency reduction?",
+    "Max retirement age: should it scale with difficulty or remain fixed?"
+  ],
+  "session_log": {
+    "2026-05-04": "Initial design session. Core loop locked. Four framework areas identified. Gamestate architecture detailed. Breeding and campaign structure pending."
+  }
+}
