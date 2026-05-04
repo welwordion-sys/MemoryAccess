@@ -1,0 +1,12 @@
+{
+  "_index": "projects.children_of_battle.frameworks",
+  "_project": "children_of_battle",
+  "_last_updated": "2026-05-04",
+  "_summary": "Mobile tactical roguelike with generational breeding, deck-building combat, and permadeath.",
+  "items": [
+    { "id": "fw_01", "label": "Game State Architecture", "tags": ["core", "state", "data-structures"] },
+    { "id": "fw_02", "label": "Breeding System", "tags": ["genetics", "inheritance", "full-vs-cheap"] },
+    { "id": "fw_03", "label": "Campaign Structure", "tags": ["combat", "events", "difficulty-scaling"] },
+    { "id": "fw_04", "label": "Technical Architecture", "tags": ["mobile", "save-system", "roguelike"] }
+  ]
+}
