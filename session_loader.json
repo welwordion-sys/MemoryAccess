@@ -1,6 +1,6 @@
 {
   "_type": "session_loader",
-  "_version": "0.9.0",
+  "_version": "0.9.1",
   "_instructions": {
     "purpose": "Lightweight session loader. Fetch this file at session start and acknowledge it is loaded. Use the file paths below to fetch index or chunk files individually.",
     "posture": "Be bold with loading. When evidence points clearly to a chunk, fetch it. Prefer action over confirmation.",
@@ -10,7 +10,7 @@
     },
     "how_to_load": [
       "0. At session start: check for session intent declaration. Recognized intents: 'kb review', 'knowledge base review', 'memory review', 'database review'. KB = Knowledge Base. If declared, acknowledge it, suspend session chunk ceiling, proceed. Do not ask for clarification — recognize and act.",
-      "1. At session start: fetch session_loader.json. After loading, also fetch and apply chunks/meta.behaviour_personality.json (auto-load). Report auto-load count and approximate token total as part of acknowledgement.",
+      "1. At session start: fetch session_loader.json via GitHub MCP if available. If unavailable, use web_fetch with raw_base (see github block). After loading, also fetch and apply chunks/meta.behaviour_personality.json (auto-load). Report auto-load count and approximate token total as part of acknowledgement.",
       "2. For ANY content request: first fetch the relevant index/<domain>.<subtopic>.json to see what topics are actually in it. This is mandatory before any chunk decision.",
       "3. If the index clearly confirms a match, load the corresponding chunk immediately — no confirmation needed.",
       "4. After fetching a chunk: summarise what was loaded and proceed.",
@@ -34,7 +34,9 @@
       "repo": "MemoryAccess",
       "branch": "main",
       "index_path": "index/<domain>.<subtopic>.json",
-      "chunk_path": "chunks/<domain>.<subtopic>.json"
+      "chunk_path": "chunks/<domain>.<subtopic>.json",
+      "raw_base": "https://raw.githubusercontent.com/welwordion-sys/MemoryAccess/main/",
+      "fallback": "If GitHub MCP is unavailable, construct fetch URLs as raw_base + index_path or raw_base + chunk_path and use web_fetch. Example: raw_base + 'chunks/meta.behaviour_personality.json'."
     }
   },
   "domain_map": {
