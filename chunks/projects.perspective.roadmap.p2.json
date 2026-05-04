@@ -7,7 +7,7 @@
     "title": "Input Layer and Encoding",
     "status": "in_progress",
     "description": "Encode arithmetic expressions and linear equations as directed graphs. No node attributes — identity emerges from structure. Input layer immutable. Seed rules provided as bootstrap scaffold.",
-    "exit_condition": "Expressions reliably converted to base graphs. Sample manually inspected and encoding confirmed sane.",
+    "exit_condition": "Expressions reliably converted to base graphs. Sample manually inspected and encoding confirmed sane. ENCODING EXIT CONDITION MET — encoding verified by smoke tests 2026-05-04. Next task: arithmetic reduction rules (bitwise addition as first target).",
     "encoding": {
       "numbers": "Open-length binary tree. MSB at root, LSB at deepest right leaf. Leaf nodes encoded by tag: empty node = 0, single self-loop = 1. Internal nodes have exactly two structural children (left = higher bits, right = current bit). Each number has exactly one structural representation.",
       "operators": "Operator node with a cycle-based structural tag. +: triangle (3-cycle). -: triangle + tail node. *: square (4-cycle). /: square + tail node. Operator node connects to its tag via a structural edge. Operands connected via operational edges (left first, right second).",
@@ -16,6 +16,15 @@
       "structural_families": "Five families: number internals (binary branching), number leaves (empty or self-loop), operators (cycle tags of distinct size/shape), parameters (bidirectional companion), equality (5-cycle unfinished / 5-cycle+tail finished). Families are mutually non-isomorphic at local topology.",
       "expression_tree": "Operators as internal nodes, numbers and variables as leaves. Tree topology encodes evaluation order. No explicit bracket nodes needed.",
       "carry_propagation": "Operational edge from operator to current bit position acts as cursor. Rule detaches and reattaches edge to next bit node. No extra marker node required."
+    },
+    "verification": {
+      "smoke_tests_passed": "2026-05-04",
+      "results": [
+        "Self-loop count on '1': 1 — correct",
+        "Node count for zero: 1, edge count: 0 — correct",
+        "3+4 graph: 12 nodes, 15 edges — verified by hand count",
+        "x+4=7 graph: 22 nodes, 28 edges — structurally sound"
+      ]
     },
     "label_format": {
       "arithmetic": "Terminal value node only — e.g. 7. No wrapper.",
@@ -28,7 +37,7 @@
         "Structural encoding — all shape constructors",
         "Neutral element collapses: x + 0 -> x, x - 0 -> x, x * 1 -> x, x / 1 -> x",
         "Zero product collapse: x * 0 -> 0",
-        "Arithmetic reduction rules for +, -, *, / on concrete numbers (to be written in P2)",
+        "Arithmetic reduction rules for +, -, *, / on concrete numbers (NEXT SESSION)",
         "Finished/unfinished equality transition"
       ],
       "withheld": [
@@ -61,9 +70,16 @@
     ],
     "implementation": {
       "file": "basic_machinery/encoding.py",
-      "status": "written, pending review and push",
+      "status": "live on main branch, smoke tested",
       "entry_point": "encode(graph, expression_string) -> Node",
       "exports": ["encode", "build_number", "build_parameter", "build_operator", "build_equality", "connect_operands", "connect_equality", "get_operands"]
+    },
+    "next_session": {
+      "task": "Arithmetic reduction rules — bitwise addition as first target",
+      "description": "Write graph rewrite rules that reduce concrete arithmetic expressions. Start with addition (3 + 4 -> 7) using bitwise traversal with carry. Verify Level 1 complexity ladder passes before moving to subtraction, multiplication, division.",
+      "open_design_questions": [
+        "How carry propagation rule interacts with current match() — may need rule chaining or iteration support in the rule engine"
+      ]
     },
     "open_design_questions": []
   }
