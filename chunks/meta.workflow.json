@@ -1,6 +1,6 @@
 {
   "_chunk": "meta.workflow",
-  "_last_updated": "2026-05-02",
+  "_last_updated": "2026-05-06",
   "_auto_load": false,
   "data": {
     "purpose": "Defines coding session workflow. General — not project-bound. Load explicitly at the start of any implementation session.",
@@ -24,6 +24,10 @@
       {
         "rule": "Code presentation format: chunk then explanation, interleaved. Never dump the full file followed by a wall of explanation.",
         "condition": "Applies always. One logical unit at a time — code chunk first, explanation immediately after, then next chunk. Logical unit sizing is Claude's judgment: imports, result types, a single function group. Never larger than what fits on one screen without scrolling."
+      },
+      {
+        "rule": "At the end of every session where files were modified or created, provide the full updated file content ready for direct insertion.",
+        "condition": "Applies always. User should not have to reconstruct files from partial chunks or diffs."
       }
     ],
     "conceptual_mistakes": {
@@ -71,5 +75,5 @@
       }
     ]
   },
-  "notes": "Migrated from workflow.txt session 9. Updated session 10, 2026-05-01: added code presentation format rule. Updated session 10, 2026-05-02: removed duplicate rule, added mobile briefing maintenance rule, updated current phase to P2."
+  "notes": "Migrated from workflow.txt session 9. Updated session 10, 2026-05-01: added code presentation format rule. Updated session 10, 2026-05-02: removed duplicate rule, added mobile briefing maintenance rule, updated current phase to P2. Updated 2026-05-06: added rule to provide full updated file content at end of session."
 }
