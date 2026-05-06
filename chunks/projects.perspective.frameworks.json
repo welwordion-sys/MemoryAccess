@@ -1,7 +1,7 @@
 {
   "_chunk": "projects.perspective.frameworks",
   "_project": "perspective",
-  "_last_updated": "2026-05-03",
+  "_last_updated": "2026-05-06",
   "data": {
     "frameworks": [
       {
@@ -57,16 +57,30 @@
       },
       {
         "name": "Graph Rewrite Rule Representation",
-        "description": "Rules are represented as pairs of graphs. Graph 1 (match graph): mixed edge types, used for pattern matching against target. Graph 2 (transition graph): single edge type, specifies the transformation after the matched edge type is stripped. Output is always clean — no mixed edges in output.",
+        "description": "Rules are represented as triples of graphs. Graph 1 (match graph): mixed edge types, used for pattern matching against target. Graph 2S (structural transition graph): single structural edge type, specifies structural changes after matched structural edges are stripped. Graph 2O (operational transition graph): single operational edge type, specifies new operational edges to add after transition. Output is always clean — no mixed edges in output. The triple schema is required because Graph 2 must be able to express both structural and operational output edges, and a single-type graph cannot encode both without ambiguity or violating the binary edge constraint.",
+        "rule_schema": "Triple: (Graph 1, Graph 2S, Graph 2O)",
         "rule_firing_sequence": [
-          "1. Match Graph 1 (mixed) against target graph",
-          "2. Strip one edge type from the matched subgraph (clean)",
-          "3. Apply Graph 2 (transition) to the cleaned subgraph",
-          "4. Reattach stripped edges to output nodes via node mapping"
+          "1. Match Graph 1 (mixed) against target graph — produces node mapping from pattern nodes to target nodes",
+          "2. Strip one edge type from the matched subgraph (produces clean single-type subgraph)",
+          "3. Apply Graph 2S (structural transition) to the cleaned subgraph",
+          "4. Apply Graph 2O (operational transition) to add new operational edges",
+          "5. Reattach stripped edges to output nodes via node mapping"
         ],
-        "node_mapping": "Explicit mapping from input nodes to output nodes in the rule. Required for reattachment of stripped edges. Operational edges serve as node pointers in the rule — when input is an operational graph, structural edges take the pointer role instead (role swap handled at match time by interpreter).",
-        "edge_role_symmetry": "Structural and operational edge roles are symmetric and positional, not fundamental. Role swap is an interpreter convention, not a change to rule structure. GA operates on single rule graphs without needing to know which role each edge type plays.",
-        "ga_compatibility": "Two-graph schema keeps each graph uniform for GA operations. Mutation and crossover operate on Graph 1 and Graph 2 independently. No pairing complexity at GA level."
+        "node_mapping": "Explicit mapping from input nodes to output nodes in the rule. Required for reattachment of stripped edges and for applying Graph 2O correctly. Operational edges serve as node pointers in the rule — when input is an operational graph, structural edges take the pointer role instead (role swap handled at match time by interpreter).",
+        "edge_role_symmetry": "Structural and operational edge roles are symmetric and positional, not fundamental. Role swap is an interpreter convention, not a change to rule structure. GA operates on each graph independently — no pairing complexity at GA level.",
+        "ga_compatibility": "Triple schema keeps each graph uniform for GA operations. Mutation and crossover operate on Graph 1, Graph 2S, and Graph 2O independently.",
+        "bias_testing_note": "For early bias testing only: Graph 2O can be omitted and new operational edges hardcoded as a post-processing step in the interpreter. This is valid only while testing matching and structural rewrite machinery in isolation. Must be removed before P5 — hardcoded operational edge logic is imperative code smuggled through the back door and becomes permanent scaffolding if left in."
+      },
+      {
+        "name": "Graph Matching Design",
+        "description": "Pattern matching is subgraph isomorphism over directed graphs with binary edge types. The match graph (Graph 1) contains both structural and operational edges. Matching finds a mapping from pattern nodes to target graph nodes such that all pattern edges exist in the target under the mapping, preserving edge type and direction.",
+        "algorithm": "Subgraph isomorphism via backtracking search with constraint propagation. Complexity is O(n!) in worst case — acceptable for small graphs in prototype, flagged for profiling at P6.",
+        "edge_type_handling": "Matching is edge-type-aware. A structural edge in the pattern must map to a structural edge in the target; an operational edge in the pattern must map to an operational edge in the target. This halves the effective search space by separating structural and operational constraint satisfaction.",
+        "role_swap": "At match time, the interpreter determines which edge type plays which role based on the input graph composition. If the input graph is predominantly operational (e.g. a rule graph being operated on by the second system), structural edges take the pointer role and operational edges take the composition role. The swap is an interpreter convention applied before matching begins — the matching algorithm itself is role-agnostic.",
+        "match_result": "A match result is a bijective node mapping: pattern_node -> target_node. Multiple valid mappings may exist (match_all). The mapping is the basis for rule application — Graph 2S and Graph 2O are applied using this mapping to locate the correct target nodes.",
+        "match_all": "match_all() returns all valid mappings. Required for rules that fire repeatedly at different positions in the same graph (e.g. tombstone GC, carry propagation). The traversal loop in P5 calls match_all and applies rules iteratively until no matches remain.",
+        "negative_constraints": "Current match() has no support for negative structural constraints (matching nodes with no incoming edges, or absence of a specific edge). This is a known limitation. Workaround: use tombstone markers to make absence conditions positive and matchable.",
+        "complexity_flag": "O(n!) worst case. For the prototype scope (small arithmetic expressions), this is acceptable. Flagged for P6 profiling — if graph size grows enough that match() dominates runtime, pruning heuristics or VF2 algorithm should be evaluated."
       },
       {
         "name": "Graph Operation Interface",
@@ -104,5 +118,5 @@
       }
     ]
   },
-  "notes": "Migrated from _archive/concepts.frameworks.json. Full content preserved. Session 8 notes: Data Transformation System updated with GA requirement and fitness signal. Layer identity corrected to representational scale. Layer boundary definition added. Session 11 notes: Graph Rewrite Rule Representation framework added. Layer transformation types clarified (within-layer vs layer transition). Edge type descriptions updated with cursor/pointer role."
+  "notes": "Migrated from _archive/concepts.frameworks.json. Full content preserved. Session 8 notes: Data Transformation System updated with GA requirement and fitness signal. Layer identity corrected to representational scale. Layer boundary definition added. Session 11 notes: Graph Rewrite Rule Representation framework added. Layer transformation types clarified (within-layer vs layer transition). Edge type descriptions updated with cursor/pointer role. Session 2026-05-06 notes: Rule schema updated from pair to triple (Graph 1, Graph 2S, Graph 2O) — required to express mixed-type output without violating binary edge constraint. Bias testing note added. Graph Matching Design framework added — covers subgraph isomorphism, edge-type-aware matching, role swap, match_all, negative constraint limitation, complexity flag."
 }
