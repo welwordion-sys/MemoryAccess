@@ -26,8 +26,8 @@
         "condition": "Applies always. One logical unit at a time — code chunk first, explanation immediately after, then next chunk. Logical unit sizing is Claude's judgment: imports, result types, a single function group. Never larger than what fits on one screen without scrolling."
       },
 						{
-			  "rule": "Do not repeat unchanged code 				chunks during a session. Only show 						modified or new chunks.",
-  "condition": "Applies always within a session. Full file is provided at end of session for insertion."
+			  "rule": "Do not repeat unchanged code chunks during a session. Only show modified or new chunks.",
+ 			 "condition": "Applies always within a session. Full file is provided at end of session for insertion."
 }
       {
         "rule": "At the end of every session where files were modified or created, provide the full updated file content ready for direct insertion.",
