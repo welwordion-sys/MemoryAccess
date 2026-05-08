@@ -1,6 +1,6 @@
 {
   "_type": "session_loader",
-  "_version": "0.9.1",
+  "_version": "0.9.2",
   "_instructions": {
     "purpose": "Lightweight session loader. Fetch this file at session start and acknowledge it is loaded. Use the file paths below to fetch index or chunk files individually.",
     "posture": "Be bold with loading. When evidence points clearly to a chunk, fetch it. Prefer action over confirmation.",
@@ -10,7 +10,8 @@
     },
     "how_to_load": [
       "0. At session start: check for session intent declaration. Recognized intents: 'kb review', 'knowledge base review', 'memory review', 'database review'. KB = Knowledge Base. If declared, acknowledge it, suspend session chunk ceiling, proceed. Do not ask for clarification — recognize and act.",
-      "1. At session start: fetch session_loader.json via GitHub MCP if available. If unavailable, use web_fetch with the URL the user provides. After loading, auto-load chunks/meta.behaviour_personality.json — the user must provide its raw URL explicitly: https://raw.githubusercontent.com/welwordion-sys/MemoryAccess/refs/heads/main/chunks/meta.behaviour_personality.json. Report auto-load count and approximate token total as part of acknowledgement."
+      "1. At session start: fetch session_loader.json via GitHub MCP if available. If unavailable, use web_fetch with raw_base (see github block). After loading, auto-load all chunks listed in _auto_loads for each domain. Report auto-load count and approximate token total as part of acknowledgement.",
+      "1b. Cascading sub-chunk load: after loading any chunk, check if it contains a '_sub_chunks' field. If yes, load all listed sub-chunks immediately and automatically. Sub-chunks count toward the auto-load ceiling. Report each sub-chunk load as part of the session start acknowledgement.",
       "2. For ANY content request: first fetch the relevant index/<domain>.<subtopic>.json to see what topics are actually in it. This is mandatory before any chunk decision.",
       "3. If the index clearly confirms a match, load the corresponding chunk immediately — no confirmation needed.",
       "4. After fetching a chunk: summarise what was loaded and proceed.",
@@ -47,7 +48,7 @@
       "_auto_loads": ["behaviour_personality"],
       "auto_load_governance": {
         "auto_load_ceiling": 3,
-        "auto_load_ceiling_note": "Maximum auto-load chunks beyond session_loader. Currently using 1 (behaviour_personality). Headroom for 2 more before warning triggers. Soft ceiling — Claude warns, user decides, decision logged in versioning.",
+        "auto_load_ceiling_note": "Maximum auto-load chunks beyond session_loader. Currently using 2 (behaviour_personality + governance via cascading). Headroom for 1 more before warning triggers. Soft ceiling — Claude warns, user decides, decision logged in versioning.",
         "session_chunk_ceiling": 12,
         "session_chunk_ceiling_note": "Maximum total chunks loaded in a single session. At 16 total chunks in KB, loading 12 in one session indicates either full KB review (declare intent) or unintentional accumulation. Soft ceiling — Claude warns, user decides.",
         "kb_review_exemption": "Declaring session intent as KB review suspends the session chunk ceiling for that session. Auto-load ceiling still applies. Lock protocol still available if erratic behavior flagged.",

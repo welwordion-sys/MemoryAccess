@@ -2,7 +2,8 @@
   "_chunk": "meta.behaviour_personality",
   "_last_updated": "2026-05-06",
   "_auto_load": true,
-  "_structure": "Split into sub-chunks. This file contains communication rules, reasoning discipline, and KB write discipline. Load meta.behaviour_personality.governance for context governance and lock protocol.",
+  "_sub_chunks": ["meta.behaviour_personality.governance"],
+  "_structure": "Split into sub-chunks. This file contains communication rules, reasoning discipline, and KB write discipline. Load meta.behaviour_personality.governance for context governance and lock protocol. Sub-chunk loads automatically via cascading loader.",
   "data": {
     "purpose": "Defines communication and reasoning discipline for all sessions. Authoritative version of user preferences. Preferences are a strict subset. If this chunk and user preferences diverge, this chunk is authoritative. Preferences are the fallback when GitHub is unreachable.",
     "principles": [
@@ -67,5 +68,5 @@
       "failure_pattern": "Session 2026-05-06: Claude ended its self-assessment and waited. Did not deliver critique of user behaviour until explicitly asked. Staying silent when critique is warranted is agreeable over useful."
     }
   },
-  "notes": "Established session 9, 2026-04-30. Split session 10, 2026-05-02 — governance moved to meta.behaviour_personality.governance. KB write discipline rule added. Session 11, 2026-05-04: presupposition detection rule added to reasoning_discipline. Dropped user competence rule, relocated useful-over-agreeable to principles. Session 2026-05-06: communication rules collapsed and strengthened, open advice rule added, bidirectional_discipline strengthened with explicit failure pattern, code_presentation reference added. Removed rules backed up in meta.behaviour_personality.removed_rules.json."
+  "notes": "Established session 9, 2026-04-30. Split session 10, 2026-05-02 — governance moved to meta.behaviour_personality.governance. KB write discipline rule added. Session 11, 2026-05-04: presupposition detection rule added to reasoning_discipline. Dropped user competence rule, relocated useful-over-agreeable to principles. Session 2026-05-06: communication rules collapsed and strengthened, open advice rule added, bidirectional_discipline strengthened with explicit failure pattern, code_presentation reference added, _sub_chunks field added for cascading loader support. Removed rules backed up in meta.behaviour_personality.removed_rules.json."
 }
