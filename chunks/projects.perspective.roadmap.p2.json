@@ -1,7 +1,7 @@
 {
   "_chunk": "projects.perspective.roadmap.p2",
   "_project": "perspective",
-  "_last_updated": "2026-05-04",
+  "_last_updated": "2026-05-06",
   "data": {
     "id": "p2",
     "title": "Input Layer and Encoding",
@@ -15,7 +15,36 @@
       "variable_x": "Parameter node with bidirectional structural edge to a dedicated companion node. All parameters are structurally identical — identity from position in expression tree. Arithmetic rules do not match parameter nodes by structural non-match.",
       "structural_families": "Five families: number internals (binary branching), number leaves (empty or self-loop), operators (cycle tags of distinct size/shape), parameters (bidirectional companion), equality (5-cycle unfinished / 5-cycle+tail finished). Families are mutually non-isomorphic at local topology.",
       "expression_tree": "Operators as internal nodes, numbers and variables as leaves. Tree topology encodes evaluation order. No explicit bracket nodes needed.",
-      "carry_propagation": "Operational edge from operator to current bit position acts as cursor. Rule detaches and reattaches edge to next bit node. No extra marker node required."
+      "negative_numbers": "Represented as 0 - n subtree. Reuses existing binary operator structure. No sign node needed. sub_zero_collapse fires on x - 0 (right operand zero), not 0 - n (left operand zero) — no conflict.",
+      "carry_marker": "2-cycle (two nodes pointing at each other) attached to operator node via structural edge. Present only when carry is active during bitwise addition. Distinct from all other structural families. NOTE: shape reuse with parameter node was rejected — carry marker must be distinct because rule mutation at meta-level could cause false pattern matches across rule graphs if shapes are shared.",
+      "tombstone_marker": "3-node chain (node -> a -> b, no cycles, no self-loops) attached to operand root after finalisation. Distinct from all existing shapes including carry marker. Used to trigger garbage collection rules on disconnected operand subtrees.",
+      "position_pointer": "Two operational edges from operator node to current bit positions in each operand tree. Start at LSB (deepest right leaf), advance toward root (MSB) in lockstep. No separate anchor edges needed — position edges are sufficient. Advance = remove position edge, add new one to parent node."
+    },
+    "arithmetic_rules_design": {
+      "execution_model": "Non-destructive. Operand trees stay intact throughout reduction. Result builds alongside as a new tree attached to operator node via operational edge. Operand trees tombstoned and GC'd after finalisation. Chosen over destructive model because multiplication reuses operand bits — destructive cleanup does not generalise.",
+      "result_tree": "Grows alongside reduction. New bit becomes new result root with previous root as structural child. Builds MSB-at-root as bits come in LSB-first. Result root attached to operator node via operational edge.",
+      "operand_order": "Operand order matters for non-commutative operators (subtraction, division). connect_operands insertion order determines left/right. match() uses permutations and does not preserve insertion order — asymmetric rules must encode left/right distinction in pattern topology. NOTE: flagged as open issue — verify connect_operands order is preserved through match() before writing subtraction rules.",
+      "unequal_operand_lengths": "Handled by implicit zero in rule logic. When one position pointer is exhausted before the other, remaining bits are processed with zero as the exhausted operand's contribution. drain_remaining rule handles this case.",
+      "garbage_collection": "Tombstone GC rule fires on tombstoned nodes. Pattern: 3-node chain. Rewrite: remove tombstone, attach tombstone to structural children, remove node. Fires repeatedly until subtree consumed. Bounded work per firing — correct for unbounded tree depth.",
+      "rule_set": [
+        "add_init: fires on + node with exactly two operational edges. Finds deepest right leaf of each operand tree. Attaches two position edges.",
+        "bit_add_00_c0, bit_add_01_c0, bit_add_10_c0, bit_add_11_c0: bit addition without carry-in",
+        "bit_add_00_c1, bit_add_01_c1, bit_add_10_c1, bit_add_11_c1: bit addition with carry-in",
+        "drain_remaining: fires when one position exhausted, other still active. Processes remaining bits with implicit zero.",
+        "add_finalise: fires when both positions exhausted (2 operand root edges + 1 result edge remain). Appends final carry bit if active. Rewires parent to result root. Tombstones operand roots. Removes operator node.",
+        "tombstone_gc: fires on tombstoned node. Removes node, propagates tombstone to children."
+      ]
+    },
+    "operations_redesign": {
+      "status": "complete — committed to main 2026-05-06",
+      "summary": "operations.py redesigned from callable rewrite to triple graph rule schema. OperationDefinition now holds pattern, graph2s, graph2o. apply() runs two passes via _apply_pass(). graph.py extended with subgraph().",
+      "rule_schema": "Triple: (pattern, graph2s, graph2o). See frameworks chunk for full firing sequence.",
+      "apply_passes": "Pass 1: strip operational, match transition input, follow mapping edges, write structural output. Pass 2: strip structural, match transition input, follow mapping edges, write operational output. Pass 2 uses updated_map from Pass 1 — deleted nodes silently ignored.",
+      "known_limitations": [
+        "match() is O(n!) via permutations — acceptable for prototype, flagged for P6 profiling",
+        "Existing tests use callable rewrite — all tests broken, need rewriting against new schema",
+        "restore() now a standalone function in operations.py wrapping snapshot/apply/revert"
+      ]
     },
     "verification": {
       "smoke_tests_passed": "2026-05-04",
@@ -37,7 +66,7 @@
         "Structural encoding — all shape constructors",
         "Neutral element collapses: x + 0 -> x, x - 0 -> x, x * 1 -> x, x / 1 -> x",
         "Zero product collapse: x * 0 -> 0",
-        "Arithmetic reduction rules for +, -, *, / on concrete numbers (NEXT SESSION)",
+        "Arithmetic reduction rules for +, -, *, / on concrete numbers (IN PROGRESS)",
         "Finished/unfinished equality transition"
       ],
       "withheld": [
@@ -47,15 +76,15 @@
       ],
       "discovery_experiment": "Once arithmetic reduction works with full seed rules, ablation is planned — selectively remove rules and observe whether the system discovers them independently. This tests the boundary between bootstrapping threshold and self-discovery.",
       "neutral_element_collapses": [
-        "add_zero_collapse: x + 0 -> x (pattern matches + node with one operational edge to zero; surviving operand recovered dynamically)",
-        "sub_zero_collapse: x - 0 -> x",
+        "add_zero_collapse: x + 0 -> x",
+        "sub_zero_collapse: x - 0 -> x (right operand zero only — does not fire on 0 - n)",
         "mul_one_collapse: x * 1 -> x",
         "div_one_collapse: x / 1 -> x"
       ],
       "zero_product_collapses": [
-        "mul_zero_collapse: x * 0 -> 0 (pattern matches * node with one operational edge to zero; whole subtree replaced by fresh zero node)"
+        "mul_zero_collapse: x * 0 -> 0"
       ],
-      "notes": "Rules are partial pattern matches — neutral element pattern covers only the operator node and the neutral operand subgraph. Surviving operand not in the pattern, recovered from live graph in rewrite lambda. No wildcard match extension to OperationDefinition needed for these rules."
+      "notes": "Seed rules need to be rewritten as triple graph schema (pattern, graph2s, graph2o). Old callable rewrite versions are now incompatible with operations.py."
     },
     "complexity_ladder": [
       "Level 1: Pure arithmetic — e.g. 3 + 4, label: 7",
@@ -64,9 +93,10 @@
       "Level 4: Variable on both sides — e.g. 2x + 4 = 3x - 1, label: x = 5"
     ],
     "deferred_decisions": [
-      "3 = 3 collapse: not a rewrite rule. Handled by finished equality recognition — if both operand subtrees are concrete values, equality is already finished. Structural isomorphism check deferred; may not be needed within current complexity ladder scope.",
-      "Wildcard match in OperationDefinition: not needed for P2 seed rules. May be revisited for higher-level rules.",
-      "Negative number encoding: not in P2 scope."
+      "3 = 3 collapse: not a rewrite rule. Handled by finished equality recognition.",
+      "Wildcard match in OperationDefinition: not needed for P2 seed rules.",
+      "Operand order in match(): verify left/right distinction survives permutation-based matching before writing subtraction rules.",
+      "complexity() function: deferred to P5. Will live in a separate evaluation module."
     ],
     "implementation": {
       "file": "basic_machinery/encoding.py",
@@ -75,10 +105,10 @@
       "exports": ["encode", "build_number", "build_parameter", "build_operator", "build_equality", "connect_operands", "connect_equality", "get_operands"]
     },
     "next_session": {
-      "task": "Arithmetic reduction rules — bitwise addition as first target",
-      "description": "Write graph rewrite rules that reduce concrete arithmetic expressions. Start with addition (3 + 4 -> 7) using bitwise traversal with carry. Verify Level 1 complexity ladder passes before moving to subtraction, multiplication, division.",
+      "task": "Rewrite seed rules and arithmetic rules as triple graph schema. Start with add_init and one bit rule to validate the new apply() mechanism end-to-end before writing the full rule set.",
       "open_design_questions": [
-        "How carry propagation rule interacts with current match() — may need rule chaining or iteration support in the rule engine"
+        "Verify operand order (left/right) survives match() permutation before writing subtraction rules",
+        "Decide whether rule graph construction helpers live in encoding.py, arithmetic.py, or a new rules/builders.py module"
       ]
     },
     "open_design_questions": []
