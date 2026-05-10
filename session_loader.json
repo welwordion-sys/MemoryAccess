@@ -1,6 +1,6 @@
 {
   "_type": "session_loader",
-  "_version": "0.9.2",
+  "_version": "0.9.3",
   "_instructions": {
     "purpose": "Lightweight session loader. Fetch this file at session start and acknowledge it is loaded. Use the file paths below to fetch index or chunk files individually.",
     "posture": "Be bold with loading. When evidence points clearly to a chunk, fetch it. Prefer action over confirmation.",
@@ -73,7 +73,7 @@
         "perspective": {
           "_summary": "Representation Space Traversal AI — a novel architecture where traversal of data representation space is the primary computational mechanism.",
           "_status": "active",
-          "_subtopics": ["frameworks", "definitions", "relationships", "findings", "open_questions", "methodology", "sources", "timeline", "roadmap"],
+          "_subtopics": ["frameworks", "definitions", "relationships", "findings", "open_questions", "methodology", "sources", "timeline", "roadmap", "design_rationale"],
           "_note": "Project findings may eventually inform the MemoryAccess memory architecture itself."
         }
       }
