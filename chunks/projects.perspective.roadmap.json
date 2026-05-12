@@ -1,7 +1,7 @@
 {
   "_chunk": "projects.perspective.roadmap",
   "_project": "perspective",
-  "_last_updated": "2026-05-02",
+  "_last_updated": "2026-05-10",
   "_structure": "Split into per-phase chunks. This file is the manifest. Load phase chunks individually as needed.",
   "data": {
     "id": "d_02",
@@ -11,15 +11,15 @@
     "scope": "Base prototype on arithmetic expressions and simple linear equations to first measurable test result. Excludes: reasoned library, second meta-level system, weighted graphs, hyperedges (unless Phase 6 forces it), full self-evolving rewrite system.",
     "phase_index": [
       { "id": "p1", "title": "Graph Substrate and Operations", "status": "complete", "chunk": "projects.perspective.roadmap.p1" },
-      ,{ "id": "p2", "title": "Input Layer and Encoding", "status": "in_progress", "chunk": "projects.perspective.roadmap.p2" }
- { "id": "p3", "title": "Layer Structure and Compression", "status": "not_started", "chunk": "projects.perspective.roadmap.p3" },
+      { "id": "p2", "title": "Input Layer and Encoding", "status": "in_progress", "chunk": "projects.perspective.roadmap.p2" },
+      { "id": "p3", "title": "Layer Structure and Compression", "status": "not_started", "chunk": "projects.perspective.roadmap.p3" },
       { "id": "p4", "title": "Empirical Library", "status": "not_started", "chunk": "projects.perspective.roadmap.p4" },
       { "id": "p5b", "title": "Minimal GA over Rule Graphs", "status": "not_started", "chunk": "projects.perspective.roadmap.p5b" },
       { "id": "p5", "title": "Traversal Loop", "status": "not_started", "chunk": "projects.perspective.roadmap.p5" },
       { "id": "p6", "title": "First Test and Decision Gates", "status": "not_started", "chunk": "projects.perspective.roadmap.p6" }
     ],
     "known_risks": [
-      { "risk": "GI cost at rule firing scale", "phase": "p5", "note": "Profile in Phase 6." },
+      { "risk": "GI cost at rule firing scale", "phase": "p5", "note": "Profile in Phase 6. Rust port with VF2/VF2++ matcher flagged as likely requirement." },
       { "risk": "Encoding design is load-bearing — poor encoding limits discoverability", "phase": "p2" },
       { "risk": "Burn-in cold start — seed rules are only bootstrap before library accumulates", "phase": "p5b" },
       { "risk": "Unbounded parameter growth in layer hierarchy", "phase": "p3" }
