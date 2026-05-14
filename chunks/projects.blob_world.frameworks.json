@@ -1,0 +1,93 @@
+{
+  "_chunk": "projects.blob_world.frameworks",
+  "_last_updated": "2026-05-15",
+  "_project": "blob_world",
+  "data": {
+    "geometry_representation": {
+      "base": "Star-shaped radius field r(theta, phi). One radius per direction from center. Surface defined by this field evaluated over spherical directions.",
+      "primary_primitive": "Localized bump. Properties: local controllability, smooth blending, compact parameterization, stable evaluation.",
+      "deprioritized": "Global harmonic-only representations. Local appendage control mattered more than global shape modes.",
+      "invariants": [
+        "Single coherent analytical blob field.",
+        "Geometry must remain star-shaped relative to primary center.",
+        "Compactly parameterized and GPU-friendly.",
+        "Collision stays analytical or near-analytical.",
+        "Deformation is part of physical representation, not merely visual."
+      ]
+    },
+    "bending_model": {
+      "key_insight": "Appendage bends because evaluation frames rotate — NOT because global blob topology changes.",
+      "leaning": {
+        "description": "Whole bump direction tilts as mostly rigid directional offset.",
+        "formula": "d' = R * d",
+        "use": "Simple directional deformation, push/pull, low-cost articulation."
+      },
+      "gradual_bending": {
+        "description": "Rotation varies progressively along bump extent. Farther regions experience greater frame rotation. Curvature emerges through transported rotated frames.",
+        "formula": "R(t) = slerp(I, R_max, t)",
+        "preserves": ["continuity", "compactness", "analytical evaluation", "pseudo-appendage behavior"]
+      },
+      "rejected": ["blob chains", "metaball chains", "explicit skeletons", "FEM-like articulated soft bodies"],
+      "rejection_reason": "Breaks elegance, complicates collision, weakens unified field representation, risks becoming capsules glued together."
+    },
+    "collision_model": {
+      "operates_on": "Transformed/deformed evaluation points after local frame transport.",
+      "consequence": "Collision geometry is evaluated after bending. Bending creates new effective collision points.",
+      "sensory_constraint": "Collision handling must preserve meaningful deformation patterns. Overly simplified responses (rigid clipping, proxy hulls, hard separation) destroy deformation gradients that encode sensory information."
+    },
+    "physics_hierarchy": {
+      "creature": ["transform/orientation", "angular velocity", "torque", "rotating local deformation fields"],
+      "blob_field": ["deformation parameters", "bump frames", "collision representation"],
+      "note": "Creature orientation mandatory. Appendage directions must rotate with body motion."
+    },
+    "rendering": {
+      "target_aesthetic": "Smooth volumetric soft bodies. Not polygon meshes.",
+      "approach": ["GPU particles", "gaussian splatting", "normal-oriented billboards"],
+      "artifact_problem": "Camera-facing billboards cause scale/fiber/lizard-skin artifacts near sharp bumps, grazing angles, high-curvature regions.",
+      "mitigations": ["normal-oriented quads", "gaussian falloff", "density smoothing", "smaller splats"],
+      "sampling_artifact": "Fibonacci lattice stretched non-uniformly by r(theta,phi). Particles near bump peak pushed farther out, creating visible rows at bump-sphere transition. Root cause: sampling distribution, not normals.",
+      "sampling_fix_correct": "Importance sampling weighted by local surface area element |dp/dtheta x dp/dphi|.",
+      "sampling_fix_pragmatic": "Oversample directions where r(theta,phi) > r_min + threshold. Compensates for stretching without full importance sampling.",
+      "sampling_fix_status": "Deferred. Physics work prioritized over rendering quality at this stage."
+    },
+    "sensory_deformation": {
+      "principle": "Deformation is part of information-processing architecture, not only collision response.",
+      "signals": ["collision", "pressure", "bending", "flattening", "directional strain"],
+      "sensory_roles": "Some blobs/protrusions serve primarily sensory roles: whiskers, antennae, pressure lobes, compliant feelers.",
+      "architectural_consequence": "Geometry, sensing, collision, and deformation all emerge from the same analytical blob framework."
+    },
+    "volume_pressure": {
+      "model": "Approximate volume preservation. Flattening in one region redistributes outward elsewhere.",
+      "note": "Not strict incompressibility. Pressure-like compensation behavior. Stiffness as unified parameter."
+    }
+  },
+  "open_problems": {
+    "mathematical": [
+      "Exact bend-limit derivation — depends on bump width, length, curvature rate, local radius gradient, neighboring transported frames. No fixed global limit.",
+      "Preventing self-intersection analytically.",
+      "Curvature transport rules.",
+      "Stable collision under extreme deformation.",
+      "Pressure redistribution model.",
+      "Maintaining star-shaped validity under transported frames.",
+      "Efficient normal generation for curved bumps.",
+      "Transition between leaning and gradual bending."
+    ],
+    "engineering": [
+      "GPU implementation of transported frames.",
+      "Efficient collision acceleration.",
+      "Stable splat density under deformation.",
+      "Real-time deformation updates.",
+      "LOD for dense particle/splat rendering.",
+      "Coupling physics and rendering efficiently.",
+      "Evolution/genetics encoding.",
+      "Multi-creature interaction scaling."
+    ]
+  },
+  "session_stop_point": {
+    "date": "2026-05-15",
+    "topic": "Rendering fiber artifact at bump-sphere transition.",
+    "last_reasoning": "Artifact is a sampling distribution problem (Fibonacci lattice stretched by r(theta,phi)), not a normal problem. Correct fix: importance sampling by surface area element. Pragmatic fix: oversample bump region. Decision: deferred — physics work more valuable at this stage.",
+    "files_at_stop": ["blob.rs", "environment.rs (empty)", "gpu.rs", "main.rs", "math.rs", "shaders.rs"]
+  },
+  "notes": "Initial KB write from single-session work 2026-05-15. Session ran to token limit without writing. Reconstructed from ChatGPT summary."
+}

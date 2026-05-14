@@ -1,0 +1,15 @@
+{
+  "_chunk": "projects.blob_world.frameworks",
+  "_last_updated": "2026-05-15",
+  "_topics": [
+    { "id": "geometry_representation", "summary": "Star-shaped radius field r(theta,phi). One radius per direction. Localized bumps as primary deformation primitive. Global harmonics deprioritized." },
+    { "id": "bending_leaning", "summary": "Leaning: whole bump direction tilts as rigid offset d'=Rd. Low cost, useful for push/pull." },
+    { "id": "bending_gradual", "summary": "Gradual bending: rotation varies progressively along bump extent via slerp(I, R_max, t). Curvature via transported frames, not joints." },
+    { "id": "collision_model", "summary": "Collision operates on transformed evaluation points after local frame transport. Bending creates new effective collision geometry. Must preserve deformation gradients for sensory use." },
+    { "id": "physics_hierarchy", "summary": "Creature owns transform/orientation/dynamics. Blob field owns deformation params, bump frames, collision representation. Creature orientation mandatory — appendage directions rotate with body." },
+    { "id": "rendering", "summary": "Target: smooth volumetric soft bodies via GPU particles, gaussian splatting, normal-oriented billboards. Camera-facing billboards cause fiber artifacts at bumps — use normal-oriented quads instead." },
+    { "id": "sensory_deformation", "summary": "Deformation is part of information-processing architecture. Collision/pressure/bending/strain provide tactile-proprioceptive data. Some protrusions serve purely sensory roles (whiskers, feelers). Overly simplified collision responses destroy sensory gradients." },
+    { "id": "volume_pressure", "summary": "Approximate volume preservation. Flattening redistributes outward. Stiffness as unified parameter. Not strict incompressibility." },
+    { "id": "rejected_architectures", "summary": "Explicitly rejected: skeletal soft bodies, FEM, metaball chains, capsule chains, per-particle collision, arbitrary mesh sculpting, unrestricted topology, strict IFS purity." }
+  ]
+}
