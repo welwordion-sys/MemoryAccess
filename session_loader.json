@@ -1,0 +1,90 @@
+{
+  "_type": "session_loader",
+  "_version": "0.9.3",
+  "_instructions": {
+    "purpose": "Lightweight session loader. Fetch this file at session start and acknowledge it is loaded. Use the file paths below to fetch index or chunk files individually.",
+    "posture": "Be bold with loading. When evidence points clearly to a chunk, fetch it. Prefer action over confirmation.",
+    "operation_model": {
+      "online": "Fast, lightweight operations: index lookup, chunk retrieval, reading. Do these freely within a session.",
+      "offline": "Heavy operations: chunk writing, restructuring, archiving, updating the loader. These are deliberate and explicit — only on user instruction or clear necessity."
+    },
+    "how_to_load": [
+      "0. At session start: check for session intent declaration. Recognized intents: 'kb review', 'knowledge base review', 'memory review', 'database review'. KB = Knowledge Base. If declared, acknowledge it, suspend session chunk ceiling, proceed. Do not ask for clarification — recognize and act.",
+      "1. At session start: fetch session_loader.json via GitHub MCP if available. If unavailable, use web_fetch with raw_base (see github block). After loading, auto-load all chunks listed in _auto_loads for each domain. Report auto-load count and approximate token total as part of acknowledgement.",
+      "1b. Cascading sub-chunk load: after loading any chunk, check if it contains a '_sub_chunks' field. If yes, load all listed sub-chunks immediately and automatically. Sub-chunks count toward the auto-load ceiling. Report each sub-chunk load as part of the session start acknowledgement.",
+      "2. For ANY content request: first fetch the relevant index/<domain>.<subtopic>.json to see what topics are actually in it. This is mandatory before any chunk decision.",
+      "3. If the index clearly confirms a match, load the corresponding chunk immediately — no confirmation needed.",
+      "4. After fetching a chunk: summarise what was loaded and proceed.",
+      "5. Context eviction: if multiple chunks have been loaded and a topic is clearly finished, consider it evicted — do not re-reference unless the user returns to it.",
+      "6. Never speculatively fetch additional files unless the user explicitly requests it.",
+      "7. NEVER fetch anything from _archive/. That folder is a read-only human backup."
+    ],
+    "lookup_syntax": {
+      "load": "load: <domain>.<subtopic>",
+      "index": "index: <domain>.<subtopic>",
+      "update": "update: <domain>.<subtopic>",
+      "new": "new chunk: <domain>.<subtopic>"
+    },
+    "logging_format": {
+      "description": "Two-tier format.",
+      "tier_1_decisions": "Architectural and design decisions. Fields: decision, rationale (one sentence), affects (chunk name). Tag with project if project-specific. Written at end of session under decisions[session_id].",
+      "tier_2_implementation": "Implementation-phase entries. Fields: attempted, outcome, decided. Tag with project. Written during implementation sessions under implementation[]."
+    },
+    "github": {
+      "owner": "welwordion-sys",
+      "repo": "MemoryAccess",
+      "branch": "main",
+      "index_path": "index/<domain>.<subtopic>.json",
+      "chunk_path": "chunks/<domain>.<subtopic>.json",
+      "raw_base": "https://raw.githubusercontent.com/welwordion-sys/MemoryAccess/refs/heads/main/",
+      "fallback": "If GitHub MCP is unavailable, construct fetch URLs as raw_base + index_path or raw_base + chunk_path and use web_fetch. Example: raw_base + 'chunks/meta.behaviour_personality.json'."
+    }
+  },
+  "domain_map": {
+    "meta": {
+      "_scope": "general",
+      "_summary": "Memory system metadata: versioning, global tags, system info, behaviour rules, workflow, session lock data.",
+      "_subtopics": ["project_info", "versioning", "global_tags", "behaviour_personality", "workflow", "session_lock"],
+      "_auto_loads": ["behaviour_personality"],
+      "auto_load_governance": {
+        "auto_load_ceiling": 3,
+        "auto_load_ceiling_note": "Maximum auto-load chunks beyond session_loader. Currently using 2 (behaviour_personality + governance via cascading). Headroom for 1 more before warning triggers. Soft ceiling — Claude warns, user decides, decision logged in versioning.",
+        "session_chunk_ceiling": 12,
+        "session_chunk_ceiling_note": "Maximum total chunks loaded in a single session. At 16 total chunks in KB, loading 12 in one session indicates either full KB review (declare intent) or unintentional accumulation. Soft ceiling — Claude warns, user decides.",
+        "kb_review_exemption": "Declaring session intent as KB review suspends the session chunk ceiling for that session. Auto-load ceiling still applies. Lock protocol still available if erratic behavior flagged.",
+        "kb_definition": "KB = Knowledge Base. The structured memory system stored in this repository.",
+        "kb_review_synonyms": ["kb review", "knowledge base review", "memory review", "database review"]
+      }
+    },
+    "notes": {
+      "_scope": "general",
+      "_summary": "General working notes, memory system drafts, session logs (cross-project). Project-specific notes live under projects.<name>.*",
+      "_subtopics": ["session_logs", "drafts", "ideas"]
+    },
+    "entities": {
+      "_scope": "general",
+      "_summary": "Named entities not tied to a specific project: people, organizations, artifacts.",
+      "_subtopics": ["people", "organizations", "locations", "artifacts"]
+    },
+    "projects": {
+      "_scope": "project-specific",
+      "_summary": "All project-specific content. Each project has its own subtopic namespace.",
+      "_projects": {
+        "perspective": {
+          "_summary": "Representation Space Traversal AI — a novel architecture where traversal of data representation space is the primary computational mechanism.",
+          "_status": "active",
+          "_subtopics": ["frameworks", "definitions", "relationships", "findings", "open_questions", "methodology", "sources", "timeline", "roadmap", "design_rationale"],
+          "_note": "Project findings may eventually inform the MemoryAccess memory architecture itself."
+        },
+        "blob_world": {
+          "_summary": "Analytically deformable star-shaped soft-body creature system. Transported local coordinate frames create curved pseudo-appendages. Compact parameterization, analytical collision, GPU rendering. Target: ALife/evolutionary simulation.",
+          "_status": "active",
+          "_language": "Rust",
+          "_files": ["blob.rs", "environment.rs", "gpu.rs", "main.rs", "math.rs", "shaders.rs"],
+          "_subtopics": ["frameworks", "findings", "open_questions", "implementation"],
+          "_note": "Single long session 2026-05-15. KB write missed due to token exhaustion. Reconstructed from ChatGPT summary. Resume point: rendering fiber artifact deferred, physics next."
+        }
+      }
+    }
+  }
+}
