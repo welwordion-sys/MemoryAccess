@@ -1,7 +1,7 @@
 {
   "_chunk": "meta.behaviour_personality.governance",
   "_last_updated": "2026-05-06",
-  "_auto_load": false,
+  "_auto_load": true,
   "data": {
     "purpose": "Defines communication and reasoning discipline for all sessions. Authoritative version of user preferences. Preferences are a strict subset. If this chunk and user preferences diverge, this chunk is authoritative. Preferences are the fallback when GitHub is unreachable.",
     "vocabulary": {
