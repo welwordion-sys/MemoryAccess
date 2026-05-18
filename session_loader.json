@@ -83,6 +83,14 @@
           "_files": ["blob.rs", "environment.rs", "gpu.rs", "main.rs", "math.rs", "shaders.rs"],
           "_subtopics": ["frameworks", "findings", "open_questions", "implementation"],
           "_note": "Single long session 2026-05-15. KB write missed due to token exhaustion. Reconstructed from ChatGPT summary. Resume point: rendering fiber artifact deferred, physics next."
+        },
+        "ecosystem_ccg": {
+          "_summary": "Ecosystem-building CCG. Players build shared biomes and food webs against an escalating world deck. Organisms have fitness-based population dynamics, resource needs, and trait systems. Shared biome contested via stack mechanic.",
+          "_status": "active",
+          "_language": "Rust",
+          "_files": ["main.rs", "types.rs", "cards.rs", "biome.rs", "player.rs", "ai.rs", "game.rs", "ui.rs"],
+          "_subtopics": ["frameworks"],
+          "_note": "Single long session 2026-05-18. types.rs/cards.rs/biome.rs/player.rs complete at v4. game.rs/ai.rs/ui.rs not yet updated to v4 types — first task next session. Code in Claude outputs not in this repo."
         }
       }
     }
