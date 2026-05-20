@@ -1,0 +1,61 @@
+{
+  "_type": "chunk",
+  "_domain": "projects",
+  "_subtopic": "blob_world.implementation",
+  "_last_updated": "2026-05-20",
+  "implementation": [
+    {
+      "session_id": "2026-05-20",
+      "project": "blob_world",
+      "entries": [
+        {
+          "attempted": "Bend via Punktverschiebung (Joint Rotation, Ghost Sphere, Translation)",
+          "outcome": "Alle drei Modi erzeugten Verschiebung/Kompression statt Krümmung — Bump-Achse blieb fix",
+          "decided": "Verworfen als primärer Bend-Mechanismus"
+        },
+        {
+          "attempted": "bend_t Parametrisierung mit Wendepunkt-Cutoff",
+          "outcome": "Funktioniert — theta_cut = theta_w + 1/(c * sin_w), t linear auf Bogenlänge",
+          "decided": "Behalten, in allen Modi aktiv"
+        },
+        {
+          "attempted": "Transportiertes Frame für Joint Rotation",
+          "outcome": "Weniger Kompression aber immer noch keine sichtbare Krümmung",
+          "decided": "Verworfen"
+        },
+        {
+          "attempted": "Gebogene Bump-Achse: bent_bump_dir = rotate(bump_dir, lean_axis, bend_amount * t)",
+          "outcome": "Noch nicht visuell validiert — neue Session nötig",
+          "decided": "Aktueller Stand, nächste Session validieren"
+        },
+        {
+          "attempted": "Lean als separate lean_dir() Funktion",
+          "outcome": "Funktioniert korrekt — starre Neigung des gesamten Bumps",
+          "decided": "Behalten"
+        }
+      ]
+    }
+  ],
+  "decisions": {
+    "2026-05-20": [
+      {
+        "decision": "Bend = gebogene Bump-Achse statt verschobener Sample-Richtung",
+        "rationale": "Nur Achsen-Rotation erzeugt echte Formkrümmung; Sample-Verschiebung verschiebt nur den Lookup-Raum",
+        "affects": "projects.blob_world.implementation",
+        "project": "blob_world"
+      },
+      {
+        "decision": "Lean und Bend sind getrennte Mechanismen — Lean verschiebt sample_dir, Bend rotiert bump_dir",
+        "rationale": "Klare Trennung erlaubt unabhängige Kontrolle von Neigung und Krümmung",
+        "affects": "projects.blob_world.implementation",
+        "project": "blob_world"
+      }
+    ]
+  },
+  "resume_point": "Visuell validieren ob Bend-Achsen-Rotation krümmt. Dann eval_r_cpu auf CPU synchronisieren für Volumen + Kollision. Modi Ghost Sphere / Translation im Shader können bereinigt werden.",
+  "open_questions": [
+    "Ist gebogene Bump-Achse visuell korrekt oder erzeugt sie andere Artefakte?",
+    "eval_r_cpu muss Lean + Bend spiegeln für korrekte Volumenberechnung",
+    "conserve_volume mit stark gebogenen Bumps nur Näherung — reicht das für ALife?"
+  ]
+}
