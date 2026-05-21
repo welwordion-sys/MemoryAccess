@@ -1,0 +1,8 @@
+## MemoryAccess Session Bootstrap
+## Paste these URLs into Claude when GitHub MCP is unavailable.
+## Order matters — paste all at once or top to bottom.
+
+https://raw.githubusercontent.com/welwordion-sys/MemoryAccess/refs/heads/main/session_loader.json
+https://raw.githubusercontent.com/welwordion-sys/MemoryAccess/refs/heads/main/chunks/meta.behaviour_personality.json
+https://raw.githubusercontent.com/welwordion-sys/MemoryAccess/refs/heads/main/chunks/meta.behaviour_personality.governance.json
+https://raw.githubusercontent.com/welwordion-sys/MemoryAccess/refs/heads/main/chunks/meta.workflow.json
