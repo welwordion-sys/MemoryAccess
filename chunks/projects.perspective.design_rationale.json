@@ -1,7 +1,7 @@
 {
   "_chunk": "projects.perspective.design_rationale",
   "_project": "perspective",
-  "_last_updated": "2026-05-10",
+  "_last_updated": "2026-05-21",
   "_purpose": "Preserves the reasoning behind architectural decisions, rejected alternatives, recurring confusions, and contextual insight that would otherwise be lost between sessions. This is a thinking archive, not a status tracker.",
   "data": {
     "origin_story": {
@@ -20,6 +20,11 @@
         "correct_definition": "Unfinished = operator can still be reduced. Both operands are concrete numbers. Arithmetic rules FIRE on unfinished operators. Finished = terminal, no rules fire. Happens when at least one operand contains a parameter — no arithmetic reduction is possible.",
         "why_this_keeps_getting_confused": "The word 'finished' intuitively suggests completion, which maps to the end state. But in this system it means 'finished with respect to reduction' i.e. nothing more can be done — which is the parameter case, not the concrete number case. Future sessions: check this definition before writing any pattern.",
         "mnemonic": "Finished = stuck. Unfinished = still working."
+      },
+      "transition_graph_input_vs_output": {
+        "correct_definition": "The transition graph (graph2s or graph2o) is a static map — it is never executed, only read. Input nodes mirror the matched subgraph after step 1's edge conversion (clone of pattern with OPERATIONAL→STRUCTURAL for Pass 1). Output nodes describe the desired final state. OPERATIONAL edges in the transition carry real node references forward from input to output. The transition graph has no knowledge of real node IDs — it only describes topology and mapping structure.",
+        "common_mistake": "Assuming the engine operates on transition nodes directly, or that output nodes somehow reference real nodes. They do not. The engine matches input nodes against the real graph to get real references, then follows OPERATIONAL edges to propagate those references to output nodes.",
+        "implication_for_rule_construction": "Every surviving real node needs an explicit input→output pair in the transition. Input nodes must have the correct STRUCTURAL topology (mirroring the post-step-1 matched subgraph) so the match in step 3 can identify them. Output nodes carry STRUCTURAL edges describing the final state of that real node."
       }
     },
     "design_decisions": {
@@ -27,7 +32,7 @@
         "decision": "Unique cycle size per operator: +: 3, -: 4, *: 5, /: 6, =: 7. No overloading of cycle size for identity.",
         "rejected_alternatives": [
           "Cycle size + tail for identity (old design): +/- shared 3-cycle, */÷ shared 4-cycle, tail distinguished within pair. Rejected because tail was then overloaded to also mean finished state — two independent semantic concepts encoded in one structural element, fragile.",
-          "Anchor position for identity: anchor off cycle[0] vs cycle[-1] to distinguish pairs. Rejected because it conflates identity with asymmetry marker, and breaks GA grammar consistency."
+          "Anchor position for identity: anchor off cycle[0] vs cycle[-1] to distinguish pairs. Rejected because it conflates identity with operand asymmetry marker, and breaks GA grammar consistency."
         ],
         "reason": "Unique sizes eliminate all ambiguity. No overloading. The GA sees a clean grammar: cycle size = operator identity, tail presence = reduction state, anchor = operand asymmetry. Each structural element has exactly one semantic role."
       },
@@ -91,6 +96,27 @@
       "layers_vs_hypergraphs": {
         "distinction": "Layers and hypergraphs solve related but different problems. Layers change abstraction level — a within-layer rule switches representation without changing abstraction (3+4 → 7), a layer transition collapses local detail into higher-level structure. Hyperedges connect node sets rather than node pairs — they give pattern matching something wildcard-like for free at the same abstraction level.",
         "current_position": "Base substrate uses binary edges only. Hypergraphs are a named upgrade path. Layer transitions are the near-term solution to the wildcard and rule explosion problems. Hyperedges are deferred to P6 where their necessity will be evaluated empirically."
+      },
+      "transition_graph_construction_via_clone": {
+        "decision": "Transition graph input side is built by cloning the pattern and converting all edges to STRUCTURAL (_make_input_graph helper). This replaces manually constructed input nodes.",
+        "reason": "The input side of a transition graph must mirror exactly what the real matched subgraph looks like after step 1's OPERATIONAL→STRUCTURAL conversion. Cloning the pattern and converting achieves this automatically, eliminates manual construction errors, and ensures the step 3 match always has correct topology to work with.",
+        "helper": "_make_input_graph(pattern) returns (input_graph, node_map) where node_map maps pattern nodes to input graph nodes. All edges converted to STRUCTURAL regardless of original type.",
+        "implication_for_rule_builders": "Rule builders construct the pattern, call _make_input_graph to get the input side, then add output nodes and OPERATIONAL input→output edges on top. Output nodes carry STRUCTURAL edges describing the final state."
+      },
+      "optag_exposes_internal_handles": {
+        "decision": "build_operator and build_equality return (node, OpTag) where OpTag holds cycle_nodes, anchor, tail. Previously returned only the op node.",
+        "reason": "Transition graph construction needs to reference individual tag nodes to wire OPERATIONAL input→output pairs for each one. Without handles the cycle nodes are unreachable after construction and get deleted by step 4b.",
+        "tail_semantics": "tail is None for finished operators (no tail exists). tail is set for unfinished operators. Tail input node with no output node = deleted by step 4b = operator becomes finished. Result node is cloned from the tail node via tail_input → result_output OPERATIONAL edge."
+      },
+      "engine_input_output_map_separation": {
+        "decision": "_apply_pass maintains two separate maps: input_real (transition input node → real node, from input_match) and output_real (transition output node → real node, built by step 4). Previously mixed into one output_node_map.",
+        "reason": "Mixing input and output transition nodes in one map caused step 5 and step 6 to use wrong references. Step 5 needs output_real to write output_type edges. Step 6 needs input_real + output_real to build real_remap for stripped edge endpoint rewriting. Separation makes each step unambiguous.",
+        "carry_forward_semantics": "OPERATIONAL edge input→output in transition means: carry the real node reference from input to output. First output from an input reuses the same real node (survive/transform). Subsequent outputs from same input create new real nodes (clone). Input with no outgoing strip_type edge: real node deleted in step 4b."
+      },
+      "fresh_node_creation_encoding": {
+        "decision": "Genuinely new real nodes (not clones of existing nodes) cannot be expressed as output-only nodes in the transition graph. All output nodes must have exactly one incoming OPERATIONAL edge from an input node.",
+        "reason": "Output nodes with no incoming OPERATIONAL edge are indistinguishable from deleted input nodes from the engine's perspective. A stray STRUCTURAL edge added by mutation could connect a deleted input to a fresh output, making distinction impossible. Clean encoding: no output node without an incoming OPERATIONAL edge.",
+        "consequence": "Fresh node creation is always a clone operation. The source of the clone determines which real node the new node is based on. graph2o's cleanup pass removes inherited operational edges that don't belong on the cloned node."
       }
     }
   }
