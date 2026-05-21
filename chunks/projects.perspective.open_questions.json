@@ -1,7 +1,7 @@
 {
   "_chunk": "projects.perspective.open_questions",
   "_project": "perspective",
-  "_last_updated": "2026-04-30",
+  "_last_updated": "2026-05-21",
   "data": {
     "open_questions": [
       {
@@ -81,8 +81,17 @@
         "resolution_path": "Contingent on q_07 — measure matching cost profile in Phase 6 of prototype roadmap.",
         "last_updated": "2026-04-29",
         "tags": ["hypergraph", "isomorphism", "hierarchy", "architecture"]
+      },
+      {
+        "id": "q_10",
+        "question": "match() is O(n!) — currently blocks tests with patterns containing full op tag topology (3-cycle + anchor = 5+ nodes). With finished op patterns, the match hangs for graphs of moderate size. Must be addressed before bit_add, drain, and add_finalise rules can be tested.",
+        "importance": "high",
+        "status": "open",
+        "resolution_path": "Pre-filter candidate nodes by local topology before permutation search. For op nodes: find nodes in the real graph that have a 3-cycle structurally reachable from them, then only try those as op node candidates. Collapses search space from n! to (small candidate set) * (n - tag_size)!. Implement after add_init passes end-to-end.",
+        "last_updated": "2026-05-21",
+        "tags": ["performance", "matching", "engine"]
       }
     ]
   },
-  "notes": "q_07 resolution path updated session 9 — k=2 recycling argument added, fail path is additive not branching. Test domain updated from MNIST to arithmetic/equation expressions."
+  "notes": "q_07 resolution path updated session 9 — k=2 recycling argument added, fail path is additive not branching. Test domain updated from MNIST to arithmetic/equation expressions. q_10 added session 2026-05-21 — match() O(n!) performance blocks testing of rules with large patterns."
 }
