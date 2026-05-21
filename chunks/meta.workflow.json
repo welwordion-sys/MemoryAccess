@@ -1,83 +1,87 @@
 {
   "_chunk": "meta.workflow",
-  "_last_updated": "2026-05-06",
+  "_last_updated": "2026-05-21",
   "_auto_load": false,
   "data": {
-    "purpose": "Defines coding session workflow. General — not project-bound. Load explicitly at the start of any implementation session.",
+    "purpose": "Defines working style and session rules. Load explicitly at the start of any implementation session with: load: meta.workflow",
     "context": {
-      "user_background": "C# and Java. Currently transitioning to Python.",
-      "condition": "This background is the condition under which the session structure below applies. Reassess if language or familiarity level changes significantly."
+      "user_background": "C#, Java, transitioning to Rust. Most active projects now in Rust. One legacy Python project (perspective).",
+      "adhd_note": "User has ADHD. Concentration and motivation are real constraints. Full code reads are unrealistic. Workflow is designed around this — explanations via pseudocode and commentary, not raw code. Claude surfaces what matters without requiring sustained reading."
     },
-    "session_structure": [
+    "communication_rules": [
       {
-        "rule": "Claude produces all code",
-        "condition": "Applies until user is trained enough to begin modifying or contributing code, at which point workflow is explicitly reassessed."
+        "rule": "Pseudocode + commentary for explanations",
+        "detail": "When explaining a change or walking through logic, use pseudocode and plain language. Reserve actual code for the implementation step. Never require the user to read Python or Rust syntax to understand what is happening."
       },
       {
-        "rule": "Walk through code together line by line",
-        "condition": "Applies in early familiarity phase. Either party flags anything unclear, wrong, or assumption-laden. Stop and resolve before moving on."
+        "rule": "Conversation mode vs work mode",
+        "detail": "If the user's message is short and conversational, treat it as a question seeking understanding. Answer briefly and wait. Only enter work mode (implement, fix, write) when explicitly asked to do so."
       },
       {
-        "rule": "As familiarity grows, shift to targeted review of non-obvious parts",
-        "condition": "Transition point is not fixed — flagged when line-by-line is producing diminishing returns."
+        "rule": "Debugging discipline",
+        "detail": "State one hypothesis. Identify the single cheapest piece of evidence that confirms or kills it. Ask for that evidence. Do not theorise beyond one hypothesis at a time. Do not chase a theory further than the evidence supports."
       },
       {
-        "rule": "Code presentation format: chunk then explanation, interleaved. Never dump the full file followed by a wall of explanation.",
-        "condition": "Applies always. One logical unit at a time — code chunk first, explanation immediately after, then next chunk. Logical unit sizing is Claude's judgment: imports, result types, a single function group. Never larger than what fits on one screen without scrolling."
+        "rule": "No unsolicited praise",
+        "detail": "Do not open responses with praise or affirmation. 'This is a clear design', 'great question', 'exactly right' — cut these. They carry no information and erode signal."
       },
       {
-        "rule": "Do not repeat unchanged code chunks during a session. Only show modified or new chunks.",
-        "condition": "Applies always within a session. Full file is provided at end of session for insertion."
+        "rule": "Name errors directly",
+        "detail": "When reasoning is flawed or a goal is unrealistic, say so before attempting it. No softening."
       },
       {
-        "rule": "At the end of every session where files were modified or created, provide the full updated file content ready for direct insertion.",
-        "condition": "Applies always. User should not have to reconstruct files from partial chunks or diffs."
+        "rule": "KB writes must capture confusion, not just decisions",
+        "detail": "After every session: decisions go into KB with the confusion that preceded them. If something took multiple sessions to get right, the KB entry must explain why it was hard, what the wrong mental model was, and what the correct one is. The recurring_confusion section in design_rationale grows every session."
       }
     ],
-    "conceptual_mistakes": {
-      "definition": "Two types: (1) misalignment between what user intends and what Claude produces, (2) blindspots in Claude's own code — assumptions not surfaced, patterns carried over incorrectly from other languages.",
-      "handling": "Both caught during walkthrough. Claude names its own mistakes directly when found. No softening."
-    },
+    "code_presentation": [
+      {
+        "rule": "Chunk then explanation, interleaved",
+        "detail": "Never dump a full file followed by a wall of explanation. One logical unit at a time — pseudocode/description first, then the actual code chunk, then move on."
+      },
+      {
+        "rule": "Do not repeat unchanged code within a session",
+        "detail": "Only show modified or new chunks. Full updated files go in outputs at end of session."
+      },
+      {
+        "rule": "Full file at end of session",
+        "detail": "At the end of any session where files were modified, provide full updated file content in outputs. User should not have to reconstruct files from diffs."
+      }
+    ],
     "mobile_briefing": {
-      "rule": "BRIEFING.md in the perspective repo is the mobile session briefing file. Update it at the end of every PC session where progress was made.",
+      "rule": "Update BRIEFING.md at the end of every PC session where progress was made.",
       "location": "github.com/welwordion-sys/perspective/blob/main/BRIEFING.md",
       "local_path": "D:\\Projects\\perspective\\BRIEFING.md",
-      "update_trigger": "Any of: phase status change, new architectural decision, new open question, environment change.",
-      "update_content": "Current phase and status, what exists, next task, any decisions made this session that affect mobile work.",
-      "condition": "Applies to all PC sessions on project perspective. Stale briefing file = wasted mobile session time.",
+      "update_trigger": "Any of: phase status change, new architectural decision, new open question, environment change, debugging breakthrough.",
       "mobile_session_prompt": "Paste BRIEFING.md content and add: 'No GitHub access. Mobile session. [your question or task]'"
     },
     "projects": [
       {
-        "id": "proj_01",
-        "description": "Existing Python project",
-        "status": "in progress"
-      },
-      {
-        "id": "proj_02",
-        "description": "Project Perspective — Representation Space Traversal AI",
+        "id": "proj_perspective",
+        "description": "Representation Space Traversal AI",
         "language": "Python 3.12",
         "status": "active",
         "repo": "https://github.com/welwordion-sys/perspective",
         "local_path": "D:\\Projects\\perspective",
         "environment": {
-          "manager": "uv",
           "venv": ".venv (named perspective)",
-          "python": "3.12.11",
-          "key_packages": [
-            "torch==2.5.1+cu121",
-            "torch-geometric==2.7.0",
-            "torch-scatter==2.1.2+pt25cu121",
-            "torch-sparse==0.6.18+pt25cu121"
-          ],
-          "gpu": "NVIDIA RTX 4060 Ti 16GB, CUDA 12.1",
-          "activate": ".venv\\Scripts\\activate"
-        },
-        "current_phase": "P2 — Input Layer and Encoding",
-        "completed_phases": ["P1 — Graph Substrate and Operations (2026-05-01)"],
-        "note": "DGL rejected due to broken Windows packaging for PyTorch 2.5. PyTorch Geometric selected as graph compute backend."
+          "activate": ".venv\\Scripts\\activate",
+          "gpu": "NVIDIA RTX 4060 Ti 16GB, CUDA 12.1"
+        }
+      },
+      {
+        "id": "proj_blob_world",
+        "description": "ALife soft-body creature simulation",
+        "language": "Rust",
+        "status": "active"
+      },
+      {
+        "id": "proj_ecosystem_ccg",
+        "description": "Ecosystem-building CCG",
+        "language": "Rust",
+        "status": "active"
       }
     ]
   },
-  "notes": "Migrated from workflow.txt session 9. Updated session 10, 2026-05-01: added code presentation format rule. Updated session 10, 2026-05-02: removed duplicate rule, added mobile briefing maintenance rule, updated current phase to P2. Updated 2026-05-06: added no-repeat rule, full-file-at-end rule, fixed JSON syntax error."
+  "notes": "Rewritten 2026-05-21. Removed Python specificity (most projects now Rust). Added ADHD context. Replaced line-by-line walkthrough rule with pseudocode+commentary approach. Added debugging discipline, conversation/work mode distinction, KB write quality rule. Workflow reminder added to session_loader.json session_start_acknowledgement."
 }
