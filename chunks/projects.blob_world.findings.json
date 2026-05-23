@@ -2,12 +2,69 @@
   "_type": "chunk",
   "_domain": "projects",
   "_subtopic": "blob_world.findings",
-  "_version": "0.1.0",
+  "_version": "0.2.0",
   "_created": "2026-05-22",
+  "_updated": "2026-05-23",
   "findings": [
     {
+      "topic": "lean_bend_working_approach",
+      "finding": "Joint-based deformation with von-Mises weighting works correctly for rendering. No hole artifact. Bend produces visible curvature.",
+      "status": "confirmed working",
+      "formula": {
+        "f": "exp(c * dot(dir, bump_dir)) / exp(c)  — von-Mises weight, 1 at peak",
+        "lever": "dir * amplitude * f  — arm from joint to surface point, along dir",
+        "angle": "lean_amount + bend_amount * f  — lean: constant; bend: von-Mises weighted",
+        "contribution": "rotate_axis_angle(lever, lean_axis, angle)  — rotated lever added to joint",
+        "pos": "dir * rmin + sum of contributions over all bumps"
+      },
+      "normals": "finite difference on eval_pos, 4 neighbour samples, pole guard for degenerate dphi",
+      "billboards": "camera-facing for sharpness, surface normal passed through for lighting",
+      "normal_flip": "if dot(normal, view_dir) < 0: normal = -normal — handles concave regions",
+      "files": ["shaders.rs"],
+      "note": "lean has slightly more compression than pure rigid tilt due to longer lever arm at peak — acceptable"
+    },
+    {
+      "topic": "lean_correction_speculative",
+      "finding": "Alternative ghost-sphere rendering formulation was explored but not validated.",
+      "status": "speculative — untested",
+      "formula_speculative": {
+        "rotated_bump_dir": "rotate_axis_angle(bump_dir, lean_axis, lean_amount + bend_amount * f)",
+        "pos": "dir * rmin + amplitude * f * rotated_bump_dir"
+      },
+      "note": "May produce cleaner bend geometry. Not tested. Do not use until validated against working approach."
+    },
+    {
+      "topic": "ghost_point_geometry",
+      "finding": "Ghost point for collision is the center of a star-shaped coordinate system covering the deformed bump region.",
+      "status": "validated visually — marker confirmed correct position",
+      "formula": {
+        "lever_peak": "rotate_axis_angle(bump_dir * amplitude, lean_axis, lean_amount + bend_amount)",
+        "ghost": "bump_dir * rmin - normalize(lever_peak) * rmin",
+        "interpretation": "joint minus rmin in direction of rotated lever — behind the bump tip"
+      },
+      "constraint": "ghost must remain within rmin sphere for star-shape guarantee from ghost center",
+      "max_bend_lean": "binary search on ghost_magnitude(rmin) < rmin * 0.99 — implemented in blob.rs",
+      "negative_radius": "when ghost outside rmin sphere, inverted ray gives negative r — model handles this but failure states possible at extremes"
+    },
+    {
+      "topic": "collision_detection",
+      "finding": "Collision between two blobs detected via radius field intersection. No explicit geometric intersection needed.",
+      "status": "design — not yet implemented",
+      "pipeline": [
+        "1. For each pair of blobs: find directions dir where r_A(dir) overlaps r_B(dir_transformed) — intersection ring on sphere",
+        "2. Intersection ring center = contact point, normal = contact normal",
+        "3. Place ghost point per object on contact normal, distance proportional to penetration depth",
+        "4. Apply Von-Mises minus Gaussian deformation field from ghost point onto existing surface",
+        "5. Adjust A parameter (flatness) until surfaces no longer overlap — stiffness controls rate"
+      ],
+      "intersection_ring": "numerical search on radius field — 1D curve on sphere where both fields equal",
+      "ghost_per_collision": "one ghost point per collision pair per object — scales linearly with collision count",
+      "asymmetric_contacts": "ghost on actual contact normal handles side-of-bump and valley contacts automatically"
+    },
+    {
       "topic": "contact_deformation_basis",
-      "finding": "Von-Mises minus Gaussian composition produces smooth flat-topped lobe suitable for contact deformation and sensing",
+      "finding": "Von-Mises minus Gaussian composition produces smooth flat-topped lobe suitable for contact deformation and sensing.",
+      "status": "design — formula confirmed, not yet implemented",
       "formula": "f(theta) = (exp(cv*cos(theta)) - A*exp(-cg*theta^2)) / (exp(cv) - A)",
       "flatness_condition": "A_opt = cv*exp(cv) / (2*cg) — zeroes second derivative at peak",
       "behavior": {
@@ -25,57 +82,38 @@
     },
     {
       "topic": "contact_deformation_pipeline",
-      "finding": "Deformation field and volume rescale must be solved jointly as a constraint — independent application causes re-penetration or kinks",
+      "finding": "Deformation field and volume rescale must be solved jointly as a constraint.",
+      "status": "design — not yet implemented",
       "pipeline": [
-        "1. Ghost sphere detects collision in transformed frame, produces penetration depth and contact normal",
+        "1. Ghost sphere detects collision via radius field, produces penetration depth and contact normal",
         "2. Deformation field parameterized by contact geometry (normal, patch size, stiffness ratio)",
         "3. Solve (deformation params, scale s) jointly such that deformed+scaled surface is tangent to contact surface",
         "4. Apply deformation and scale, compute repulsive force from penetration depth and displaced volume"
       ],
       "displaced_volume": "spherical cap: V_cap = pi * h^2 * (r - h/3)",
       "volume_rescale": {
-        "rule": "rescale only non-contact hemisphere to avoid re-penetration into contact surface",
+        "rule": "rescale only non-contact hemisphere to avoid re-penetration",
         "formula": "s = ((V_original - V_contact) / integral_exterior r^3 dOmega)^(1/3)"
       },
-      "kink_avoidance": "spatially-varying scale field using same Von-Mises/Gaussian basis — full rescale far from contact, zero at contact center, smooth by construction — contact surface approximate not exact",
+      "kink_avoidance": "spatially-varying scale field using same Von-Mises/Gaussian basis",
       "non_sensory_note": "approximate conformance acceptable for non-sensory blobs"
     },
     {
       "topic": "concave_contact",
-      "finding": "Valley between bumps is concave on receiving surface — deformation is inward, not outward",
+      "finding": "Valley between bumps is concave on receiving surface — deformation is inward, not outward.",
+      "status": "design — not yet implemented",
       "basis_handling": "same Von-Mises/Gaussian basis applies with negative amplitude",
       "multi_term_needed": "when bump tip hits valley slope contact is asymmetric and off-center — single lobe insufficient",
       "ghost_sphere": "handles repulsion correctly in all cases via transformed frame regardless of surface concavity"
     },
     {
       "topic": "sensing_constraint",
-      "finding": "Deformation field doubles as sensory surface — conformance quality directly determines sensing fidelity",
+      "finding": "Deformation field doubles as sensory surface — conformance quality directly determines sensing fidelity.",
+      "status": "design — not yet implemented",
       "pure_von_mises_limit": "cannot produce flat contact patch — nonzero curvature at peak always present",
       "solution": "Von-Mises minus Gaussian approximation sufficient — exact flatness not required",
-      "sensory_blobs": "each basis term is a detectable feature: contact center, boundary ring, secondary lobes from bump collisions — coefficients are the sensory signal",
+      "sensory_blobs": "each basis term is a detectable feature: contact center, boundary ring, secondary lobes — coefficients are the sensory signal",
       "non_sensory_blobs": "close conformance acceptable, volume conservation and repulsion are primary requirements"
-    },
-    {
-      "topic": "lean_correction",
-      "finding": "Lean rotates around sphere center, not joint — previous model was wrong",
-      "ghost_sphere_formulation": {
-        "J": "bump_dir * r_min — joint fixed on sphere surface",
-        "P": "dir * r_min — point on base sphere in sample direction",
-        "offset": "rotate_axis_angle(P - J, lean_axis, angle) - (P - J)",
-        "angle": "lean_amount + bend_amount * normalized_undeformed",
-        "normalized_undeformed": "exp(c * dot(dir, bump_dir)) / exp(c)",
-        "rotated_bump_dir": "rotate_axis_angle(bump_dir, lean_axis, angle)",
-        "full_vec": "dir * r_min + amplitude * normalized * rotated_bump_dir - O'",
-        "r": "length(full_vec)",
-        "ghost_dir": "normalize(full_vec)",
-        "von_mises_eval": "dot(ghost_dir, bump_dir)"
-      },
-      "two_approaches": {
-        "ghost_sphere": "radius field — correct for collision/volume",
-        "direct_point": "r_min * dir + amplitude * normalized * rotated_bump_dir — sufficient for rendering"
-      },
-      "status": "ghost_sphere complete, both approaches in shader for testing",
-      "files_modified": ["blob.rs", "math.rs", "shaders.rs"]
     }
   ]
 }
