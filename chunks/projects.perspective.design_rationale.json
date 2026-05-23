@@ -1,7 +1,7 @@
 {
   "_chunk": "projects.perspective.design_rationale",
   "_project": "perspective",
-  "_last_updated": "2026-05-21",
+  "_last_updated": "2026-05-23",
   "_purpose": "Preserves the reasoning behind architectural decisions, rejected alternatives, recurring confusions, and contextual insight that would otherwise be lost between sessions. This is a thinking archive, not a status tracker.",
   "data": {
     "origin_story": {
@@ -117,6 +117,37 @@
         "decision": "Genuinely new real nodes (not clones of existing nodes) cannot be expressed as output-only nodes in the transition graph. All output nodes must have exactly one incoming OPERATIONAL edge from an input node.",
         "reason": "Output nodes with no incoming OPERATIONAL edge are indistinguishable from deleted input nodes from the engine's perspective. A stray STRUCTURAL edge added by mutation could connect a deleted input to a fresh output, making distinction impossible. Clean encoding: no output node without an incoming OPERATIONAL edge.",
         "consequence": "Fresh node creation is always a clone operation. The source of the clone determines which real node the new node is based on. graph2o's cleanup pass removes inherited operational edges that don't belong on the cloned node."
+      },
+      "operational_edge_marker_encoding": {
+        "decision": "Operational edges in the real graph are represented during step 1 conversion by interrupting the edge with a marker node carrying an operational self-loop. A→[OP]→B becomes A→[S]→marker→[S]→B with marker→[OP]→marker. This replaces the current direct OPERATIONAL→STRUCTURAL conversion.",
+        "status": "Designed, not yet implemented.",
+        "motivation": "The current direct conversion (OPERATIONAL→STRUCTURAL) destroys the structural uniqueness of matched nodes. The op node's distinguishing feature — its operational edges to operands — becomes indistinguishable from genuine structural edges after conversion. This causes the step 3 match to produce shuffled mappings that misidentify which transition input node corresponds to which real node, breaking steps 4-6.",
+        "why_direct_conversion_fails": "Step 1 converts op→left and op→right OPERATIONAL edges to STRUCTURAL. The op node now looks structurally similar to other nodes with structural edges to the same targets. The step 3 match finds a valid isomorphism but not the identity-preserving one. Real nodes get assigned to wrong transition nodes, stripped edges get restored to wrong nodes, and the wrong nodes survive step 4b.",
+        "marker_node_properties": [
+          "Has exactly one operational self-loop (marker→[OP]→marker).",
+          "Has exactly two structural edges: one incoming from the original source, one outgoing to the original target.",
+          "Directional: source→marker→target encodes the original A→B direction unambiguously.",
+          "Distinct from all other constructs: no other node in the system has an operational self-loop (tombstone is a separate concept on a different node type, not a marker).",
+          "Structurally unique: the marker chain A→marker→B with self-loop on marker is distinguishable from a direct A→B structural edge and from any natural structural topology."
+        ],
+        "traversal_rules_for_engine": [
+          "Step 2 (output-only detection): marker nodes are never input or output nodes. Exclude any node with an operational self-loop from input_nodes and output_only sets.",
+          "Step 3 (match): match candidate pool excludes marker nodes. The retyped input subgraph built from the transition does not contain marker nodes — the match sees the marker chain topology as a structural pattern and identifies the correct real nodes.",
+          "Step 4 (follow_mapping): when following STRUCTURAL edges from an input node, skip through marker nodes transparently — A→marker→B is treated as A→B for the purposes of node identity propagation.",
+          "Step 4b (deletion): marker nodes are always deleted after the pass — they are temporary infrastructure, never part of the output graph.",
+          "Step 5 (output edge writing): unaffected — writes output_type edges between real nodes only.",
+          "Step 6 (stripped edge restoration): unaffected — operates on real nodes only, marker nodes already deleted."
+        ],
+        "transition_graph_impact": "None. Rule builders in arithmetic.py write operational edges normally between real nodes. The marker insertion is a mechanical step 1 artifact invisible to rule construction. Transition graphs remain clean and readable.",
+        "self_loop_collision_risk": "Operational self-loops are currently used only for tombstone markers on a different node type. If a real graph node legitimately acquires an operational self-loop through rule application, it would be misidentified as a marker node. This risk is currently low but must be tracked as the rule set grows. The tombstone_gc rule uses operational self-loops — its nodes must be excluded from marker detection or the tombstone encoding must be changed.",
+        "deferred_implementation_note": "Implementation requires care in _apply_pass: marker nodes inserted in step 1 must be tracked separately so step 4b can delete them without confusing them with pattern-matched nodes. A marker_nodes set should be maintained alongside matched_target_nodes throughout the pass."
+      },
+      "unified_pass_proposal": {
+        "decision": "Deferred. Not pursued at this time.",
+        "proposal": "Collapse the two-pass design (graph2s + graph2o) into a single unified transition graph that expresses both structural and operational rewrites in one pass.",
+        "motivation": "The two-pass design was introduced because a single transition graph cannot use OPERATIONAL edges for both mapping (input→output) and output edge writing simultaneously. But the two passes create the step 1 conversion problem — pass 1 destroys operational edges to make them visible to pass 2's structural matching, breaking node uniqueness.",
+        "why_rejected": "The two-pass design is correct and necessary given the two-edge-type paradigm. OPERATIONAL edges cannot simultaneously mean 'this input maps to this output' and 'this edge should exist in the output graph' — the engine cannot distinguish these uses. Collapsing the passes would require a third edge type or an out-of-band convention, both of which violate the self-describing substrate principle. The operational edge marker encoding (see above) solves the uniqueness problem within the existing two-pass design without requiring unification.",
+        "kept_for": "Documents that this direction was considered and why it was closed. Do not reopen without a concrete proposal for how OPERATIONAL edges can serve dual roles within the two-type paradigm."
       }
     }
   }
