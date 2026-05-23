@@ -1,49 +1,49 @@
 {
   "_chunk": "projects.ecosystem_ccg.frameworks",
   "_project": "ecosystem_ccg",
-  "_last_updated": "2026-05-22",
-  "_session_note": "Balancing session. Resource rules redesigned, reference land calibrated, carnivore food_need not yet finalized.",
+  "_last_updated": "2026-05-23",
+  "_session_note": "Sim rig built and tested. resource_factor surplus problem found and root-caused. Boom-bust cycle is the target, not equilibrium.",
 
   "overview": {
     "name": "Ecosystem CCG",
-    "type": "card game / simulation",
     "language": "Rust",
     "target_platform": "Web (WASM + index.html), terminal for testing",
-    "status": "active — resource system redesigned, cards will be replaced, carnivore balance pending",
+    "status": "active — resource_factor formula needs redesign, carnivore balance pending, cards will be replaced",
     "files": ["main.rs", "types.rs", "cards.rs", "biome.rs", "player.rs", "ai.rs", "game.rs", "ui.rs", "lib.rs"],
     "local_path": "D:\\Projects\\ecosystem_ccg\\src\\",
+    "sim_rig": "Separate sim_test project with sim.toml config. cargo run -- sim.toml. biome.rs + types.rs shared with main project.",
     "repo_note": "Code lives in Claude outputs, not in this repo. KB tracks design only."
   },
 
   "architecture": {
     "separation_rule": "ui.rs is the ONLY file with stdin/stdout. All other modules are pure logic.",
     "module_roles": {
-      "types.rs": "All data types, constants, trait system, card types, intention phase types. Zero I/O.",
-      "cards.rs": "All card definitions and deck builders. Zero I/O. Will be replaced entirely.",
-      "biome.rs": "World state: land slots, active biomes, placed organisms, fitness resolution, biome contests, world effect application. Zero I/O.",
-      "player.rs": "Three separate decks (organism, mutation, env), two hands (combined limit 5, env limit 3), discard/graveyard zones, elimination logic. Zero I/O.",
-      "ai.rs": "Greedy AI decisions. Zero I/O.",
-      "game.rs": "Turn loop, human action API, win/loss conditions. No direct I/O.",
-      "ui.rs": "All terminal input/output.",
+      "types.rs": "All data types, constants, trait system. Zero I/O.",
+      "cards.rs": "Card definitions and deck builders. Will be replaced entirely.",
+      "biome.rs": "World state, fitness resolution, biome contests, world effects. Zero I/O.",
+      "player.rs": "Three decks, two hands (combined limit 5, env limit 3). Zero I/O.",
+      "ai.rs": "Greedy AI. Zero I/O.",
+      "game.rs": "Turn loop, human action API, win/loss.",
+      "ui.rs": "Terminal I/O only.",
       "lib.rs": "WASM bindings — functional."
     }
   },
 
   "turn_structure": {
     "phases": ["Declare", "React", "Commit/Resolve"],
-    "declare": "Human and AI declare intentions simultaneously. Cards removed from hand immediately.",
+    "declare": "Human and AI declare simultaneously. Cards removed from hand immediately.",
     "react": "All intentions visible. One round to retarget, withdraw, add buffer.",
     "commit": "Execute intentions, world resolve, world event, next turn.",
     "env_play_limit": "one environment card per turn"
   },
 
   "hand_and_deck_rules": {
-    "three_decks": "organism deck, mutation deck, environment deck — separate draws",
-    "combined_hand": {"contains": "organisms and mutations", "limit": 5, "draw_per_turn": "1 organism + 1 mutation"},
-    "env_hand": {"contains": "biome cards and env modifiers", "limit": 3, "draw_per_turn": 1},
+    "three_decks": "organism, mutation, environment — separate draws",
+    "combined_hand": {"limit": 5, "draw_per_turn": "1 organism + 1 mutation"},
+    "env_hand": {"limit": 3, "draw_per_turn": 1},
     "starting_hand": {"organisms": 5, "mutations": 3, "environments": 3},
-    "discard_pile": "reshuffles into deck at 10 cards",
-    "graveyard": "played organisms, activated biomes, used modifiers — never recycles"
+    "discard_pile": "reshuffles at 10 cards",
+    "graveyard": "never recycles"
   },
 
   "system_constants": {
@@ -54,36 +54,67 @@
     "FITNESS_CRITICAL_NEED": 0.3,
     "POP_START": 1,
     "POP_MAX": 6,
-    "SHADE_K": "0.4 (confirmed by simulation, NOT YET in code — currently 0.1)",
+    "SHADE_K": 0.4,
     "CARNIVORE_NUTRITION_FACTOR": 0.5,
-    "PRESSURE_K1": "0.1 (confirmed, NOT YET in code — currently 0.3)",
-    "PRESSURE_K2": "0.1 (confirmed, NOT YET in code — currently 0.2)",
+    "PRESSURE_K1": "NOT FINALIZED — depends on resource_factor fix",
+    "PRESSURE_K2": "NOT FINALIZED — depends on resource_factor fix",
     "PREDATION_K": 0.4
   },
 
+  "resource_factor_formula": {
+    "STATUS": "NEEDS REDESIGN",
+    "current_surplus": "log2(supply/need + 1) — PROBLEM: ratio=2 gives 1.585, too high",
+    "current_shortage": "sqrt(supply/need) — OK, keep",
+    "problem_root_cause": "Water surplus (water=8, need=4 → factor=1.585) compensates food shortage. p=1 h=2: food_factor=0.526 but water_factor=1.585 → h_fit=0.83. Herbivore stable when it should collapse.",
+    "key_rule": "h > p must NEVER be stable — herbivore must struggle when outnumbering producers",
+    "proposed_new_formula": "supply >= need: 1.0 + CAP * (1.0 - 1.0/ratio)",
+    "proposed_cap": 0.3,
+    "proposed_examples": {
+      "ratio_1": 1.0,
+      "ratio_2": 1.15,
+      "ratio_4": 1.225,
+      "ratio_inf": 1.3
+    },
+    "two_levels_design": "genugend (need met = 1.0), reichlich (surplus = up to 1.3 asymptote)",
+    "applies_to": "all resources uniformly — no mechanical reason to treat minerals differently",
+    "verification_needed": "after fix, water=8 need=4 should give 1.15 not 1.585"
+  },
+
+  "boom_bust_design": {
+    "STATUS": "TARGET — not yet achieved",
+    "goal": "Without carnivore: herbivore grows, overeats producers, system collapses (either producer or herbivore first). Carnivore prevents this cycle.",
+    "not_wanted": "stable low-population equilibrium",
+    "sim_rig_findings": {
+      "K_0.1": "p=1 h=2 stable at fit=0.83 — no collapse, water surplus masks food shortage",
+      "K_0.3": "p=6 start: boom-bust turns 1-7 (p:6→1, h:1→3→2), then dead p=1 h=2 equilibrium — no second cycle",
+      "K_0.5": "immediate extinction turn 2-3 — too fast",
+      "root_cause": "resource_factor surplus bonus — fix formula first, then retune K"
+    },
+    "sunlight_bug_fixed": "sim rig had resource_factor(supply, sn * pop) for sunlight — corrected to tolerance_factor(supply, sn, 999.0)"
+  },
+
   "resource_rules": {
-    "sunlight": "Tolerance (tf), NOT a resource. NOT scaled by population. Reduced by shading from larger producers. Producer has sun_need as tolerance minimum.",
-    "minerals": "Competitive among producers, reach-based, scales with pop. rf(share, mineral_need * pop). Sets multi-species Wendepunkt at total_pop=8.",
-    "moisture": "Tolerance only, not competitive. Renamed from water_level throughout codebase.",
-    "temperature": "Tolerance for all organisms.",
+    "sunlight": "Tolerance (tf), NOT resource_factor. NOT scaled by population. Reduced by shading.",
+    "minerals": "Competitive, reach-based, scales with pop. rf(share, mineral_need * pop).",
+    "moisture": "Tolerance only. Renamed from water_level.",
+    "temperature": "Tolerance for all.",
     "water": "Competitive among animals ONLY. Producers do NOT use water.",
-    "food": "Shared pool from producers. food_pool = sum(pop * fitness * food_multiplier). No base_food_value field.",
-    "predation": "Hunt limit = size * hunt_multiplier (strictly <, not <=). No intraspecies predation (card.id check). Carnivore-as-prey = 0.5x value."
+    "food": "Shared pool = sum(producer_pop * fitness * food_multiplier). No base_food_value.",
+    "predation": "Hunt limit = size * hunt_multiplier (strictly <). No intraspecies predation (card.id). Carnivore-as-prey = 0.5x."
   },
 
   "sunlight_shading": {
-    "mechanism": "Sort producers by size descending. Largest get full biome.sunlight. Each group reduces available_light for next group: available_light -= sum(territory * pop) * SHADE_K.",
-    "effect": "Smaller producers under larger ones suffer fitness penalty if available_light < sun_need.",
-    "shade_specialist": "Low sun_need organism thrives under large producers — valid design niche."
+    "mechanism": "Sort producers by size desc. Each group reduces available_light: available_light -= sum(territory * pop) * SHADE_K.",
+    "SHADE_K": 0.4,
+    "shade_specialist": "Low sun_need survives under large producers — valid niche."
   },
 
   "producer_pressure": {
     "formula": "pressure_factor = 1.0 / (1.0 + food_pressure*K1 + env_damage*K2)",
     "food_pressure": "sum(food_need * eater_pop) / producer_pop",
     "env_damage": "sum(eater_territory * eater_pop) / (producer_size * producer_pop)",
-    "applies_to": "herbivores and omnivores only — carnivores exert NO producer pressure",
-    "K1": 0.1,
-    "K2": 0.1
+    "applies_to": "herbivores and omnivores ONLY",
+    "K_status": "NOT FINALIZED — retune after resource_factor fix"
   },
 
   "reference_land": {
@@ -94,89 +125,60 @@
     "temperature": 15.0,
     "space_producer": 8.0,
     "space_herbivore": 8.0,
-    "space_carnivore": "6.0 or 7.0 — NOT FINALIZED",
+    "space_carnivore": "NOT FINALIZED (6 or 7)",
     "health": 12,
     "regen": 1,
-    "note": "sunlight=4.0 chosen so shading has meaningful effect. minerals=6.0 sets Wendepunkt at total_producer_pop=8 for two same-size cards."
+    "water_note": "8.0 chosen before resource_factor fix — may need adjustment after"
   },
 
   "reference_organisms": {
     "producer": {
-      "size": 1.0,
-      "territory_need": 1.0,
-      "reach": 1.0,
-      "mineral_need": 1.5,
-      "sun_need_tolerance": 2.5,
-      "temp_tol": [-5, 35],
-      "moisture_tol": [2.0, 8.0],
-      "traits": "none"
+      "size": 1.0, "territory_need": 1.0, "reach": 1.0, "mineral_need": 1.5,
+      "sun_need_tolerance": 2.5, "temp_tol": [-5, 35], "moisture_tol": [2.0, 8.0]
     },
     "herbivore": {
-      "size": 1.5,
-      "territory_need": 1.5,
-      "water_need": 2.0,
-      "food_need": 1.5,
-      "temp_tol": [-5, 30],
-      "traits": "none"
+      "size": 1.5, "territory_need": 1.5, "water_need": 2.0, "food_need": 1.5,
+      "temp_tol": [-5, 30]
     },
     "omnivore": {
-      "size": 1.7,
-      "territory_need": 1.8,
-      "water_need": 2.0,
-      "food_need": 1.8,
-      "hunt_multiplier": 1.0,
-      "temp_tol": [-5, 30],
-      "food_mechanic": "best split between producer pool and herbivore biomass",
-      "mali_rationale": "territory +0.3 and food_need +0.3 vs herbivore — cost of flexibility",
-      "traits": "none"
+      "size": 1.7, "territory_need": 1.8, "water_need": 2.0, "food_need": 1.8,
+      "hunt_multiplier": 1.0, "temp_tol": [-5, 30],
+      "food": "best split between producer pool and herbivore biomass",
+      "mali": "territory +0.3, food_need +0.3 vs herbivore"
     },
     "carnivore": {
-      "size": 2.0,
-      "territory_need": 2.5,
-      "water_need": 2.5,
-      "food_need": "NOT FINALIZED — tested 1.0-2.0, system too unstable at mobile simulation scale",
-      "hunt_multiplier": 1.0,
-      "temp_tol": [-10, 30],
-      "design_note": "population should visually match herbivore count but represent less biomass (CARNIVORE_NUTRITION_FACTOR=0.5)",
-      "traits": "none"
+      "size": 2.0, "territory_need": 2.5, "water_need": 2.5,
+      "food_need": "NOT FINALIZED",
+      "hunt_multiplier": 1.0, "temp_tol": [-10, 30],
+      "design_note": "pop should visually match herbivore but represent less biomass (CARNIVORE_NUTRITION_FACTOR=0.5)"
     }
   },
 
-  "confirmed_dynamics": {
-    "single_producer_card": "theoretical equilibrium p=8, POP_MAX=6 stops it — always growing at max pop",
-    "two_producer_cards_same_size": "Wendepunkt at total_pop=8 via mineral competition (p=4 each → fitness ≈ 0.7)",
-    "two_producer_cards_with_shading": "smaller card equilibrium shifts to p=3, total ~6-7",
-    "shade_specialist_niche": "low sun_need thrives under large producers — intentional design space",
-    "herbivore_without_carnivore": "grows to h=3-4 on reference land, then stabilizes via food pool exhaustion",
-    "carnivore_role": "stabilizes herbivore population, prevents producer collapse from overgrazing",
-    "producer_regulation": "sunlight (tolerance) + minerals (competitive) + territory — three independent factors"
-  },
-
   "open_issues": [
-    "Carnivore food_need NOT FINALIZED — needs PC simulation at high populations",
-    "predation_factor BUG: uses average prey pool per carnivore instead of total_carn_need / total_prey_value — must fix before carnivore tuning",
+    "CRITICAL: resource_factor surplus formula — implement 1.0 + 0.3*(1.0 - 1.0/ratio)",
+    "CRITICAL: boom-bust cycle not achieved — h > p must be unstable",
+    "Carnivore food_need NOT FINALIZED",
+    "predation_factor BUG: averages prey pool per carnivore instead of total_carn_need / total_prey_value",
     "space_carnivore NOT FINALIZED (6 or 7)",
-    "SHADE_K=0.4 and PRESS_K1/K2=0.1 confirmed but NOT YET updated in code",
-    "All existing cards will be replaced — new alien/fantasy theme ('The Future is Wild' aesthetic)",
-    "Omnivore high-pop simulation not yet done",
-    "WASM build working — pkg/ folder must be alongside index.html, python server required"
+    "PRESSURE_K1/K2 NOT FINALIZED — retune after resource_factor fix",
+    "All cards will be replaced — alien/fantasy theme",
+    "WASM: pkg/ folder must be alongside index.html, python server required"
   ],
 
   "next_session_tasks": [
-    "1. Fix predation_factor bug: remove averaging, use total_carn_need / total_prey_value directly",
-    "2. Update SHADE_K=0.4, PRESS_K1=0.1, PRESS_K2=0.1 in types.rs",
-    "3. Finalize carnivore food_need with corrected predation formula at p=6/8 producer",
-    "4. Finalize space_carnivore (6 or 7)",
-    "5. Begin new card design — alien/fantasy theme, all roles",
-    "6. Update REFERENCE.md in project folder"
+    "1. Implement new resource_factor: supply>=need → 1.0 + 0.3*(1.0 - 1.0/ratio)",
+    "2. Re-run boom-bust sim, tune PRESSURE_K for collapse without immediate extinction",
+    "3. Fix predation_factor: remove averaging, use total_carn_need / total_prey_value",
+    "4. Finalize carnivore food_need and space_carnivore",
+    "5. Begin card design — alien/fantasy theme"
   ],
 
   "biome_system": {
-    "land_slots": "each land starts with a standard biome (stack 0)",
-    "standard_biome_replacement": "free placement, no buffer needed, no contest",
-    "player_biome_contest": "must provide buffer > current stack size to challenge",
-    "contest_resolution": "highest stack wins; ties carry to next turn",
-    "modifier_transfer": "when biome replaced, player modifiers transfer if tag compatible and health >= min_health"
+    "land_slots": "each land starts with standard biome (stack 0)",
+    "standard_biome_replacement": "free, no buffer, no contest",
+    "player_biome_contest": "buffer > current stack size required",
+    "contest_resolution": "highest stack wins; ties carry",
+    "modifier_transfer": "tag compatible and health >= min_health"
   },
 
   "world_cards": {
@@ -185,18 +187,9 @@
   },
 
   "card_design_principles": {
-    "theme": "Alien/fantasy planet — biologically consistent foreign creatures. 'The Future is Wild' aesthetic.",
+    "theme": "Alien/fantasy planet. 'The Future is Wild' aesthetic — biologically consistent foreign creatures.",
     "roles": ["Producer", "Herbivore", "Omnivore", "Carnivore"],
     "all_current_cards_replaced": true,
-    "biome_tag_policy": "biome_tags only for genuine biological impossibility. Traits and resource needs self-regulate fitness.",
-    "available_trait_effects": [
-      "ResourceMultiplier(Resource, f32)",
-      "FitnessBonus(f32)",
-      "PredationResistance(f32) — rare",
-      "HuntSizeMultiplier(f32)",
-      "TerritoryMultiplier(f32)",
-      "FoodMultiplier(f32) — producers only",
-      "ExtraFoodFromLarge{size_threshold, food_bonus, pressure}"
-    ]
+    "biome_tag_policy": "only for genuine biological impossibility — traits and needs self-regulate"
   }
 }
