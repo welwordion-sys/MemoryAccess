@@ -114,6 +114,25 @@
       "solution": "Von-Mises minus Gaussian approximation sufficient — exact flatness not required",
       "sensory_blobs": "each basis term is a detectable feature: contact center, boundary ring, secondary lobes — coefficients are the sensory signal",
       "non_sensory_blobs": "close conformance acceptable, volume conservation and repulsion are primary requirements"
+
+{
+  "topic": "motor_system",
+  "finding": "Motor layer is prescribed oscillation with hierarchical control. Nervous system modulates oscillation, does not compute raw targets.",
+  "status": "design — not yet implemented",
+  "structure": {
+    "movement_set": "Collection of bumps with fixed relative phases, frequencies, amplitude ratios. Multiple sets can run simultaneously at partial amplitude.",
+    "global_amplitude": "One scalar per set. Primary control surface — driving to zero silences the set.",
+    "parameter_modulation": "Individual bump parameters within a set (direction, frequency, amplitude ratio) can be nudged independently — handles steering and obstacle navigation.",
+    "additivity": "Sets are additive. Gait, reach, recoil etc can coexist at partial amplitude. Incoherent superpositions are an evolutionary concern, not a hard constraint."
+  },
+  "evolution": {
+    "timescale_slow": "Oscillation patterns themselves — frequencies, phases, amplitude ratios, set membership. Body morphology equivalent. Evolves at slower pace.",
+    "timescale_fast": "Routing — which sensory inputs modulate which oscillation parameters at what weight. The nervous system. Evolves on top of stable motor primitives.",
+    "first_experiments": "Nervous system absent. Pure oscillation evolution only. Validates motor layer before routing complexity enters."
+  },
+  "sensing_integration": "Sensory basis terms (Von-Mises minus Gaussian descriptors) route into oscillation parameter modulation. Computation model between sensing and motor not yet decided — alternatives to neural networks under consideration.",
+  "note": "Movement sets are genome from the start, not fixed infrastructure. Two evolutionary timescales are a design choice, not an emergent property."
+}
     }
   ]
 }
