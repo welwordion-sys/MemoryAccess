@@ -133,6 +133,16 @@
   "sensing_integration": "Sensory basis terms (Von-Mises minus Gaussian descriptors) route into oscillation parameter modulation. Computation model between sensing and motor not yet decided — alternatives to neural networks under consideration.",
   "note": "Movement sets are genome from the start, not fixed infrastructure. Two evolutionary timescales are a design choice, not an emergent property."
 }
+
+{
+  "topic": "computation_model",
+  "finding": "Sensory-to-motor computation via function composition graph operating in the basis language. Geometric operations on basis term descriptors, not arithmetic on raw scalars.",
+  "status": "design — approach selected, not yet formalized",
+  "rationale": "Linear map rejected as low potential — cannot combine sensory terms or respond to geometric relationships. Neural networks deferred. Function graph in basis language is evolvable, interpretable, and consistent with existing sensing and motor vocabulary.",
+  "operations": "Candidate operations: project contact direction onto bump axis, convolve two basis terms, scale amplitude by directional alignment. Full operation set not yet defined.",
+  "evolution_target": "Graph topology and parameter-to-oscillation routing. Operations themselves are fixed primitives.",
+  "next": "Internal states (object permanence, long-term behaviour) layer on top of reactive graph once reactive layer validated."
+}
     }
   ]
 }
