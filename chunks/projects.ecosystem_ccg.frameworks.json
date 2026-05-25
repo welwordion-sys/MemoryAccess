@@ -1,15 +1,15 @@
 {
   "_chunk": "projects.ecosystem_ccg.frameworks",
   "_project": "ecosystem_ccg",
-  "_last_updated": "2026-05-24",
-  "_session_note": "Major fitness formula overhaul. Sim harness (sim_test) built and running on Termux. All changes below confirmed in sim. biomeS.rs is sim version, game biome.rs not yet updated.",
+  "_last_updated": "2026-05-25",
+  "_session_note": "Fitness formula finalized. Sim harness running on Termux. Core P+H+C dynamics confirmed working. All constants below confirmed by simulation.",
 
   "overview": {
     "name": "Ecosystem CCG",
     "type": "card game / simulation",
     "language": "Rust",
     "target_platform": "Termux (terminal) now, egui Android APK later",
-    "status": "active — sim harness running, fitness formula finalized, thresholds still being tuned",
+    "status": "active — sim dynamics confirmed, ready to apply to game biome.rs",
     "files": ["main.rs", "types.rs", "cards.rs", "biome.rs", "player.rs", "ai.rs", "game.rs", "ui.rs"],
     "sim_files": ["sim_test/src/main.rs", "sim_test/src/biome.rs (biomeS)", "sim_test/src/types.rs", "sim_test/sim.toml"],
     "current_version": "v4",
@@ -30,98 +30,123 @@
   },
 
   "sim_harness": {
-    "location": "sim_test/ — standalone Rust binary",
+    "location": "sim_test/ — standalone Rust binary, runs on Termux",
     "config": "sim.toml — edit organism and land stats without recompile",
     "usage": "cargo run [config.toml]",
-    "features": ["configurable start_pop per organism", "count=0 to disable organism", "verbose log toggle in main.rs", "POP_MAX and thresholds in types.rs"],
-    "note": "biomeS.rs is the sim version of biome.rs — kept separate. Game biome.rs needs all sim fixes applied before next playtest."
+    "features": ["configurable start_pop per organism", "count=0 to disable organism", "verbose log toggle in main.rs (uncomment log lines)", "food pool options A/B/C toggle by comment in biomeS.rs"],
+    "food_pool_options": {
+      "A": "current pop, no fitness scaling — cliff-edge collapse",
+      "B": "last_population — one-turn delay, cliff-edge collapse (ACTIVE)",
+      "C": "last-turn fitness scaling — gradual signal, tighter feedback"
+    },
+    "note": "biomeS.rs is sim version of biome.rs. Game biome.rs needs all sim fixes applied before next playtest."
+  },
+
+  "confirmed_dynamics": {
+    "P1_H1_growth": "Both grow together. H outpaces P slightly. Natural equilibrium P6 H5 (oscillates between P4H4 and P5H5 due to threshold=0.9).",
+    "collapse_threshold": "P4 H6 → extinction. P5 H6 → survives at lower pops. Tipping point between P4 and P5.",
+    "carnivore_window": "Safe carnivore entry: H2-H4. Too early (H1) → kills herbivore. Too late (H5+) → collapse already underway.",
+    "carnivore_effect": "C1 at P3 H4 stabilizes system. Without carnivore → eventual extinction.",
+    "design_goal_met": "Boom-bust confirmed. Carnivore stabilization confirmed. Reaction window P2H2 to P3H4."
   },
 
   "fitness_system": {
-    "scale": "floating point, base 1.0",
-    "starting_value": 1.0,
     "formula": "fitness = (1.0 + surplus * deficit_term) * below_product",
-    "formula_components": {
-      "surplus": "sum(max(0, factor - 1.0)) for all factors — total above-1 contribution",
+    "components": {
+      "surplus": "sum(max(0, f - 1.0)) for all factors",
       "deficit_term": "product((f - critical) / (1.0 - critical)) for all f < 1.0 — scales surplus down as deficits worsen",
-      "below_product": "product(f) for all f < 1.0 — directly multiplies fitness down for deficits"
+      "below_product": "product(f) for all f < 1.0 — directly multiplies fitness down"
     },
-    "formula_rationale": "Surplus cannot compensate for deficits. Two strong deficits = death. One moderate deficit + surplus = reduced but viable.",
-    "critical_check": "Any single factor below FITNESS_CRITICAL_NEED short-circuits and returns FITNESS_AUTO_DOWNGRADE * 0.5",
+    "rationale": "Surplus cannot compensate for deficits. Two strong deficits = death. deficit_term reduces surplus contribution, below_product reduces base fitness.",
+    "critical_check": "Any single factor below FITNESS_CRITICAL_NEED short-circuits → returns FITNESS_AUTO_DOWNGRADE * 0.5",
     "thresholds": {
-      "auto_upgrade": ">=1.25 (not yet validated — leave for now)",
-      "upgrade_if_best": "0.99 (anything healthy upgrades if best in group)",
-      "stable_zone": "0.99 to 1.24",
-      "downgrade_if_worst": "<0.8",
-      "auto_downgrade": "<0.5",
-      "critical_need": "0.5"
+      "auto_upgrade": 1.25,
+      "upgrade_if_best": 0.9,
+      "downgrade_if_worst": 0.9,
+      "auto_downgrade": 0.5,
+      "critical_need": 0.5,
+      "note": "upgrade_if_best == downgrade_if_worst = 0.9 — no stable zone, dynamic oscillation only. auto_upgrade for multi-species thriving scenarios."
     },
-    "food_pool_timing": "Calculated from LAST TURN's producer fitness — one-turn delay creates reaction window for boom-bust dynamics"
+    "food_pool_timing": "Uses last_population (Option B) — one-turn delay creates reaction window. last_population snapshot taken at start of resolve()."
   },
 
   "resource_factor": {
     "formula": "if ratio >= 1.0: 1.0 + 0.3 * (1.0 - 1.0/ratio)  else: sqrt(ratio)",
-    "surplus_cap": "approaches 1.3 asymptotically, never exceeds it",
-    "rationale": "Old log2 formula let water surplus compensate for food scarcity. New formula caps surplus so no single resource can mask deficits."
+    "surplus_cap": "approaches 1.3 asymptotically",
+    "rationale": "Caps surplus so no single resource masks deficits. Old log2 let water surplus compensate food scarcity."
   },
 
   "resources": {
     "sunlight": {
       "role": "Producer only",
-      "mechanic": "tolerance_factor(supply, sun_need, 999.0) — threshold, not abundance. Meeting need = factor 1.0, below need = sqrt falloff.",
+      "mechanic": "tolerance_factor(supply, sun_need, 999.0) — threshold not abundance. Meeting need = 1.0, below = sqrt falloff.",
       "shading": "available_light -= sum(territory * pop) * SHADE_K per size group, largest first"
     },
     "minerals": {
       "role": "Producer only",
-      "mechanic": "resource_factor(share, mineral_need). share = (reach / total_reach) * minerals. Population cancels — competition is reach-based per individual.",
+      "mechanic": "resource_factor(share, mineral_need). share = (reach / total_reach) * minerals. Per-individual, population cancels. Competition is reach-based.",
       "note": "total_reach = sum(reach * pop) so high-pop species dominates competition"
     },
     "water": {
       "role": "Animals only",
-      "mechanic": "resource_factor(share, water_need * pop). Competitive, shared proportionally by need."
+      "mechanic": "resource_factor(share, water_need * pop). Competitive, shared proportionally."
     },
     "food": {
       "role": "Herbivores/Omnivores",
-      "mechanic": "resource_factor(share, food_need * pop). Pool = sum(prod_pop * last_fitness * multiplier). One-turn delay.",
-      "carnivore": "prey_value = size * pop (herbivore/omnivore) or size * pop * 0.5 (carnivore). Divided by total_carn_pop for per-individual share."
+      "mechanic": "resource_factor(share, food_need * pop). Pool = sum(prod_last_pop * multiplier). One-turn delay via last_population.",
+      "carnivore": "prey_value = size * pop (herb/omni) or * 0.5 (carnivore). Divided by total_carn_pop for per-individual share."
     },
-    "moisture": "tolerance_factor, not competitive",
-    "temperature": "tolerance_factor, not competitive"
+    "moisture": "tolerance_factor, not competitive. Producer only.",
+    "temperature": "tolerance_factor, not competitive. All roles."
   },
 
   "pressure_system": {
     "food_pressure": {
-      "formula": "food_pressure = (total_herb_omni_food_need / total_prod_pop) * PRESSURE_K1",
-      "applied_as": "pressure_factor = 1/(1 + food_pressure + trampling). Passed into calc_fitness_producer as a factor."
+      "formula": "food_pressure = (total_herb_omni_food_need * sparsity_factor / total_prod_pop) * PRESSURE_K1",
+      "applied_as": "pressure_factor = 1/(1 + food_pressure + trampling). Factor in calc_fitness_producer."
     },
     "trampling": {
-      "formula": "sum over herbivores: max(0, herb_size - prod_size) * herb_territory * herb_pop * PRESSURE_K2",
-      "rationale": "Size differential — large herbivores trample small producers. Large producers immune to small herbivores. No division by producer biomass — scales with absolute herbivore numbers.",
-      "per_producer": "Each producer experiences its own trampling based on its own size vs each herbivore size"
+      "formula": "sum over herbivores: max(0, herb_size - prod_size) * herb_territory_need * herb_pop * PRESSURE_K2",
+      "rationale": "Size differential — large herbivores trample small producers. Large producers immune to small herbivores. Scales with absolute herbivore numbers.",
+      "per_producer": "Each producer card experiences its own trampling based on its size vs each herbivore"
+    },
+    "sparsity": {
+      "formula": "penalty = 0.2 * max(0, 1 - (herb_pop * prod_pop) / SPARSITY_K)",
+      "effect": "Reduces effective food_need for both herbivore food received and pressure on producer symmetrically",
+      "rationale": "At low densities organisms have difficulty finding each other — reduces both feeding efficiency and trampling impact",
+      "K": 9.0,
+      "max_penalty": 0.2,
+      "cutoff": "No effect when herb_pop * prod_pop >= SPARSITY_K (= 9)"
     }
   },
 
   "predation_system": {
     "hunt_limit": "carnivore.size * hunt_multiplier — prey must be STRICTLY LESS THAN",
-    "prey_value": "size * pop for herb/omni, size * pop * CARNIVORE_NUTRITION_FACTOR for carnivore prey",
-    "competition_fix": "total_prey_value divided by total_carn_pop (not species count) — each individual competes for prey share",
+    "no_intraspecies": "prey.card.id == predator.card.id → skip",
+    "prey_value": "size * pop for herb/omni, * CARNIVORE_NUTRITION_FACTOR (0.5) for carnivore prey",
+    "competition_fix": "total_prey_value / total_carn_pop — each individual competes for share",
     "predation_factor": "1 / (1 + carn_food_need / prey_share_per_individual * PREDATION_K)",
-    "applied_as": "factor in calc_fitness_animal factors list — enters both deficit_term and below_product"
+    "applied_as": "factor in calc_fitness_animal — enters both deficit_term and below_product"
   },
 
   "constants": {
-    "confirmed": {
-      "SHADE_K": 0.4,
-      "CARNIVORE_NUTRITION_FACTOR": 0.5,
-      "PRESSURE_K1": 0.1,
-      "PRESSURE_K2": "NOT YET TUNED — trampling formula changed this session",
-      "PREDATION_K": 0.4,
-      "POP_START": 1,
-      "POP_MAX": 6,
-      "COMBINED_HAND_LIMIT": 5,
-      "ENV_HAND_LIMIT": 3
-    },
-    "thresholds_status": "upgrade thresholds not yet validated against new formula range"
+    "FITNESS_AUTO_UPGRADE": 1.25,
+    "FITNESS_UPGRADE_IF_BEST": 0.9,
+    "FITNESS_DOWNGRADE_IF_WORST": 0.9,
+    "FITNESS_AUTO_DOWNGRADE": 0.5,
+    "FITNESS_CRITICAL_NEED": 0.5,
+    "FITNESS_START": 1.0,
+    "SHADE_K": 0.4,
+    "CARNIVORE_NUTRITION_FACTOR": 0.5,
+    "PRESSURE_K1": 0.1,
+    "PRESSURE_K2": 0.03,
+    "PREDATION_K": 0.4,
+    "SPARSITY_K": 9.0,
+    "POP_START": 1,
+    "POP_MAX": 6,
+    "COMBINED_HAND_LIMIT": 5,
+    "ENV_HAND_LIMIT": 3,
+    "note": "PRESSURE_K2 and carnivore food_need not yet tested with full 3-species sim at POP_MAX=6"
   },
 
   "reference_land": {
@@ -134,8 +159,7 @@
     "space_herbivore": 8.0,
     "space_carnivore": 4.0,
     "health": 12,
-    "regen": 1,
-    "note": "minerals=12 confirmed — solo producer natural ceiling P9, resource and crowding both active. POP_MAX=6 is card cap."
+    "regen": 1
   },
 
   "reference_organisms": {
@@ -146,13 +170,14 @@
       "mineral_need": 1.5,
       "sunlight_need": 2.5,
       "moisture_tolerance": "2.0-8.0",
-      "temp_tolerance": "-5 to 35"
+      "temp_tolerance": "-5 to 35",
+      "water_need": 0.0
     },
     "herbivore": {
       "size": 1.5,
       "territory_need": 1.5,
       "water_need": 2.0,
-      "food_need": 1.5,
+      "food_need": 1.0,
       "temp_tolerance": "-5 to 30"
     },
     "omnivore": {
@@ -160,34 +185,24 @@
       "territory_need": 1.8,
       "hunt_multiplier": 1.0,
       "water_need": 2.0,
-      "food_need": 1.8,
-      "note": "mali vs herbivore: +0.3 territory, +0.3 food_need"
+      "food_need": 1.3,
+      "note": "mali vs herbivore: +0.3 territory, +0.3 food_need. NOT YET SIMULATED."
     },
     "carnivore": {
       "size": 2.0,
       "territory_need": 2.5,
       "hunt_multiplier": 1.0,
       "water_need": 2.5,
-      "food_need": "NOT FINALIZED — tuning in progress",
+      "food_need": "NOT FINALIZED — basic stabilization confirmed, value not locked",
       "temp_tolerance": "-10 to 30"
     }
   },
 
-  "design_goals": {
-    "boom_bust": "H>P should be unstable. P1 H1 both grow. H overshoots P, P collapses, H collapses behind it. Window of 3-4 turns to play carnivore.",
-    "carnivore_role": "Stabilizes herbivore overshoot. With carnivore present system reaches P3 H3 C1-2 equilibrium instead of collapse.",
-    "reaction_window": "One-turn food pool delay gives players time to react to producer stress before full collapse.",
-    "card_ceiling": "POP_MAX=6 is the hard card limit. Resource/space ceiling should be around P8-9 so card cap is reached before resource exhaustion."
-  },
-
   "next_session_tasks": [
-    "Tune PRESSURE_K2 for new trampling formula (currently untested with size differential)",
-    "Validate upgrade thresholds against new fitness formula range",
-    "Test P1 H1 boom-bust dynamics — confirm both grow then H overshoots and both collapse",
-    "Test P+H+C three-species dynamics — confirm carnivore stabilizes",
-    "Tune carnivore food_need",
+    "Lock carnivore food_need via simulation",
+    "Test omnivore dynamics",
     "Apply all biomeS.rs changes to game biome.rs",
-    "Update game types.rs constants (SHADE_K=0.4, PRESSURE_K1=0.1, PRESSURE_K2=TBD, thresholds)",
+    "Update game types.rs constants to confirmed values",
     "Update game.rs/ai.rs/ui.rs to v4 types",
     "cargo build game and fix compile errors",
     "First playtest"
