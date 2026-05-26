@@ -142,13 +142,20 @@
         "self_loop_collision_risk": "Operational self-loops are currently used only for tombstone markers on a different node type. If a real graph node legitimately acquires an operational self-loop through rule application, it would be misidentified as a marker node. This risk is currently low but must be tracked as the rule set grows. The tombstone_gc rule uses operational self-loops — its nodes must be excluded from marker detection or the tombstone encoding must be changed.",
         "deferred_implementation_note": "Implementation requires care in _apply_pass: marker nodes inserted in step 1 must be tracked separately so step 4b can delete them without confusing them with pattern-matched nodes. A marker_nodes set should be maintained alongside matched_target_nodes throughout the pass."
       },
-      "unified_pass_proposal": {
-        "decision": "Deferred. Not pursued at this time.",
-        "proposal": "Collapse the two-pass design (graph2s + graph2o) into a single unified transition graph that expresses both structural and operational rewrites in one pass.",
-        "motivation": "The two-pass design was introduced because a single transition graph cannot use OPERATIONAL edges for both mapping (input→output) and output edge writing simultaneously. But the two passes create the step 1 conversion problem — pass 1 destroys operational edges to make them visible to pass 2's structural matching, breaking node uniqueness.",
-        "why_rejected": "The two-pass design is correct and necessary given the two-edge-type paradigm. OPERATIONAL edges cannot simultaneously mean 'this input maps to this output' and 'this edge should exist in the output graph' — the engine cannot distinguish these uses. Collapsing the passes would require a third edge type or an out-of-band convention, both of which violate the self-describing substrate principle. The operational edge marker encoding (see above) solves the uniqueness problem within the existing two-pass design without requiring unification.",
-        "kept_for": "Documents that this direction was considered and why it was closed. Do not reopen without a concrete proposal for how OPERATIONAL edges can serve dual roles within the two-type paradigm."
-      }
+"unified_pass_proposal": {
+  "decision": "Adopted. Single-pass design replaces two-pass graph2s + graph2o.",
+  "previous_status": "Rejected 2026-05-23. Reopened and adopted 2026-05-26.",
+  "original_rejection_reason": "OPERATIONAL edges cannot simultaneously mean 'this input maps to this output' and 'this edge should exist in the output graph' — the engine cannot distinguish these uses.",
+  "resolution": "Output operational edges are encoded as marker chains in the transition output side, identical to how input operational edges are encoded in the input side. OPERATIONAL edges in the transition remain unambiguously input→output mapping instructions. Marker chains in the output side are read by step 5 and written as OPERATIONAL edges into the real graph. No dual-role ambiguity.",
+  "unified_transition_structure": {
+    "input_side": "Clone of pattern with OPERATIONAL edges converted to marker chains. Built by _make_input_graph as before.",
+    "operational_edges": "Exclusively input→output node mapping. No output semantics.",
+    "output_side": "STRUCTURAL edges written directly as STRUCTURAL. Operational edges to write encoded as marker chains (A→[S]→marker→[S]→B, marker→[OP]→marker). Step 5 reads marker chains and writes OPERATIONAL edges into real graph."
+  },
+  "schema_change": "OperationDefinition loses graph2o field. graph2s becomes graph2 (single transition). apply() calls _apply_pass once. Rule builders merge graph2s and graph2o construction into single transition graph.",
+  "affected_files": ["operations.py", "arithmetic.py", "encoding.py"],
+  "implementation_status": "Not yet implemented."
+}
     }
   }
 }
