@@ -2,9 +2,9 @@
   "_type": "chunk",
   "_domain": "projects",
   "_subtopic": "blob_world.findings",
-  "_version": "0.2.0",
+  "_version": "0.3.0",
   "_created": "2026-05-22",
-  "_updated": "2026-05-23",
+  "_updated": "2026-05-27",
   "findings": [
     {
       "topic": "lean_bend_working_approach",
@@ -43,7 +43,7 @@
         "interpretation": "joint minus rmin in direction of rotated lever — behind the bump tip"
       },
       "constraint": "ghost must remain within rmin sphere for star-shape guarantee from ghost center",
-      "max_bend_lean": "binary search on ghost_magnitude(rmin) < rmin * 0.99 — implemented in blob.rs",
+      "max_bend_lean": "see lean_bend_constraints entry — replaced by tangent condition",
       "negative_radius": "when ghost outside rmin sphere, inverted ray gives negative r — model handles this but failure states possible at extremes"
     },
     {
@@ -114,35 +114,45 @@
       "solution": "Von-Mises minus Gaussian approximation sufficient — exact flatness not required",
       "sensory_blobs": "each basis term is a detectable feature: contact center, boundary ring, secondary lobes — coefficients are the sensory signal",
       "non_sensory_blobs": "close conformance acceptable, volume conservation and repulsion are primary requirements"
-
-{
-  "topic": "motor_system",
-  "finding": "Motor layer is prescribed oscillation with hierarchical control. Nervous system modulates oscillation, does not compute raw targets.",
-  "status": "design — not yet implemented",
-  "structure": {
-    "movement_set": "Collection of bumps with fixed relative phases, frequencies, amplitude ratios. Multiple sets can run simultaneously at partial amplitude.",
-    "global_amplitude": "One scalar per set. Primary control surface — driving to zero silences the set.",
-    "parameter_modulation": "Individual bump parameters within a set (direction, frequency, amplitude ratio) can be nudged independently — handles steering and obstacle navigation.",
-    "additivity": "Sets are additive. Gait, reach, recoil etc can coexist at partial amplitude. Incoherent superpositions are an evolutionary concern, not a hard constraint."
-  },
-  "evolution": {
-    "timescale_slow": "Oscillation patterns themselves — frequencies, phases, amplitude ratios, set membership. Body morphology equivalent. Evolves at slower pace.",
-    "timescale_fast": "Routing — which sensory inputs modulate which oscillation parameters at what weight. The nervous system. Evolves on top of stable motor primitives.",
-    "first_experiments": "Nervous system absent. Pure oscillation evolution only. Validates motor layer before routing complexity enters."
-  },
-  "sensing_integration": "Sensory basis terms (Von-Mises minus Gaussian descriptors) route into oscillation parameter modulation. Computation model between sensing and motor not yet decided — alternatives to neural networks under consideration.",
-  "note": "Movement sets are genome from the start, not fixed infrastructure. Two evolutionary timescales are a design choice, not an emergent property."
-}
-
-{
-  "topic": "computation_model",
-  "finding": "Sensory-to-motor computation via function composition graph operating in the basis language. Geometric operations on basis term descriptors, not arithmetic on raw scalars.",
-  "status": "design — approach selected, not yet formalized",
-  "rationale": "Linear map rejected as low potential — cannot combine sensory terms or respond to geometric relationships. Neural networks deferred. Function graph in basis language is evolvable, interpretable, and consistent with existing sensing and motor vocabulary.",
-  "operations": "Candidate operations: project contact direction onto bump axis, convolve two basis terms, scale amplitude by directional alignment. Full operation set not yet defined.",
-  "evolution_target": "Graph topology and parameter-to-oscillation routing. Operations themselves are fixed primitives.",
-  "next": "Internal states (object permanence, long-term behaviour) layer on top of reactive graph once reactive layer validated."
-}
+    },
+    {
+      "topic": "motor_system",
+      "finding": "Motor layer is prescribed oscillation with hierarchical control. Nervous system modulates oscillation, does not compute raw targets.",
+      "status": "design — not yet implemented",
+      "structure": {
+        "movement_set": "Collection of bumps with fixed relative phases, frequencies, amplitude ratios. Multiple sets can run simultaneously at partial amplitude.",
+        "global_amplitude": "One scalar per set. Primary control surface — driving to zero silences the set.",
+        "parameter_modulation": "Individual bump parameters within a set (direction, frequency, amplitude ratio) can be nudged independently — handles steering and obstacle navigation.",
+        "additivity": "Sets are additive. Gait, reach, recoil etc can coexist at partial amplitude. Incoherent superpositions are an evolutionary concern, not a hard constraint."
+      },
+      "evolution": {
+        "timescale_slow": "Oscillation patterns themselves — frequencies, phases, amplitude ratios, set membership. Body morphology equivalent. Evolves at slower pace.",
+        "timescale_fast": "Routing — which sensory inputs modulate which oscillation parameters at what weight. The nervous system. Evolves on top of stable motor primitives.",
+        "first_experiments": "Nervous system absent. Pure oscillation evolution only. Validates motor layer before routing complexity enters."
+      },
+      "sensing_integration": "Sensory basis terms (Von-Mises minus Gaussian descriptors) route into oscillation parameter modulation. Computation model between sensing and motor not yet decided — alternatives to neural networks under consideration.",
+      "note": "Movement sets are genome from the start, not fixed infrastructure. Two evolutionary timescales are a design choice, not an emergent property."
+    },
+    {
+      "topic": "computation_model",
+      "finding": "Sensory-to-motor computation via function composition graph operating in the basis language. Geometric operations on basis term descriptors, not arithmetic on raw scalars.",
+      "status": "design — approach selected, not yet formalized",
+      "rationale": "Linear map rejected as low potential — cannot combine sensory terms or respond to geometric relationships. Neural networks deferred. Function graph in basis language is evolvable, interpretable, and consistent with existing sensing and motor vocabulary.",
+      "operations": "Candidate operations: project contact direction onto bump axis, convolve two basis terms, scale amplitude by directional alignment. Full operation set not yet defined.",
+      "evolution_target": "Graph topology and parameter-to-oscillation routing. Operations themselves are fixed primitives.",
+      "next": "Internal states (object permanence, long-term behaviour) layer on top of reactive graph once reactive layer validated."
+    },
+    {
+      "topic": "lean_bend_constraints",
+      "finding": "Lean and bend have separate limits derived from different geometric conditions. Bend limit uses tangent condition in 2D lean plane. Lean fixed at 60 degrees.",
+      "status": "confirmed working",
+      "max_lean": "Fixed PI/3 (60 degrees). Concentration adjustment deferred — both lean and bend become less safe with higher concentration, but at different rates.",
+      "max_bend": "Bisection on tangent condition: find bend angle where a ray from ghost center becomes tangent to the deformed surface in the lean plane. Uses full shader deformation formula: pos(theta) = dir(theta)*rmin + lever(theta), lever rotated by bend*f where f is Von-Mises weight. Ghost at (-sin(bend)*rmin, rmin*(1-cos(bend))). 128 samples inner search, 24 bisection steps. Worst case: all angle is bend, lean=0.",
+      "lean_bend_interaction": "max_bend scaled down linearly with lean: max_bend_effective = max_bend * (1 - lean_fraction * 0.5). At max lean, bend is halved. Lean fraction computed after lean clamp.",
+      "concentration_effect": "Both lean and bend become less safe with higher concentration. Bend strongly sensitive, lean slightly sensitive. Single shared budget was wrong — they have different geometric effects.",
+      "ghost_magnitude_check": "Kept as helper in blob.rs (ghost_magnitude fn), currently unused in constraint. Ghost-inside-rmin is too conservative as a standalone constraint — ghost exits rmin well before star-shape breaks.",
+      "files": ["blob.rs", "main.rs"],
+      "note": "Tangent-from-ghost approach only works when full deformation formula is used consistently for both surface positions and ghost position. Earlier attempts with simplified surface curve failed silently — bisection returned PI/2 unconditionally."
     }
   ]
 }
