@@ -1,13 +1,13 @@
 {
   "_chunk": "projects.perspective.design_rationale",
   "_project": "perspective",
-  "_last_updated": "2026-05-23",
+  "_last_updated": "2026-05-29",
   "_purpose": "Preserves the reasoning behind architectural decisions, rejected alternatives, recurring confusions, and contextual insight that would otherwise be lost between sessions. This is a thinking archive, not a status tracker.",
   "data": {
     "origin_story": {
       "summary": "The project began from a concrete experience with an alife game where organisms could be hand-crafted including their neural networks. Eyes provided input based on four directions. The genetic representation allowed coding axons with rotational symmetry across all four directions, but not dendrites. A technique for tunable excitation levels was discovered by looping tendrils back — but because directional asymmetry had to be encoded separately, the design easily broke under mutation. This was the first clear demonstration that representation determines what a GA can maintain, not just what it can find. A GA in a bad representation space does not just search slowly — it actively destroys solutions that exploit structure the representation does not respect.",
       "key_insight": "The GA did not fail to find the solution. The human found it, and the GA could not preserve it. Representation determines mutation stability, not just searchability.",
-      "implication_for_perspective": "The rules being hand-crafted now (23 arithmetic rules) are exactly the kind of structure a naive GA would destroy. The encoding choices — cycle sizes, anchors, edge types — are constraints that define what a valid mutation looks like. The goal is a representation where hand-crafted solutions become mutation-stable."
+      "implication_for_perspective": "The rules being hand-crafted now (arithmetic rules) are exactly the kind of structure a naive GA would destroy. The encoding choices — cycle sizes, anchors, edge types — are constraints that define what a valid mutation looks like. The goal is a representation where hand-crafted solutions become mutation-stable."
     },
     "project_scope_clarification": {
       "current_phase": "Building a substrate that correctly solves arithmetic and equation reduction. Hand-crafted, correct by construction. Not meant to be GA-evolved directly. These rules are ground truth — proof the representation is expressive enough.",
@@ -22,9 +22,10 @@
         "mnemonic": "Finished = stuck. Unfinished = still working."
       },
       "transition_graph_input_vs_output": {
-        "correct_definition": "The transition graph (graph2s or graph2o) is a static map — it is never executed, only read. Input nodes mirror the matched subgraph after step 1's edge conversion (clone of pattern with OPERATIONAL→STRUCTURAL for Pass 1). Output nodes describe the desired final state. OPERATIONAL edges in the transition carry real node references forward from input to output. The transition graph has no knowledge of real node IDs — it only describes topology and mapping structure.",
+        "correct_definition": "The transition graph (graph2) is a static map — it is never executed, only read. Input nodes mirror the matched subgraph after step 1's edge conversion. Output nodes describe the desired final state. OPERATIONAL edges in the transition carry real node references forward from input to output. The transition graph has no knowledge of real node IDs — it only describes topology and mapping structure.",
         "common_mistake": "Assuming the engine operates on transition nodes directly, or that output nodes somehow reference real nodes. They do not. The engine matches input nodes against the real graph to get real references, then follows OPERATIONAL edges to propagate those references to output nodes.",
-        "implication_for_rule_construction": "Every surviving real node needs an explicit input→output pair in the transition. Input nodes must have the correct STRUCTURAL topology (mirroring the post-step-1 matched subgraph) so the match in step 3 can identify them. Output nodes carry STRUCTURAL edges describing the final state of that real node."
+        "implication_for_rule_construction": "Every surviving real node needs an explicit input→output pair in the transition. Input nodes must have the correct STRUCTURAL topology so the match in step 3 can identify them. Output nodes carry STRUCTURAL edges describing the final state of that real node.",
+        "input_node_classification": "Input nodes = all transition nodes that are not output_only (has incoming OPERATIONAL), not markers (operational self-loop only), and not placeholders (both self-loops). Formally: set(transition.nodes) - output_only - excluded. This correctly includes leaf nodes (bit nodes, parent nodes) that have no OPERATIONAL edges but are structurally part of the input subgraph. Do NOT change this to structural expansion from has_outgoing — that was tried and reverted."
       }
     },
     "design_decisions": {
@@ -38,124 +39,134 @@
       },
       "anchor_uniformity": {
         "decision": "Both _tag_cycle and _tag_cycle_plus include a left anchor off cycle[0]. Anchor is present on all operator and equality tags regardless of finished/unfinished state.",
-        "rejected_alternative": "Anchor only on unfinished tags (where left/right matters for arithmetic rules). Rejected because a finished operator still needs asymmetry for non-commutative operators, and the GA sees inconsistent structure depending on state.",
+        "rejected_alternative": "Anchor only on unfinished tags. Rejected because a finished operator still needs asymmetry for non-commutative operators, and the GA sees inconsistent structure depending on state.",
         "reason": "GA mutation stability requires uniform grammar. If the anchor appears only on some tags, the GA has no consistent entry point for operand asymmetry. Uniform anchor means every tag looks the same structurally except for cycle size and tail presence."
       },
       "carry_marker_placement": {
         "decision": "Carry marker (2-cycle) attached to result node via operational edge, not to operator node.",
-        "rejected_alternative": "Carry marker on operator node via structural edge (old design). Rejected because it made the operator node's pattern state-dependent — two pattern variants per bit rule (carry/no-carry op node), complicating the rule set.",
-        "reason": "With carry on the result node, the operator node pattern is identical across all 8 bit rules. Only the result node's local structure varies. Cleaner pattern matching, simpler rule construction."
+        "rejected_alternative": "Carry marker on operator node via structural edge. Rejected because it made the operator node's pattern state-dependent.",
+        "reason": "With carry on the result node, the operator node pattern is identical across all bit rules. Only the result node's local structure varies."
       },
       "carry_marker_asymmetry": {
         "decision": "2-cycle asymmetry provided by the directional operational edge from result node to one cycle node. No additional structure needed.",
-        "discussion": "2-cycles are structurally symmetric (A→B→A looks the same from either end). The question was how to distinguish which node is the attachment point. The operational edge direction resolves this — the node receiving the operational edge from result_node is unambiguously the anchor. No extra marker node needed."
+        "discussion": "2-cycles are structurally symmetric. The operational edge direction resolves which node is the attachment point unambiguously."
       },
       "position_pointer_at_encode_time": {
-        "decision": "Operational position edges attached to LSBs at encode time via connect_operands. build_number returns (root, lsb) tuple — lsb known at construction, no traversal needed.",
-        "rejected_alternative": "Lazy initialisation via add_init rule (original design). add_init would find LSBs at rule-fire time by traversal.",
-        "reason": "LSB is known at construction — same mechanism as root. Returning (root, lsb) from build_number costs nothing and eliminates a separate init rule and a traversal that would have been hard to express in the graph2s/graph2o schema. The universal principle is: if information is available at construction time, encode it then.",
-        "note": "connect_operands now takes (op_node, left_root, left_lsb, right_root, right_lsb). Applies universally to all operators — bit traversal from LSB to MSB is the reduction protocol for all arithmetic, not just addition."
+        "decision": "Operational position edges attached to LSBs at encode time via connect_operands. build_number returns (root, lsb) tuple.",
+        "rejected_alternative": "Lazy initialisation via add_init rule.",
+        "reason": "LSB is known at construction time. Returning (root, lsb) from build_number costs nothing and eliminates a separate init rule.",
+        "note": "connect_operands takes (op_node, left_root, left_lsb, right_root, right_lsb). Bit traversal from LSB to MSB is the reduction protocol."
       },
       "add_init_kept_as_separate_rule": {
-        "decision": "add_init rules (4 variants) are separate from bit_add rules (8 variants). They share no pattern — init has no result node, bit_add does.",
-        "alternative_considered": "Merge init and no-carry bit rules — add_init_XY and bit_add_XY_c0 are the same computation, just with/without a pre-existing result node. Merging would require bit_add rules to handle 'result node present or absent' — two pattern variants per rule, same total count (12 vs 12). No saving.",
-        "reason": "Separate init rules are cleaner to implement. Bit rules assume result node always present. Init rules create it. Uniform preconditions per rule set."
+        "decision": "add_init rules are separate from bit_add rules. They share no pattern — init has no result node, bit_add does.",
+        "reason": "Separate init rules are cleaner. Bit rules assume result node always present. Init rules create it."
       },
       "op_node_recycled_in_finalise": {
         "decision": "In add_finalise, the operator node is recycled as the result root rather than being removed and the parent rewired.",
-        "problem_it_solves": "If op node is simply removed, the parent's operational edge has nowhere to reattach. Step 6 of _apply_pass reattaches stripped edges to surviving mapped nodes — but if op node is not in the output node map, the reattachment target is undefined.",
-        "mechanism": "Op node's cycle tag nodes (cycle + anchor) are absent from the transition graph2s output, so they are removed by step 4b. The op node itself survives as a bare node with no tag. The parent's operational edge was pointing at the op node and stays attached to it. The op node becomes the new result root, with the result tree structurally attached to it.",
-        "elegance": "No rewiring needed. The edge that was pointing at the op node simply continues to point at it — it's now the result root."
+        "mechanism": "Op node's cycle tag nodes are absent from the output, so they are removed. The op node itself survives as a bare node. The parent's operational edge continues to point at it — it becomes the new result root.",
+        "elegance": "No rewiring needed."
       },
       "tombstone_as_operational_self_loop": {
         "decision": "Tombstone marker = operational self-loop on a node.",
-        "old_design": "3-node chain (node → a → b, no cycles, no self-loops). Distinct from carry marker and parameter shape.",
-        "reason_for_change": "Operational self-loop is simpler, structurally unambiguous (no other construct in the system uses operational self-loops), and easier to express in pattern graphs. The 3-node chain required 3 nodes in the pattern; self-loop requires 1.",
-        "note": "Self-loop bit value (structural self-loop = bit 1) is distinct from tombstone (operational self-loop). The two edge types make these unambiguous despite same topological shape."
+        "reason": "Simpler, structurally unambiguous, easier to express in pattern graphs.",
+        "note": "Structural self-loop = bit 1. Operational self-loop = tombstone. Two edge types make these unambiguous."
       },
       "wildcard_problem_deferred": {
-        "decision": "Wildcard matching (matching 'any bit node' without specifying value) deferred. Not implemented at P2.",
-        "current_workaround": "Explicit case splits: separate rules for bit=0 and bit=1. This produces 23 rules for addition alone.",
-        "future_solution": "Layer transitions. A higher-abstraction layer can express 'any bit node' without enumerating cases. The compression happens at the layer boundary, not inside the rule schema. Hyperedges are a related but different mechanism — deferred to P6.",
-        "why_not_now": "The current rule explosion is the correct ground-level representation. It is not a bug. The GA operating at a higher layer would discover the compressed form. Compressing it by hand now would obscure what the system needs to discover."
+        "decision": "Wildcard matching deferred. Not implemented.",
+        "current_workaround": "Explicit case splits: separate rules for bit=0 and bit=1.",
+        "future_solution": "Layer transitions. Hyperedges deferred to P6."
       },
       "ga_and_rule_explosion": {
-        "observation": "23 hand-coded rules for addition alone. All case splits on bit values. A GA operating on rule graphs would need to enumerate the same cases or discover more compressed representations.",
-        "key_insight": "The explosion is inherent to binary arithmetic — you cannot avoid the case splits at the ground level. But a GA might find a single rule handling multiple bit cases using a more abstract pattern — which is exactly what hypergraphs and layer transitions enable.",
-        "implication": "The GA operating on hypergraph rules searches a much smaller space than a GA operating on binary graph rules. The compression it finds may naturally converge toward hypergraph-like structures even without being told to. This is the connection between the alife origin story and the layer/hypergraph upgrade paths."
+        "observation": "Many hand-coded rules for addition. All case splits on bit values.",
+        "key_insight": "The explosion is inherent to binary arithmetic. A GA might find compressed representations using more abstract patterns.",
+        "implication": "The GA operating on hypergraph rules searches a much smaller space."
       },
       "three_graph_schema_origin": {
-        "history": "Original design used two graphs: pattern (mixed edge types, for matching) + transition (single edge type, for rewriting). This was split into graph2s and graph2o in a later session. The BRIEFING.md from 2026-05-03 still describes the two-graph design.",
-        "reason_for_split": "A single transition graph could not cleanly express both structural and operational rewrites in one pass. Two passes with complementary strip/output roles gives each pass a clear single responsibility and makes the passes composable.",
-        "ga_implication": "GA operates on each of the three graphs independently. The three-graph split is not just an implementation detail — it defines the mutation space."
+        "history": "Original design used two graphs: pattern + transition. Split into graph2s + graph2o in a session on 2026-05-03. Merged back into a single graph2 on 2026-05-29.",
+        "current_schema": "Two graphs: pattern (for matching) + graph2 (unified transition for rewriting). OperationDefinition has fields: name, pattern, graph2.",
+        "reason_for_merge": "graph2o construction required a second matching pass against the post-graph2s state, which was complex, error-prone, and redundant. Marker chains on the output side of graph2 encode operational output edges directly, eliminating the need for a second pass.",
+        "ga_implication": "GA operates on pattern and graph2 independently. Two-graph split defines the mutation space."
       },
       "negative_numbers": {
         "decision": "Negative numbers represented as 0 - n subtree. No sign node.",
-        "reason": "Reuses existing binary operator structure. No new structural family needed. sub_zero_collapse fires on x - 0 (right operand zero), not on 0 - n (left operand zero) — no accidental collapse of negative number representations."
+        "reason": "Reuses existing binary operator structure."
       },
       "layers_vs_hypergraphs": {
-        "distinction": "Layers and hypergraphs solve related but different problems. Layers change abstraction level — a within-layer rule switches representation without changing abstraction (3+4 → 7), a layer transition collapses local detail into higher-level structure. Hyperedges connect node sets rather than node pairs — they give pattern matching something wildcard-like for free at the same abstraction level.",
-        "current_position": "Base substrate uses binary edges only. Hypergraphs are a named upgrade path. Layer transitions are the near-term solution to the wildcard and rule explosion problems. Hyperedges are deferred to P6 where their necessity will be evaluated empirically."
+        "distinction": "Layers change abstraction level. Hyperedges connect node sets rather than node pairs.",
+        "current_position": "Base substrate uses binary edges only. Hypergraphs are a named upgrade path. Layer transitions are the near-term solution to the wildcard and rule explosion problems."
       },
       "transition_graph_construction_via_clone": {
-        "decision": "Transition graph input side is built by cloning the pattern and converting all edges to STRUCTURAL (_make_input_graph helper). This replaces manually constructed input nodes.",
-        "reason": "The input side of a transition graph must mirror exactly what the real matched subgraph looks like after step 1's OPERATIONAL→STRUCTURAL conversion. Cloning the pattern and converting achieves this automatically, eliminates manual construction errors, and ensures the step 3 match always has correct topology to work with.",
-        "helper": "_make_input_graph(pattern) returns (input_graph, node_map) where node_map maps pattern nodes to input graph nodes. All edges converted to STRUCTURAL regardless of original type.",
-        "implication_for_rule_builders": "Rule builders construct the pattern, call _make_input_graph to get the input side, then add output nodes and OPERATIONAL input→output edges on top. Output nodes carry STRUCTURAL edges describing the final state."
+        "decision": "Transition graph input side is built by cloning the pattern and converting all edges to STRUCTURAL (_make_input_graph helper).",
+        "reason": "The input side must mirror exactly what the real matched subgraph looks like after step 1's edge conversion. Cloning the pattern and converting achieves this automatically.",
+        "helper": "_make_input_graph(pattern, boundary_nodes) returns (input_graph, node_map). boundary_nodes get a structural edge to a shared placeholder (S+O self-loops) signalling external connections."
       },
       "optag_exposes_internal_handles": {
-        "decision": "build_operator and build_equality return (node, OpTag) where OpTag holds cycle_nodes, anchor, tail. Previously returned only the op node.",
-        "reason": "Transition graph construction needs to reference individual tag nodes to wire OPERATIONAL input→output pairs for each one. Without handles the cycle nodes are unreachable after construction and get deleted by step 4b.",
-        "tail_semantics": "tail is None for finished operators (no tail exists). tail is set for unfinished operators. Tail input node with no output node = deleted by step 4b = operator becomes finished. Result node is cloned from the tail node via tail_input → result_output OPERATIONAL edge."
-      },
-      "engine_input_output_map_separation": {
-        "decision": "_apply_pass maintains two separate maps: input_real (transition input node → real node, from input_match) and output_real (transition output node → real node, built by step 4). Previously mixed into one output_node_map.",
-        "reason": "Mixing input and output transition nodes in one map caused step 5 and step 6 to use wrong references. Step 5 needs output_real to write output_type edges. Step 6 needs input_real + output_real to build real_remap for stripped edge endpoint rewriting. Separation makes each step unambiguous.",
-        "carry_forward_semantics": "OPERATIONAL edge input→output in transition means: carry the real node reference from input to output. First output from an input reuses the same real node (survive/transform). Subsequent outputs from same input create new real nodes (clone). Input with no outgoing strip_type edge: real node deleted in step 4b."
-      },
-      "fresh_node_creation_encoding": {
-        "decision": "Genuinely new real nodes (not clones of existing nodes) cannot be expressed as output-only nodes in the transition graph. All output nodes must have exactly one incoming OPERATIONAL edge from an input node.",
-        "reason": "Output nodes with no incoming OPERATIONAL edge are indistinguishable from deleted input nodes from the engine's perspective. A stray STRUCTURAL edge added by mutation could connect a deleted input to a fresh output, making distinction impossible. Clean encoding: no output node without an incoming OPERATIONAL edge.",
-        "consequence": "Fresh node creation is always a clone operation. The source of the clone determines which real node the new node is based on. graph2o's cleanup pass removes inherited operational edges that don't belong on the cloned node."
+        "decision": "build_operator and build_equality return (node, OpTag) where OpTag holds cycle_nodes, anchor, tail.",
+        "reason": "Transition graph construction needs to reference individual tag nodes to wire OPERATIONAL input→output pairs.",
+        "tail_semantics": "tail is None for finished operators. tail is set for unfinished operators. Tail input node with no output = deleted = operator becomes finished. Result node cloned from tail via tail_input→result_output OPERATIONAL edge."
       },
       "operational_edge_marker_encoding": {
-        "decision": "Operational edges in the real graph are represented during step 1 conversion by interrupting the edge with a marker node carrying an operational self-loop. A→[OP]→B becomes A→[S]→marker→[S]→B with marker→[OP]→marker. This replaces the current direct OPERATIONAL→STRUCTURAL conversion.",
-        "status": "Designed, not yet implemented.",
-        "motivation": "The current direct conversion (OPERATIONAL→STRUCTURAL) destroys the structural uniqueness of matched nodes. The op node's distinguishing feature — its operational edges to operands — becomes indistinguishable from genuine structural edges after conversion. This causes the step 3 match to produce shuffled mappings that misidentify which transition input node corresponds to which real node, breaking steps 4-6.",
-        "why_direct_conversion_fails": "Step 1 converts op→left and op→right OPERATIONAL edges to STRUCTURAL. The op node now looks structurally similar to other nodes with structural edges to the same targets. The step 3 match finds a valid isomorphism but not the identity-preserving one. Real nodes get assigned to wrong transition nodes, stripped edges get restored to wrong nodes, and the wrong nodes survive step 4b.",
+        "decision": "Operational edges in the real graph are represented during step 1 by marker chains. A→[OP]→B becomes A→[S]→marker→[S]→B with marker→[OP]→marker. Implemented.",
+        "status": "Implemented in _apply_pass step 1.",
+        "motivation": "Preserves structural uniqueness of matched nodes. Direct OPERATIONAL→STRUCTURAL conversion destroyed distinctiveness.",
         "marker_node_properties": [
-          "Has exactly one operational self-loop (marker→[OP]→marker).",
-          "Has exactly two structural edges: one incoming from the original source, one outgoing to the original target.",
-          "Directional: source→marker→target encodes the original A→B direction unambiguously.",
-          "Distinct from all other constructs: no other node in the system has an operational self-loop (tombstone is a separate concept on a different node type, not a marker).",
-          "Structurally unique: the marker chain A→marker→B with self-loop on marker is distinguishable from a direct A→B structural edge and from any natural structural topology."
+          "Has exactly one operational self-loop.",
+          "Has exactly two structural edges: one incoming, one outgoing.",
+          "Directional: source→marker→target encodes original direction unambiguously.",
+          "Distinct from all other constructs."
         ],
-        "traversal_rules_for_engine": [
-          "Step 2 (output-only detection): marker nodes are never input or output nodes. Exclude any node with an operational self-loop from input_nodes and output_only sets.",
-          "Step 3 (match): match candidate pool excludes marker nodes. The retyped input subgraph built from the transition does not contain marker nodes — the match sees the marker chain topology as a structural pattern and identifies the correct real nodes.",
-          "Step 4 (follow_mapping): when following STRUCTURAL edges from an input node, skip through marker nodes transparently — A→marker→B is treated as A→B for the purposes of node identity propagation.",
-          "Step 4b (deletion): marker nodes are always deleted after the pass — they are temporary infrastructure, never part of the output graph.",
-          "Step 5 (output edge writing): unaffected — writes output_type edges between real nodes only.",
-          "Step 6 (stripped edge restoration): unaffected — operates on real nodes only, marker nodes already deleted."
-        ],
-        "transition_graph_impact": "None. Rule builders in arithmetic.py write operational edges normally between real nodes. The marker insertion is a mechanical step 1 artifact invisible to rule construction. Transition graphs remain clean and readable.",
-        "self_loop_collision_risk": "Operational self-loops are currently used only for tombstone markers on a different node type. If a real graph node legitimately acquires an operational self-loop through rule application, it would be misidentified as a marker node. This risk is currently low but must be tracked as the rule set grows. The tombstone_gc rule uses operational self-loops — its nodes must be excluded from marker detection or the tombstone encoding must be changed.",
-        "deferred_implementation_note": "Implementation requires care in _apply_pass: marker nodes inserted in step 1 must be tracked separately so step 4b can delete them without confusing them with pattern-matched nodes. A marker_nodes set should be maintained alongside matched_target_nodes throughout the pass."
+        "input_output_marker_classification": "Markers are classified as input-side or output-side based on their structural neighbours. A marker whose structural neighbours include at least one input node is an input-side marker (included in step 3 matching). A marker whose structural neighbours are all output nodes is an output-side marker (used only in step 5 edge writing). This prevents output-side markers from polluting the step 3 match candidate pool."
       },
-"unified_pass_proposal": {
-  "decision": "Adopted. Single-pass design replaces two-pass graph2s + graph2o.",
-  "previous_status": "Rejected 2026-05-23. Reopened and adopted 2026-05-26.",
-  "original_rejection_reason": "OPERATIONAL edges cannot simultaneously mean 'this input maps to this output' and 'this edge should exist in the output graph' — the engine cannot distinguish these uses.",
-  "resolution": "Output operational edges are encoded as marker chains in the transition output side, identical to how input operational edges are encoded in the input side. OPERATIONAL edges in the transition remain unambiguously input→output mapping instructions. Marker chains in the output side are read by step 5 and written as OPERATIONAL edges into the real graph. No dual-role ambiguity.",
-  "unified_transition_structure": {
-    "input_side": "Clone of pattern with OPERATIONAL edges converted to marker chains. Built by _make_input_graph as before.",
-    "operational_edges": "Exclusively input→output node mapping. No output semantics.",
-    "output_side": "STRUCTURAL edges written directly as STRUCTURAL. Operational edges to write encoded as marker chains (A→[S]→marker→[S]→B, marker→[OP]→marker). Step 5 reads marker chains and writes OPERATIONAL edges into real graph."
-  },
-  "schema_change": "OperationDefinition loses graph2o field. graph2s becomes graph2 (single transition). apply() calls _apply_pass once. Rule builders merge graph2s and graph2o construction into single transition graph.",
-  "affected_files": ["operations.py", "arithmetic.py", "encoding.py"],
-  "implementation_status": "Not yet implemented."
-}
+      "unified_pass_proposal": {
+        "decision": "Adopted. Single-pass design replaces two-pass graph2s + graph2o.",
+        "previous_status": "Rejected 2026-05-23. Reopened and adopted 2026-05-29.",
+        "original_rejection_reason": "OPERATIONAL edges cannot simultaneously mean input→output mapping and output edge to write.",
+        "resolution": "Output operational edges are encoded as marker chains in the transition output side. OPERATIONAL edges in the transition remain unambiguously input→output mapping instructions. Marker chains in the output side are read by step 5 and written as OPERATIONAL edges into the real graph.",
+        "schema_change": "OperationDefinition loses graph2o field. graph2s becomes graph2. apply() calls _apply_pass once.",
+        "implementation_status": "Implemented."
+      },
+      "vf2_matching": {
+        "decision": "VF2 subgraph isomorphism replaces O(n!) permutation search in match() and match_all().",
+        "reason": "Permutation search was timing out on graphs with 20+ nodes. VF2 uses constraint propagation and backtracking — candidate sets are pruned by fingerprint compatibility before any search begins, then refined further by structural consistency checks as nodes are assigned.",
+        "fingerprint": "(s_out, s_in, s_self, o_out, o_in, o_self) — degree signature per edge type. Used for initial candidate filtering before backtracking.",
+        "exact_mode": "exact=True enforces that each matched real node has the same edge counts as its pattern counterpart within real_candidates. Used in step 3 transition matching, not in initial pattern matching.",
+        "interface": "match() and match_all() signatures unchanged. Drop-in replacement.",
+        "incremental_index_planned": "A Rete-style incremental match index is planned above apply() to avoid recomputing matches after each rewrite. Interface is compatible — index layer intercepts apply() calls without restructuring match(). Not yet implemented."
+      },
+      "node_recycling": {
+        "decision": "Deleted nodes and marker nodes are stripped of edges and collected into a recycle pool. Fresh output nodes (output-only or no OPERATIONAL connection) draw from this pool before calling graph.add_node().",
+        "reason": "Avoids node ID explosion over many rewrite steps. Keeps the graph compact. Consistent IDs matter for the incremental match index.",
+        "external_edge_preservation": "Recycled nodes have all edges stripped before entering the pool. If an output node has a placeholder connection in the transition output side, its external edges are restored from the saved pre-strip state. Without placeholder: node starts clean.",
+        "recycle_pool_type": "list[tuple[Node, list[Edge]]] — node plus its saved external edges."
+      },
+      "step_4c_edge_stripping": {
+        "decision": "Before writing output edges (step 5), strip stale structural edges from all surviving nodes in output_map. Any structural edge present in the real graph but absent from the transition output side is removed.",
+        "reason": "Surviving nodes (remapped input→output) carry old structural edges from before the rewrite. These edges are incorrect in the new context and must be cleaned up.",
+        "external_edge_rule": "External edges (to nodes outside real_candidates) are also removed unless the output node has a placeholder connection in the transition. Placeholder = preserve external connections. No placeholder = fresh start including externals.",
+        "implementation": "Computed in step 4c of _apply_pass, before step 5. Builds desired_structural set from transition output side, then removes any structural edge from surviving nodes not in that set."
+      },
+      "add_init_redesign_with_buffer": {
+        "decision": "add_init expanded from 4 rules to 16 rules (2 left_bit × 2 right_bit × 2 left_single × 2 right_single). Buffer node added. Result LSB→buffer anchor edge added.",
+        "single_vs_multi": "left_single/right_single=True means that operand is a single-bit number (its LSB is also its MSB, no structural parent above it). Multi-bit operands have a parent node. The add_init variant is selected at rule-fire time by which pattern matches.",
+        "specificity_ordering": "Rules must be tried in order mm → ms/sm → ss. The ss pattern is less constrained and will match cases intended for mm/ms/sm if tried first. apply() must try more specific rules first.",
+        "buffer_node": "A fresh node created by add_init that serves as the MSB placeholder for the result chain. result_lsb→[S]→buffer (structural chain start) and result_lsb→[OP]→buffer (fixed anchor). The result chain grows structurally toward the buffer as bits are computed. The buffer never moves.",
+        "implicit_zero": "Single-bit operands get a fresh zero node placed at their next bit level (the implicit zero above their MSB). Op's pointer advances to this zero node rather than being deleted. Drain rules then fire on this zero.",
+        "pointer_structure": "After add_init, op has exactly 3 operational edges: op→left_pos (current left bit level), op→right_pos (current right bit level), op→result_lsb (fixed result anchor). result_lsb has result_lsb→[OP]→buffer.",
+        "placeholder_on_output": "Boundary output nodes (op, multi-bit parents) get a structural edge to the transition placeholder in the output side of graph2. This signals step 4c to preserve their external edges."
+      },
+      "drain_redesign": {
+        "decision": "Drain expanded from 8 rules to 16 rules (2 active_sides × 2 active_bits × 2 exhausted_bits × 2 carry_in). Exhausted operand and active_pos are consumed (deleted). Op advances its pointer from active_pos to active_parent.",
+        "exhausted_bit_variants": "The exhausted operand can be bit 0 or bit 1 — both are valid end states for a number that has been fully processed. Two variants needed to match either.",
+        "name_format": "drain_{active_side}_{active_bit}e{exhausted_bit}_c{carry_in}",
+        "active_parent_boundary": "active_parent is a boundary node — it has external structural connections to sibling subtree nodes outside the matched set. Must be in boundary_nodes for _make_input_graph.",
+        "tombstone_confusion": "drain was initially confused with tombstone_gc. drain fires during the addition process when one operand is exhausted. tombstone_gc fires on dangling result fragments after addition completes."
+      },
+      "fresh_node_creation_encoding": {
+        "decision": "Updated. Fresh output nodes (no incoming OPERATIONAL edge) are created from the recycle pool (step 4b) or graph.add_node() if pool is empty. The previous rule requiring all output nodes to have incoming OPERATIONAL edges is relaxed.",
+        "reason": "Carry nodes and buffer nodes are genuinely new — they have no natural input node to clone from. The recycle pool provides deleted real nodes as fresh containers.",
+        "constraint_that_remains": "Output nodes that ARE in output_only (have incoming OPERATIONAL edge) still follow the original semantics: first output reuses the input's real node, subsequent outputs create new nodes.",
+        "all_output_nodes_set": "set(transition.nodes) - input_nodes - transition_all_markers - transition_placeholders. This set drives the recycle pool assignment loop."
+      }
     }
   }
 }
