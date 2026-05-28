@@ -1,7 +1,7 @@
 {
   "_chunk": "projects.perspective.open_questions",
   "_project": "perspective",
-  "_last_updated": "2026-05-21",
+  "_last_updated": "2026-05-28",
   "data": {
     "open_questions": [
       {
@@ -60,8 +60,8 @@
         "question": "Are hypergraphs a minimum requirement for the representation? Standard graphs may fundamentally limit the representations discoverable — discrete systems have fragmented search spaces with unreachable configurations, as demonstrated by cellular automata rule evolution. Hyperedges allow multi-way structural relationships but raise isomorphism cost significantly.",
         "importance": "critical",
         "status": "open",
-        "resolution_path": "Run base prototype on arithmetic/equation expressions, inspect failure modes for representation fragmentation signal. Note: directed graph is hypergraph at k=2 — fail outcome is additive, not branching. k=2 prototype recycles as seed for hypergraph upgrade: GOI, layer hierarchy, library structure, GA mechanics, fitness signal, and seed rules all transfer. Matching engine and rule representations need extension, not replacement.",
-        "last_updated": "2026-04-30",
+        "resolution_path": "Run base prototype on arithmetic/equation expressions, inspect failure modes for representation fragmentation signal. Note: directed graph is hypergraph at k=2 — fail outcome is additive, not branching. k=2 prototype recycles as seed for hypergraph upgrade: GOI, layer hierarchy, library structure, GA mechanics, fitness signal, and seed rules all transfer. Matching engine and rule representations need extension, not replacement. Additional argument from travel path encoding: transitions operate over regions (multiple nodes), not single nodes — a binary edge from a representative node to the result is lossy. If travel paths cannot be faithfully encoded at k=2, the self-similarity property of the endpoint architecture breaks. This makes hyperedges a structural requirement, not just an expressiveness improvement — the question is when, not if.",
+        "last_updated": "2026-05-28",
         "tags": ["hypergraph", "representation", "substrate", "roadmap"]
       },
       {
@@ -90,8 +90,33 @@
         "resolution_path": "Pre-filter candidate nodes by local topology before permutation search. For op nodes: find nodes in the real graph that have a 3-cycle structurally reachable from them, then only try those as op node candidates. Collapses search space from n! to (small candidate set) * (n - tag_size)!. Implement after add_init passes end-to-end.",
         "last_updated": "2026-05-21",
         "tags": ["performance", "matching", "engine"]
+      },
+      {
+        "id": "q_11",
+        "question": "Which rules are reversible and which are irreversible? Almost everything interesting (commutativity, simplification, solving, normalisation) appears to destroy ordering or structure information without provenance. Is the reversible category practically useful, or does everything require provenance tracking?",
+        "importance": "high",
+        "status": "open",
+        "resolution_path": "Rule classification pass: go through the intended rule set and explicitly label each rule reversible or irreversible with reasoning. Practical classification is three categories: provably reversible, provably irreversible, unknown — unknown defaults to provenance tracking. This work determines which rules need provenance tracking, which rules can fire without snapshotting, and whether the reversible/irreversible distinction survives contact with a concrete rule set.",
+        "blocks": ["layer infrastructure implementation", "correct shaping of arithmetic.py rules"],
+        "last_updated": "2026-05-28",
+        "tags": ["rules", "layers", "architecture", "reversibility"]
+      },
+      {
+        "id": "q_12",
+        "question": "How do you measure reversibility of a rule empirically? Neither syntactic inverse construction nor injectivity sampling guarantees input-independent reversibility — injectivity across the full input space is generally undecidable for graph rules.",
+        "importance": "high",
+        "status": "open",
+        "candidate_approaches": {
+          "syntactic_inverse": "Swap Graph 1 and output side, construct inverse rule, test on known output. Cheap but misses context-dependent irreversibility.",
+          "injectivity_sampling": "Generate input sample, apply rule, check for output collisions. Two different inputs producing the same output confirms irreversibility. Cannot confirm reversibility — only absence of observed collisions.",
+          "provenance_gap_test": "Construct inverse rule, run match_all on output, count results. Unique result = reversible for that input. Multiple results = irreversible for that input — original input is unrecoverable without provenance. Most directly useful for identifying which rules need provenance tracking."
+        },
+        "limitation": "All three approaches are input-conditional. Reversibility as a global property of a rule is undecidable in general. Practical classification defaults unknown cases to provenance tracking.",
+        "blocks": ["q_11 rule classification pass"],
+        "last_updated": "2026-05-28",
+        "tags": ["rules", "reversibility", "measurement", "architecture"]
       }
     ]
   },
-  "notes": "q_07 resolution path updated session 9 — k=2 recycling argument added, fail path is additive not branching. Test domain updated from MNIST to arithmetic/equation expressions. q_10 added session 2026-05-21 — match() O(n!) performance blocks testing of rules with large patterns."
+  "notes": "q_07 resolution path updated session 9 — k=2 recycling argument added, fail path is additive not branching. Test domain updated from MNIST to arithmetic/equation expressions. q_10 added session 2026-05-21 — match() O(n!) performance blocks testing of rules with large patterns. q_07 updated session 2026-05-28 — travel path encoding argument added, hyperedges reclassified as structural requirement not just expressiveness improvement. q_11 added 2026-05-28 — rule classification pass identified as prerequisite for layer infrastructure. q_12 added 2026-05-28 — reversibility measurement approaches and limitations."
 }
