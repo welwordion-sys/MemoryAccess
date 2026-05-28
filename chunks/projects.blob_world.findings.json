@@ -2,157 +2,120 @@
   "_type": "chunk",
   "_domain": "projects",
   "_subtopic": "blob_world.findings",
-  "_version": "0.3.0",
+  "_version": "0.4.0",
   "_created": "2026-05-22",
-  "_updated": "2026-05-27",
+  "_updated": "2026-05-28",
   "findings": [
     {
       "topic": "lean_bend_working_approach",
-      "finding": "Joint-based deformation with von-Mises weighting works correctly for rendering. No hole artifact. Bend produces visible curvature.",
+      "finding": "Lever-based deformation is the confirmed working rendering formula. Ghost sphere formulation confirmed equivalent — same surface, different mathematical expression.",
       "status": "confirmed working",
       "formula": {
-        "f": "exp(c * dot(dir, bump_dir)) / exp(c)  — von-Mises weight, 1 at peak",
-        "lever": "dir * amplitude * f  — arm from joint to surface point, along dir",
-        "angle": "lean_amount + bend_amount * f  — lean: constant; bend: von-Mises weighted",
-        "contribution": "rotate_axis_angle(lever, lean_axis, angle)  — rotated lever added to joint",
+        "f": "von_mises(dir, bump_dir, c) = exp(c * dot(dir, bump_dir)) / exp(c)",
+        "lever": "dir * amplitude * f",
+        "angle": "lean_amount + bend_amount * f — lean: constant; bend: von-Mises weighted",
+        "contribution": "rotate_axis_angle(lever, lean_axis, angle)",
         "pos": "dir * rmin + sum of contributions over all bumps"
       },
-      "normals": "finite difference on eval_pos, 4 neighbour samples, pole guard for degenerate dphi",
-      "billboards": "camera-facing for sharpness, surface normal passed through for lighting",
-      "normal_flip": "if dot(normal, view_dir) < 0: normal = -normal — handles concave regions",
+      "ghost_sphere_equivalent": {
+        "full_vec": "dir * rmin + sum(rotate_axis_angle(dir * amplitude * f, lean_axis, angle))",
+        "r": "length(full_vec)",
+        "ghost_dir": "normalize(full_vec)",
+        "note": "Identical to lever formula. Useful for collision radius field."
+      },
+      "normals": "finite difference on eval_pos. Pole guard: if length(dphi) < 0.01 return dir (not dp_dtheta — degenerate at poles).",
+      "billboards": "normal-facing for stable orientation. world_pos = particle.position.xyz not billboard offset.",
+      "normal_flip": "if dot(normal, view_dir) < 0: normal = -normal",
       "files": ["shaders.rs"],
-      "note": "lean has slightly more compression than pure rigid tilt due to longer lever arm at peak — acceptable"
+      "note": "Camera-facing billboards caused pole artifacts due to ref_up flip. Normal-facing is stable."
     },
     {
-      "topic": "lean_correction_speculative",
-      "finding": "Alternative ghost-sphere rendering formulation was explored but not validated.",
-      "status": "speculative — untested",
-      "formula_speculative": {
-        "rotated_bump_dir": "rotate_axis_angle(bump_dir, lean_axis, lean_amount + bend_amount * f)",
-        "pos": "dir * rmin + amplitude * f * rotated_bump_dir"
-      },
-      "note": "May produce cleaner bend geometry. Not tested. Do not use until validated against working approach."
+      "topic": "shader_history",
+      "finding": "Working shader is lever-based (shadersRotateJoint.rs). Ghost sphere shader had broken lean/bend — lean_amount used as linear distance not angle.",
+      "status": "resolved",
+      "working_shader": "lever approach — bump_contribution with rotate_axis_angle(dir*amplitude*f, lean_axis, angle)",
+      "broken_shader": "ghost sphere eval_r approach — lean_amount * rmin as linear ghost shift",
+      "restoration": "Reverted to lever shader mid-session. Ghost sphere kept as COMPUTE_SHADER_GHOST for collision comparison only.",
+      "files": ["shaders.rs"],
+      "note": "bend_mode toggle removed — single working mode only."
     },
     {
-      "topic": "ghost_point_geometry",
-      "finding": "Ghost point for collision is the center of a star-shaped coordinate system covering the deformed bump region.",
-      "status": "validated visually — marker confirmed correct position",
-      "formula": {
-        "lever_peak": "rotate_axis_angle(bump_dir * amplitude, lean_axis, lean_amount + bend_amount)",
-        "ghost": "bump_dir * rmin - normalize(lever_peak) * rmin",
-        "interpretation": "joint minus rmin in direction of rotated lever — behind the bump tip"
-      },
-      "constraint": "ghost must remain within rmin sphere for star-shape guarantee from ghost center",
-      "max_bend_lean": "see lean_bend_constraints entry — replaced by tangent condition",
-      "negative_radius": "when ghost outside rmin sphere, inverted ray gives negative r — model handles this but failure states possible at extremes"
-    },
-    {
-      "topic": "collision_detection",
-      "finding": "Collision between two blobs detected via radius field intersection. No explicit geometric intersection needed.",
-      "status": "design — not yet implemented",
-      "pipeline": [
-        "1. For each pair of blobs: find directions dir where r_A(dir) overlaps r_B(dir_transformed) — intersection ring on sphere",
-        "2. Intersection ring center = contact point, normal = contact normal",
-        "3. Place ghost point per object on contact normal, distance proportional to penetration depth",
-        "4. Apply Von-Mises minus Gaussian deformation field from ghost point onto existing surface",
-        "5. Adjust A parameter (flatness) until surfaces no longer overlap — stiffness controls rate"
-      ],
-      "intersection_ring": "numerical search on radius field — 1D curve on sphere where both fields equal",
-      "ghost_per_collision": "one ghost point per collision pair per object — scales linearly with collision count",
-      "asymmetric_contacts": "ghost on actual contact normal handles side-of-bump and valley contacts automatically"
-    },
-    {
-      "topic": "contact_deformation_basis",
-      "finding": "Von-Mises minus Gaussian composition produces smooth flat-topped lobe suitable for contact deformation and sensing.",
-      "status": "design — formula confirmed, not yet implemented",
-      "formula": "f(theta) = (exp(cv*cos(theta)) - A*exp(-cg*theta^2)) / (exp(cv) - A)",
-      "flatness_condition": "A_opt = cv*exp(cv) / (2*cg) — zeroes second derivative at peak",
-      "behavior": {
-        "A_below_opt": "flat zone present, width increases as A decreases from A_opt",
-        "A_at_opt": "flattest top, collapses to point contact at A_opt",
-        "A_above_opt": "ring bump above 1 — useful for sensing contact boundary"
-      },
-      "parameters": {
-        "cv": "controls overall lobe width",
-        "cg": "controls Gaussian sharpness — higher cg = broader subtraction",
-        "A": "controls flat zone size, bounded by A_opt"
-      },
-      "practical_values": "cv=5.1 cg=7.3 A~11.5 gives ~10-11 degree flat zone",
-      "multi_term": "complex contacts (bump-in-valley, blob-blob, asymmetric) require sum of basis terms with independent centers, widths, weights"
-    },
-    {
-      "topic": "contact_deformation_pipeline",
-      "finding": "Deformation field and volume rescale must be solved jointly as a constraint.",
-      "status": "design — not yet implemented",
-      "pipeline": [
-        "1. Ghost sphere detects collision via radius field, produces penetration depth and contact normal",
-        "2. Deformation field parameterized by contact geometry (normal, patch size, stiffness ratio)",
-        "3. Solve (deformation params, scale s) jointly such that deformed+scaled surface is tangent to contact surface",
-        "4. Apply deformation and scale, compute repulsive force from penetration depth and displaced volume"
-      ],
-      "displaced_volume": "spherical cap: V_cap = pi * h^2 * (r - h/3)",
-      "volume_rescale": {
-        "rule": "rescale only non-contact hemisphere to avoid re-penetration",
-        "formula": "s = ((V_original - V_contact) / integral_exterior r^3 dOmega)^(1/3)"
-      },
-      "kink_avoidance": "spatially-varying scale field using same Von-Mises/Gaussian basis",
-      "non_sensory_note": "approximate conformance acceptable for non-sensory blobs"
-    },
-    {
-      "topic": "concave_contact",
-      "finding": "Valley between bumps is concave on receiving surface — deformation is inward, not outward.",
-      "status": "design — not yet implemented",
-      "basis_handling": "same Von-Mises/Gaussian basis applies with negative amplitude",
-      "multi_term_needed": "when bump tip hits valley slope contact is asymmetric and off-center — single lobe insufficient",
-      "ghost_sphere": "handles repulsion correctly in all cases via transformed frame regardless of surface concavity"
-    },
-    {
-      "topic": "sensing_constraint",
-      "finding": "Deformation field doubles as sensory surface — conformance quality directly determines sensing fidelity.",
-      "status": "design — not yet implemented",
-      "pure_von_mises_limit": "cannot produce flat contact patch — nonzero curvature at peak always present",
-      "solution": "Von-Mises minus Gaussian approximation sufficient — exact flatness not required",
-      "sensory_blobs": "each basis term is a detectable feature: contact center, boundary ring, secondary lobes — coefficients are the sensory signal",
-      "non_sensory_blobs": "close conformance acceptable, volume conservation and repulsion are primary requirements"
-    },
-    {
-      "topic": "motor_system",
-      "finding": "Motor layer is prescribed oscillation with hierarchical control. Nervous system modulates oscillation, does not compute raw targets.",
-      "status": "design — not yet implemented",
-      "structure": {
-        "movement_set": "Collection of bumps with fixed relative phases, frequencies, amplitude ratios. Multiple sets can run simultaneously at partial amplitude.",
-        "global_amplitude": "One scalar per set. Primary control surface — driving to zero silences the set.",
-        "parameter_modulation": "Individual bump parameters within a set (direction, frequency, amplitude ratio) can be nudged independently — handles steering and obstacle navigation.",
-        "additivity": "Sets are additive. Gait, reach, recoil etc can coexist at partial amplitude. Incoherent superpositions are an evolutionary concern, not a hard constraint."
-      },
-      "evolution": {
-        "timescale_slow": "Oscillation patterns themselves — frequencies, phases, amplitude ratios, set membership. Body morphology equivalent. Evolves at slower pace.",
-        "timescale_fast": "Routing — which sensory inputs modulate which oscillation parameters at what weight. The nervous system. Evolves on top of stable motor primitives.",
-        "first_experiments": "Nervous system absent. Pure oscillation evolution only. Validates motor layer before routing complexity enters."
-      },
-      "sensing_integration": "Sensory basis terms (Von-Mises minus Gaussian descriptors) route into oscillation parameter modulation. Computation model between sensing and motor not yet decided — alternatives to neural networks under consideration.",
-      "note": "Movement sets are genome from the start, not fixed infrastructure. Two evolutionary timescales are a design choice, not an emergent property."
-    },
-    {
-      "topic": "computation_model",
-      "finding": "Sensory-to-motor computation via function composition graph operating in the basis language. Geometric operations on basis term descriptors, not arithmetic on raw scalars.",
-      "status": "design — approach selected, not yet formalized",
-      "rationale": "Linear map rejected as low potential — cannot combine sensory terms or respond to geometric relationships. Neural networks deferred. Function graph in basis language is evolvable, interpretable, and consistent with existing sensing and motor vocabulary.",
-      "operations": "Candidate operations: project contact direction onto bump axis, convolve two basis terms, scale amplitude by directional alignment. Full operation set not yet defined.",
-      "evolution_target": "Graph topology and parameter-to-oscillation routing. Operations themselves are fixed primitives.",
-      "next": "Internal states (object permanence, long-term behaviour) layer on top of reactive graph once reactive layer validated."
+      "topic": "ground_collision_ring",
+      "finding": "CPU-side ground plane collision ring implemented and rendering correctly. Red particles mark intersection of blob surface with ground_y plane.",
+      "status": "confirmed working",
+      "implementation": "eval_pos_cpu mirrors compute shader lever formula exactly. 128x128 sphere samples, flags where world_y within epsilon of ground_y.",
+      "epsilon": "0.02 — tunable in main.rs",
+      "files": ["blob.rs", "main.rs", "gpu.rs", "shaders.rs"],
+      "note": "eval_pos_cpu must match shader formula exactly or ring diverges from surface."
     },
     {
       "topic": "lean_bend_constraints",
-      "finding": "Lean and bend have separate limits derived from different geometric conditions. Bend limit uses tangent condition in 2D lean plane. Lean fixed at 60 degrees.",
-      "status": "confirmed working",
-      "max_lean": "Fixed PI/3 (60 degrees). Concentration adjustment deferred — both lean and bend become less safe with higher concentration, but at different rates.",
-      "max_bend": "Bisection on tangent condition: find bend angle where a ray from ghost center becomes tangent to the deformed surface in the lean plane. Uses full shader deformation formula: pos(theta) = dir(theta)*rmin + lever(theta), lever rotated by bend*f where f is Von-Mises weight. Ghost at (-sin(bend)*rmin, rmin*(1-cos(bend))). 128 samples inner search, 24 bisection steps. Worst case: all angle is bend, lean=0.",
-      "lean_bend_interaction": "max_bend scaled down linearly with lean: max_bend_effective = max_bend * (1 - lean_fraction * 0.5). At max lean, bend is halved. Lean fraction computed after lean clamp.",
-      "concentration_effect": "Both lean and bend become less safe with higher concentration. Bend strongly sensitive, lean slightly sensitive. Single shared budget was wrong — they have different geometric effects.",
-      "ghost_magnitude_check": "Kept as helper in blob.rs (ghost_magnitude fn), currently unused in constraint. Ghost-inside-rmin is too conservative as a standalone constraint — ghost exits rmin well before star-shape breaks.",
-      "files": ["blob.rs", "main.rs"],
-      "note": "Tangent-from-ghost approach only works when full deformation formula is used consistently for both surface positions and ghost position. Earlier attempts with simplified surface curve failed silently — bisection returned PI/2 unconditionally."
+      "finding": "Separate limits for lean and bend. Max bend uses 2D tangent condition. Max lean fixed at 60 degrees.",
+      "status": "confirmed working — may need recalibration for lever shader",
+      "max_lean": "Fixed PI/3 (60 degrees).",
+      "max_bend": "Bisection on tangent condition in 2D lean plane. 128 samples inner, 24 bisection steps.",
+      "lean_bend_interaction": "max_bend_effective = max_bend * (1 - lean_fraction * 0.5).",
+      "warning": "Constraints were designed during ghost sphere era. Feathering at extreme lean+bend acceptable for now.",
+      "files": ["blob.rs", "main.rs"]
+    },
+    {
+      "topic": "ghost_point_geometry",
+      "finding": "Ghost point behind bump tip. Formula confirmed from lever surface.",
+      "status": "formula confirmed, collision not yet implemented",
+      "formula": {
+        "lever_peak": "rotate_axis_angle(bump_dir * amplitude, lean_axis, lean_amount + bend_amount)",
+        "ghost": "bump_dir * rmin - normalize(lever_peak) * rmin"
+      },
+      "ghost_sphere_radius_field": "r(dir) = length(dir*rmin + sum(rotate_axis_angle(dir*amplitude*f, lean_axis, angle)))",
+      "files": ["shaders.rs (COMPUTE_SHADER_GHOST)"]
+    },
+    {
+      "topic": "collision_detection",
+      "finding": "Ground ring implemented. Blob-blob not yet.",
+      "status": "partial — ground ring working",
+      "ground_collision": "CPU eval_pos_cpu samples sphere, flags y <= ground_y. Renders as red ring."
+    },
+    {
+      "topic": "contact_deformation_basis",
+      "finding": "Von-Mises minus Gaussian composition produces smooth flat-topped lobe.",
+      "status": "design — not yet implemented",
+      "formula": "f(theta) = (exp(cv*cos(theta)) - A*exp(-cg*theta^2)) / (exp(cv) - A)",
+      "practical_values": "cv=5.1 cg=7.3 A~11.5 gives ~10-11 degree flat zone"
+    },
+    {
+      "topic": "contact_deformation_pipeline",
+      "finding": "Deformation field and volume rescale solved jointly.",
+      "status": "design — not yet implemented",
+      "displaced_volume": "V_cap = pi * h^2 * (r - h/3)",
+      "volume_rescale": "s = ((V_original - V_contact) / integral_exterior r^3 dOmega)^(1/3)"
+    },
+    {
+      "topic": "sensing_constraint",
+      "finding": "Deformation field doubles as sensory surface.",
+      "status": "design — not yet implemented",
+      "sensory_blobs": "each basis term is a detectable feature — coefficients are the sensory signal"
+    },
+    {
+      "topic": "motor_system",
+      "finding": "Motor layer is prescribed oscillation with hierarchical control.",
+      "status": "design — not yet implemented",
+      "structure": {
+        "movement_set": "Bumps with fixed relative phases, frequencies, amplitude ratios. Additive.",
+        "global_amplitude": "One scalar per set.",
+        "parameter_modulation": "Individual bump parameters nudgeable for steering."
+      },
+      "evolution": {
+        "timescale_slow": "Oscillation patterns — body morphology.",
+        "timescale_fast": "Routing — nervous system.",
+        "first_experiments": "Pure oscillation evolution, no nervous system."
+      }
+    },
+    {
+      "topic": "computation_model",
+      "finding": "Sensory-to-motor via function composition graph in basis language.",
+      "status": "design — approach selected, not yet formalized",
+      "rationale": "Linear map rejected. Neural networks deferred. Function graph evolvable and interpretable.",
+      "evolution_target": "Graph topology and parameter-to-oscillation routing."
     }
   ]
 }
