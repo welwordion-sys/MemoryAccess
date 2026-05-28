@@ -2,7 +2,7 @@
   "_type": "chunk",
   "_domain": "projects",
   "_subtopic": "blob_world.implementation",
-  "_last_updated": "2026-05-20",
+  "_last_updated": "2026-05-29",
   "implementation": [
     {
       "session_id": "2026-05-20",
@@ -10,23 +10,8 @@
       "entries": [
         {
           "attempted": "Bend via Punktverschiebung (Joint Rotation, Ghost Sphere, Translation)",
-          "outcome": "Alle drei Modi erzeugten Verschiebung/Kompression statt Krümmung — Bump-Achse blieb fix",
-          "decided": "Verworfen als primärer Bend-Mechanismus"
-        },
-        {
-          "attempted": "bend_t Parametrisierung mit Wendepunkt-Cutoff",
-          "outcome": "Funktioniert — theta_cut = theta_w + 1/(c * sin_w), t linear auf Bogenlänge",
-          "decided": "Behalten, in allen Modi aktiv"
-        },
-        {
-          "attempted": "Transportiertes Frame für Joint Rotation",
-          "outcome": "Weniger Kompression aber immer noch keine sichtbare Krümmung",
-          "decided": "Verworfen"
-        },
-        {
-          "attempted": "Gebogene Bump-Achse: bent_bump_dir = rotate(bump_dir, lean_axis, bend_amount * t)",
-          "outcome": "Noch nicht visuell validiert — neue Session nötig",
-          "decided": "Aktueller Stand, nächste Session validieren"
+          "outcome": "Alle drei Modi erzeugten Verschiebung/Kompression statt Kruemmung — Bump-Achse blieb fix",
+          "decided": "Verworfen als primaerer Bend-Mechanismus"
         },
         {
           "attempted": "Lean als separate lean_dir() Funktion",
@@ -34,28 +19,63 @@
           "decided": "Behalten"
         }
       ]
+    },
+    {
+      "session_id": "2026-05-29",
+      "project": "blob_world",
+      "entries": [
+        {
+          "attempted": "Lever shader formula confirmed: pos = dir*rmin + sum(rotate_axis_angle(dir*amplitude*f, lean_axis, lean_amount + bend_amount*f))",
+          "outcome": "This is cs_main in COMPUTE_SHADER. eval_pos_cpu mirrors it exactly.",
+          "decided": "Authoritative surface formula. Do not switch to ghost sphere eval_r for rendering."
+        },
+        {
+          "attempted": "Ghost sphere COMPUTE_SHADER_GHOST role clarified",
+          "outcome": "Collision proxy only. Confirmed matching lever surface geometry.",
+          "decided": "Keep for collision. Not used for rendering."
+        },
+        {
+          "attempted": "max_bend recalibration — existing constraint used ghost sphere radial formula, wrong for lever shader",
+          "outcome": "Not yet implemented. 2D cross-section formula derived. pos_and_deriv needs replacing.",
+          "decided": "First task next session. See decisions for constraint model."
+        }
+      ]
     }
   ],
   "decisions": {
     "2026-05-20": [
       {
-        "decision": "Bend = gebogene Bump-Achse statt verschobener Sample-Richtung",
-        "rationale": "Nur Achsen-Rotation erzeugt echte Formkrümmung; Sample-Verschiebung verschiebt nur den Lookup-Raum",
+        "decision": "Lean and Bend are separate mechanisms",
+        "rationale": "Lean tilts the whole bump rigidly; Bend curves via lever rotation. Clean separation allows independent control.",
+        "affects": "projects.blob_world.implementation",
+        "project": "blob_world"
+      }
+    ],
+    "2026-05-29": [
+      {
+        "decision": "max_lean and max_bend computed independently, coupled at UI time only",
+        "rationale": "Independent limits are cheap and predictable. Joint 2D bisection over (lean,bend) not worth the complexity.",
         "affects": "projects.blob_world.implementation",
         "project": "blob_world"
       },
       {
-        "decision": "Lean und Bend sind getrennte Mechanismen — Lean verschiebt sample_dir, Bend rotiert bump_dir",
-        "rationale": "Klare Trennung erlaubt unabhängige Kontrolle von Neigung und Krümmung",
-        "affects": "projects.blob_world.implementation",
+        "decision": "max_bend_effective = max_bend * (1 - lean_fraction * 0.5), lean_fraction = lean_amount / max_lean",
+        "rationale": "Shared soft budget: bend headroom halved at max lean. Applied in main.rs slider logic, not in constraint computation.",
+        "affects": "projects.blob_world.implementation, main.rs",
+        "project": "blob_world"
+      },
+      {
+        "decision": "max_lean fixed at PI/3 (60 deg)",
+        "rationale": "No analytical fold condition needed for lean alone at current amplitudes. Revisit if ALife evolves extreme shapes.",
+        "affects": "blob.rs max_lean()",
         "project": "blob_world"
       }
     ]
   },
-  "resume_point": "Visuell validieren ob Bend-Achsen-Rotation krümmt. Dann eval_r_cpu auf CPU synchronisieren für Volumen + Kollision. Modi Ghost Sphere / Translation im Shader können bereinigt werden.",
+  "resume_point": "Implement max_bend for lever shader: replace pos_and_deriv inner formula with lever surface. 2D cross-section: px = sin(t)*rmin - a*f*sin(lean+bend*f), py = cos(t)*rmin + a*f*cos(lean+bend*f). Same bisection structure, evaluate at lean_amount=0 worst case. Then: blob-blob collision ring.",
   "open_questions": [
-    "Ist gebogene Bump-Achse visuell korrekt oder erzeugt sie andere Artefakte?",
-    "eval_r_cpu muss Lean + Bend spiegeln für korrekte Volumenberechnung",
-    "conserve_volume mit stark gebogenen Bumps nur Näherung — reicht das für ALife?"
+    "max_bend bisection: verify new lever pos_and_deriv fires before visible fold — test at high concentration + amplitude",
+    "blob-blob collision: overlap test only, or penetration depth + contact normal?",
+    "conserve_volume with strongly bent bumps is approximate — sufficient for ALife fitness?"
   ]
 }
