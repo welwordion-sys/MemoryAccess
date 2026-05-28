@@ -1,7 +1,7 @@
 {
   "_chunk": "projects.perspective.frameworks",
   "_project": "perspective",
-  "_last_updated": "2026-05-06",
+  "_last_updated": "2026-05-28",
   "data": {
     "frameworks": [
       {
@@ -22,13 +22,76 @@
       },
       {
         "name": "Hierarchical Graph Layer Structure",
-        "description": "Multi-layer graph hierarchy where lower layers hold raw structure and primitives, and upper layers hold nodes that represent compressed subgraphs from below. What a node IS defines what layer it belongs to — layer identity is determined by representational scale, not by operation type. Each layer has its own ruleset. Layers can fuse or split. Input layer is immutable. Reversibility is a property of the Data Transformation System as a whole, not a distinguishing property of any particular layer.",
-        "components": ["Input layer (immutable)", "Layer nodes (each upper-layer node represents a subgraph from the layer below)", "Per-layer rulesets", "Fusion and splitting (governed by data system)"],
+        "description": "Multi-layer graph where each layer holds graph structure. Movement between representations is either sideways (within a layer, reversible) or upward (between layers, irreversible). Layer 0 is mutable only during encoding — once a structure is committed, layer 0 is immutable. All further transformation is sideways or upward. The full structure is a traversal graph: nodes are representations at various layers, horizontal edges are reversible rule applications, vertical edges are irreversible transformations with provenance pointers. Finding representations that allow meaningful upward movement is one of the main tasks of the traveler — sideways movement is not bookkeeping, it is the primary computational work.",
+        "components": ["Input layer (immutable once committed)", "Per-layer graph structures", "Per-layer rulesets", "Provenance pointers (upward edges)", "Fusion and splitting (governed by data system)"],
+        "movement_types": {
+          "sideways": "Reversible rules produce parallel representations within the same layer. No information loss. Multiple equivalent forms coexist, connected by reversible transformations. A sideways transformation is valuable because it opens or closes upward paths — fitness of sideways rules is whether the representations they produce are ones upward rules can fire on. Example: commutativity reordering looks reversible as an operation class but requires provenance to recover original ordering for a specific application.",
+          "upward": "Irreversible rules produce a new graph at layer N+1 derived from a region of layer N. The result is a full graph transformation — not compression to a single node. A provenance pointer connects the layer N+1 graph back to the source region at layer N. The source region is a subgraph (many nodes), not a single node. The source is never destroyed.",
+          "shortcuts": "Discovered paths composing sideways and upward moves that reach the same result via a different route. Finding shortcuts is a primary GA search target."
+        },
+        "provenance_model": "Upward edges carry a pointer to the source graph at layer N. Many-to-one: a subgraph region at layer N collectively produces the layer N+1 result. Maps naturally to hyperedge encoding — a hyperedge over the source region nodes.",
+        "reversibility_note": "Almost everything interesting is irreversible. Commutativity, simplification, solving, normalisation — all destroy ordering or structure information without provenance. The reversible category may not be practically useful and everything may require provenance. Open question pending rule classification work (see q_11, q_12).",
         "layer_boundary_definition": "A subgraph from layer N becomes a node at layer N+1 when the GA has converged on rules that consistently produce that subgraph for a given label. The boundary is earned through convergence, not assigned by design.",
-        "transformation_types": {
-          "within_layer": "Switches representation of information without changing abstraction level. Example: 3+4 and 7 contain the same information — arithmetic operations are within-layer transformations.",
-          "layer_transition": "Changes abstraction level — collapses local detail into higher-level structure. Example: full expression tree collapsed into a single result node."
-        }
+        "implementation_gap": "Current arithmetic.py rules are shaped as consuming rewrites — they mutate layer 0 in place and discard the source. Correct shape for encoding phase, wrong shape for transformation phase. operations.py needs provenance tracking: snapshot before irreversible rule application, store snapshot as layer N with link to result graph."
+      },
+      {
+        "name": "Rule Space Layer Structure",
+        "description": "Rule space has its own layer structure, independent of the graph hierarchy. The GA can operate at different granularities of rule space. Coarse rules (wildcards) are rule groupings — they delegate to specific micro-rules based on what is actually in the matched subgraph. This is not a substrate feature. The correspondence between graph layer hierarchy and rule layer hierarchy should align: a coarse graph match at layer N maps to a rule group, and the micro-rules in that group are exactly the rules valid for the layer 0 substructures the layer N node points to.",
+        "wildcard_semantics": "A wildcard match fires at the rule-group level. Selection of which specific rule applies is a local decision driven by subgraph content. Reduces visible rule count at the coarse level without eliminating the specific cases — they live inside the group.",
+        "ga_search_decomposition": "Upper-layer rule structure is one GA search target. Micro-rule sets are another. The mapping between them is a third. These can evolve independently or co-evolve with different mutation rates.",
+        "status": "design intention — not implemented"
+      },
+      {
+        "name": "Quantum Traveler Exploration Model",
+        "description": "The traveler explores representation space in parallel — a population of growing structures rather than a single path-finder. Each layer N representation is a potential root for upward growth. The structure branches like moss or a tree: some branches reach a good abstraction and keep growing, some terminate, some find the solution label early and exit. The overall shape is organic, not directed. The system is not searching for the path — it is growing until something matches.",
+        "exploration_properties": {
+          "early_exit": "A branch that reaches the solution label cleanly terminates. First-class success outcome, not just path completion. Strong fitness signal for the rules that enabled it.",
+          "dead_ends": "Branches that stop growing are normal and cheap. No backtracking needed. Unexploited roots remain available.",
+          "pruning": "Structural explosion — runaway node/edge growth — signals a branch moving away from useful abstraction. Pruned before closest-match ranking. Pruning heuristic does not require a precise distance metric, only detection of obvious divergence.",
+          "closest_match_fallback": "If no branch reaches the solution label, rank survivors by proximity. The metric only needs to rank survivors, not measure absolute distance. Much easier problem than a full distance metric."
+        },
+        "ga_fitness_connection": "Rules that produce more branches reaching the solution label, or reaching it faster, are fitter. Rules that consistently produce dead-end patches are less fit. Evaluation is on growth patterns, not individual transformations."
+      },
+      {
+        "name": "Compound Match Resolution",
+        "description": "When multiple rules fire in a single pass and their match regions overlap, the overlapping regions are resolved as a compound match rather than independent firings. This prevents unbounded layer splitting while preserving the information from all firing rules.",
+        "firing_model": "Single firing pass per ruleset application. Each irreversible match produces a new graph as a delta — unchanged nodes are references to the origin layer (structural sharing, not full copy). Reversible rules that overlap are reclassified as irreversible for that firing — reversibility is context-dependent, not just a property of the rule in isolation.",
+        "resolution_algorithm": {
+          "step_1": "Find all overlapping match regions across the full firing set.",
+          "step_2": "Rank by overlap degree — number of rules sharing nodes in that region.",
+          "step_3": "Resolve highest degree overlap first — produce compound output nodes for that region.",
+          "step_4": "Resolved output nodes become stable anchors, equivalent to outside nodes, for remaining unresolved matches.",
+          "step_5": "Cascade down degree ranking until all overlaps resolved.",
+          "step_6": "Route boundary connections through resolved regions to outside nodes."
+        },
+        "node_types_in_resolution": {
+          "outside_nodes": "Never transformed by definition. Only their connections change. Stable anchors throughout resolution.",
+          "overlapping_nodes": "Produce two output nodes, one per rule. Clean — already expressible in current formalism.",
+          "common_output_nodes": "Receive connections from both transformations. No conflict — union of connections.",
+          "boundary_of_one_inside_other": "The crux case. A node that is a boundary (outside connection) from rule A's perspective but has been transformed by rule B. Resolution: rule B's output node that replaced the shared boundary node inherits rule A's external connection information. Compound transition graph threads rule A's boundary connections through rule B's output."
+        },
+        "bridging_node_case": "A node bridging two equal-degree overlap regions surfaces naturally as a higher-degree overlap and is caught in step 2 before either region. Algorithm handles this without explicit tie-breaking.",
+        "formalism": "Compound transition graph is a composition operation on two transition graphs sharing a boundary. Expressible as an extension of the current triple (Graph 1, Graph 2S, Graph 2O) formalism — not a new substrate requirement."
+      },
+      {
+        "name": "Layer Generation Granularity",
+        "description": "Layers are generated per compound firing pass, not per individual rule application. A stable configuration or solution match is the natural layer boundary. Unchanged nodes are structural references to the origin layer — layers are deltas, not clones.",
+        "bitwise_arithmetic_note": "Bitwise arithmetic is a pathological case for layer generation — high firing density, maximum overlap, low semantic lift per firing. Produces many layers relative to semantic content. Acceptable from the machine's perspective but not a representative benchmark for layer dynamics.",
+        "maturation_trajectory": "An inexperienced traveler descends to bit-level resolution for every operation. A mature traveler with library access recognizes multi-bit patterns early and operates at a coarser granularity, only descending to single-bit resolution when forced by the final result. This is not programmed behavior — it emerges from fitness pressure. Travel paths that avoid unnecessary bit-level descent produce cleaner layer structures and are measurably fitter.",
+        "fitness_gradient": "The difference in layer efficiency between naive bit-level thrashing and library-assisted multi-bit operation is large and measurable. Bitwise arithmetic domain is therefore a good training ground precisely because this gradient is clear."
+      },
+      {
+        "name": "System Endpoint Architecture",
+        "description": "The mature form of the Perspective system. Three self-similar levels plus a human gate. Each level runs the same fundamental mechanism — graph-based exploration with a population of variants — at a different abstraction scale.",
+        "input_stage": "Data arrives as a graph. Perspective looks for structural matches against known library representations — either prompted by a hint or searching autonomously if library access is permitted. The memory plus input problem is encoded as a graph paired with a travel path, refined over many iterations. The starting point is a positioned structure with prior knowledge of how to begin moving.",
+        "levels": {
+          "traveler": "Explores representation space. Has matured past blind GA variation — reads its input and predicts productive travel attempts rather than sampling randomly. Uses library lookup for known solutions and known travel paths. Operates under overseer population management.",
+          "overseer": "Manages a population of traveler variants. Creates variants based on observed growth patterns. Directs population toward faster and cleaner goal reach. Reads traveler travel paths as data using the same graph matching machinery.",
+          "senior_overseer": "Manages overseer variants. Searches for its own inheritor. Retires only after exhaustive degradation testing has confirmed the inheritor does not regress on any covered test. Succession safety is the senior's primary responsibility — the burden of proof is on the inheritor, not on the senior finding a reason to stay.",
+          "human": "Holds the threshold gate. Decides when the reasoned library unlocks. Approves senior succession. Deliberately outside the system — the fourth level is not automated."
+        },
+        "travel_paths_as_data": "Travel paths are first-class data structures encoded as transition graphs in the same formalism as everything else. Library entries are representations paired with the travel paths that reliably reach them. The overseer reads traveler travel paths as data. The senior reads overseer travel paths as data. The self-similarity is literal — the same matching and rewriting machinery runs at every level because the input is always graphs and transition graphs.",
+        "self_similarity_note": "The formalism choice at the base — two edge types, directed graphs, transition graph triples — had to be expressive enough to represent its own operation history without a separate metalanguage. That constraint is load-bearing for the endpoint architecture."
       },
       {
         "name": "Hybrid Representation Model",
@@ -49,11 +112,12 @@
           "edge_types": "Exactly two types, globally fixed, no extensions permitted at this level. Type 1: structural — defines what a pattern is (composition, identity). Type 2: operational — defines transformations between patterns, and serves as cursor/pointer in rule firing. Reduces isomorphism complexity by allowing regime-separated matching. Binary typing does not clutter rule space.",
           "node_typing": "None. Typing complicates rule space. Identity emerges from structural relationships and library compression, not labels.",
           "weights": "Not in base prototype. Named upgrade path — to be evaluated empirically.",
-          "hyperedges": "Not in base prototype. Named upgrade path — motivated by CA-derived insight that discrete systems have fragmented representation spaces with unreachable configurations. To be evaluated empirically via Phase 6 of prototype roadmap.",
+          "hyperedges": "Not in base prototype. Named upgrade path — motivated by CA-derived insight that discrete systems have fragmented representation spaces with unreachable configurations, and by travel path encoding argument (see below). To be evaluated empirically via Phase 6 of prototype roadmap.",
           "automation": "Substrate upgrade decisions are made manually by the researcher at the start of a training run, not automated at runtime."
         },
         "two_level_principle": "Every substrate decision must be evaluated twice — once for the traveler operating on data, once for the second system operating on the traveler. Features that only serve one level do not belong in the shared base.",
-        "upgrade_paths": ["hyperedges (bounded arity k)", "edge weights", "multigraph (edge multiplicity)"]
+        "upgrade_paths": ["hyperedges (bounded arity k)", "edge weights", "multigraph (edge multiplicity)"],
+        "hyperedge_structural_argument": "Transitions operate over regions of layer N (multiple nodes), not single nodes. A binary edge from a representative node to the result is a lossy encoding of what actually happened. If travel paths cannot be faithfully encoded at k=2, the self-similarity property breaks — the traveler cannot operate on its own history with the same machinery. This makes hyperedges a structural requirement for the endpoint architecture, not just an expressiveness improvement. The only open question is when to implement, not whether. Blocked by isomorphism cost — see q_07, q_08."
       },
       {
         "name": "Graph Rewrite Rule Representation",
@@ -118,5 +182,5 @@
       }
     ]
   },
-  "notes": "Migrated from _archive/concepts.frameworks.json. Full content preserved. Session 8 notes: Data Transformation System updated with GA requirement and fitness signal. Layer identity corrected to representational scale. Layer boundary definition added. Session 11 notes: Graph Rewrite Rule Representation framework added. Layer transformation types clarified (within-layer vs layer transition). Edge type descriptions updated with cursor/pointer role. Session 2026-05-06 notes: Rule schema updated from pair to triple (Graph 1, Graph 2S, Graph 2O) — required to express mixed-type output without violating binary edge constraint. Bias testing note added. Graph Matching Design framework added — covers subgraph isomorphism, edge-type-aware matching, role swap, match_all, negative constraint limitation, complexity flag."
+  "notes": "Migrated from _archive/concepts.frameworks.json. Full content preserved. Session 8: Data Transformation System updated with GA requirement and fitness signal. Layer identity corrected to representational scale. Layer boundary definition added. Session 11: Graph Rewrite Rule Representation framework added. Layer transformation types clarified. Edge type descriptions updated. Session 2026-05-06: Rule schema updated from pair to triple. Bias testing note added. Graph Matching Design framework added. Session 2026-05-28: Hierarchical Graph Layer Structure rewritten — sideways/upward movement, provenance model, reversibility note, implementation gap. Rule Space Layer Structure added. Quantum Traveler Exploration Model added. Compound Match Resolution added. Layer Generation Granularity added. System Endpoint Architecture added. Base Substrate Architecture updated with hyperedge structural argument."
 }
