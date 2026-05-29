@@ -1,0 +1,18 @@
+{
+  "_index": "projects.perspective.current_state",
+  "_project": "perspective",
+  "_last_updated": "2026-05-29",
+  "_note": "Load-first ground-truth chunk. Reconciles vision / recorded-decisions / actual-code as of 2026-05-29; wins over older chunks on conflict.",
+  "items": [
+    { "id": "cs_01", "label": "Schema truth (pair: Graph1 + single graph2; operational edges as marker chains, both sides)", "tags": ["schema", "engine", "graph2", "markers"] },
+    { "id": "cs_02", "label": "Layer model (sideways/upward = same/upper floor; one firing one layer; poisoned-apple; provenance-gap-test)", "tags": ["layers", "reversibility", "provenance", "poisoned-apple"] },
+    { "id": "cs_03", "label": "Engine invariants (input_nodes DO-NOT-CHANGE; VF2; step 4c; node recycling = allocation only)", "tags": ["engine", "operations", "invariants", "VF2"] },
+    { "id": "cs_04", "label": "Encoding invariants (one role per element; encode-at-construction; transition contract; output node >=1 op-edge, multiple = merge)", "tags": ["encoding", "invariants", "transition", "optag"] },
+    { "id": "cs_05", "label": "Confusion tells (finished=stuck; transition input vs output; sideways vs upward)", "tags": ["pitfalls", "mnemonics"] },
+    { "id": "cs_06", "label": "Rules state (add_init 16 / bit_add 8 / drain 16 / add_finalise NEEDS REDESIGN / tombstone_gc)", "tags": ["rules", "arithmetic", "add_finalise", "current-task"] },
+    { "id": "cs_07", "label": "Open: reversibility classification (per rule/floor; gate on overlap RATE not can-overlap proof)", "status": "open", "tags": ["open", "reversibility", "q_11", "q_12"] },
+    { "id": "cs_08", "label": "Open: hyperedges structural requirement (when, not whether)", "status": "open", "tags": ["open", "hyperedges", "q_07", "substrate"] },
+    { "id": "cs_09", "label": "Resolved 2026-05-29: GA mutation stability (single pass kept; stability via constrained operators)", "status": "resolved", "tags": ["resolved", "GA", "graph2", "p5b"] },
+    { "id": "cs_10", "label": "Supersedes list (stale points in frameworks / design_rationale / roadmap / open_questions)", "tags": ["reconciliation", "stale", "meta"] }
+  ]
+}
