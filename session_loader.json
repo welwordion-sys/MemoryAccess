@@ -74,8 +74,8 @@
         "perspective": {
           "_summary": "Representation Space Traversal AI — a novel architecture where traversal of data representation space is the primary computational mechanism.",
           "_status": "active",
-          "_subtopics": ["frameworks", "definitions", "relationships", "findings", "open_questions", "methodology", "sources", "timeline", "roadmap", "design_rationale"],
-          "_note": "Project findings may eventually inform the MemoryAccess memory architecture itself."
+          "_subtopics": ["current_state", "frameworks", "definitions", "relationships", "findings", "open_questions", "methodology", "sources", "timeline", "roadmap", "design_rationale"],
+          "_note": "LOAD current_state FIRST — reconciled ground truth (2026-05-29), wins over older chunks on conflict. Project findings may eventually inform the MemoryAccess memory architecture itself."
         },
         "blob_world": {
           "_summary": "Analytically deformable star-shaped soft-body creature system. Transported local coordinate frames create curved pseudo-appendages. Compact parameterization, analytical collision, GPU rendering. Target: ALife/evolutionary simulation.",
