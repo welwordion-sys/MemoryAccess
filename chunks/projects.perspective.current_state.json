@@ -1,0 +1,87 @@
+{
+  "_chunk": "projects.perspective.current_state",
+  "_project": "perspective",
+  "_last_updated": "2026-05-29",
+  "_purpose": "Load-first ground truth for perspective. Reconciles the three states (vision / recorded decisions / actual code) that diverged as of 2026-05-29. Where this chunk and an older chunk disagree, THIS chunk wins until the older chunk is updated.",
+  "_supersedes_pending_update": {
+    "frameworks": "Rule schema 'triple (Graph1, Graph2S, Graph2O)' SUPERSEDED -> pair (Graph1, graph2). match() 'O(n!), evaluate VF2 at P6' SUPERSEDED -> VF2 implemented. 'sideways = parallel reps within the same layer' is fine but ambiguous: 'same layer' = same LEVEL/floor, not same node -- see layer_model.",
+    "design_rationale": "add_init '4 variants' -> 16. add_finalise 'settled (op_node_recycled_in_finalise)' -> needs redesign. Engine step list predates step 4c + node recycling. Step-1 'OPERATIONAL->STRUCTURAL conversion' -> replaced by marker-chain insertion. 'every output node has exactly one incoming OPERATIONAL edge' -> at least one; multiple = merge. unified_pass_proposal + operational_edge_marker_encoding 'not implemented' -> now implemented.",
+    "roadmap": "'hyperedges unless Phase 6 forces it' -> structural requirement, see q_07. VF2/Rust-port flagged for p5 -> VF2 already done in current Python engine.",
+    "open_questions": "q_10 (match O(n!)) RESOLVED by VF2."
+  },
+  "current_phase": "p2 (Input Layer and Encoding). p1 complete; p3-p6 not started.",
+  "current_construction_task": "Redesign add_finalise (only add_* rule not done).",
+  "schema_truth": {
+    "rule": "Pair: (Graph 1 = match graph, mixed edge types) + (graph2 = single transition graph). graph2s/graph2o removed. _apply_pass runs once.",
+    "operational_edges_in_graph2": "Encoded as marker chains on BOTH input and output sides: A-[S]->marker-[S]->B with marker-[OP]->marker. Input/output-side markers distinguished by structural neighbours. OPERATIONAL edges in the transition mean input->output node mapping ONLY.",
+    "files": "operations.py (engine), arithmetic.py (rules), encoding.py (seed builders; uses graph2= , graph2o= removed)."
+  },
+  "layer_model": {
+    "_note": "Major change Sonnet must internalise. Metaphor: rooms (representations) on floors (abstraction levels).",
+    "one_firing_one_layer": "One ruleset firing -> EXACTLY one new layer (a new read space / representation node; a target for further rulesets). The source layer always persists -- nothing is erased.",
+    "sideways_layer": "Same floor. Reversible reframing -- non-loss encoding change, same granularity. Recoverable by applying the inverse ruleset; NO provenance pointer (the ruleset IS the inverse).",
+    "upward_layer": "Upper floor. Irreversible -- granularity shift, lossy processing. NOT recoverable from the ruleset; provenance pointer to source REQUIRED.",
+    "classifier": "= provenance-gap-test (q_12): inverse-match (match_all) the result. Unique pre-image = ruleset-invertible = sideways. Multiple = not recoverable = upward.",
+    "atomicity_poisoned_apple": "A layer is atomically sideways OR upward. ANY single irreversible match in the firing -- intrinsic non-injectivity or overlap-induced -- makes the ENTIRE layer upward. Sideways requires every match in the pass to be ruleset-invertible. No mixed/partial layers (a layer edge is one edge; it can't be half-reversible).",
+    "overlap_handling": "Rule overlap in a pass resolves as a compound match WITHIN the one layer. REJECTED ALTERNATIVE: deferring overlapping matches into a second layer -- explodes the floor count (catastrophic at bitwise density) and is semantically lossy (deferred matches fire on a mutated graph, losing the joint info compound resolution preserves). This is the layer-split trap.",
+    "layer_0": "Immutable once committed. All further movement is sideways or upward.",
+    "boundary_earned": "A subgraph becomes a layer-N+1 node when the GA converges on rules that consistently produce it for a given label. Earned by convergence, not assigned.",
+    "implementation_gap": "Current arithmetic.py rules are CONSUMING -- mutate layer 0 in place, discard the source. Correct for the encoding phase, WRONG for the transformation phase, which needs the source retained and upward firings linked via provenance. operations.py needs: invertibility check (sideways vs upward) + retain-source-on-upward (the consuming rules currently discard it)."
+  },
+  "engine_invariants_operations_py": [
+    "DO NOT CHANGE: input_nodes = set(transition.nodes) - output_only - excluded.",
+    "Matching is VF2 (replaced O(n!) permutation search). q_10 resolved.",
+    "Step 4c: strip stale structural edges from surviving nodes before step 5; remove external edges unless the output node has a placeholder connection in the transition.",
+    "Node recycling (deleted + marker nodes pooled, reused for fresh outputs) is ALLOCATION ONLY, never semantic. It does NOT create output-only nodes; the at-least-one-operational-edge invariant below holds.",
+    "Marker recognizer is by structural neighbours. Totality over malformed / GA-mutated graph2 is unverified -> only matters at p5b (see open_items.ga_mutation_stability)."
+  ],
+  "encoding_invariants": {
+    "one_role_per_element": "Each structural element has exactly one semantic role; no overloading. cycle size = operator identity (+:3 -:4 *:5 /:6 =:7); tail present = unfinished / tail absent = finished; anchor off cycle[0] = operand asymmetry, present on ALL operator+equality tags regardless of state; structural self-loop = bit value 1; operational self-loop = tombstone/marker (edge type disambiguates from bit self-loop).",
+    "encode_at_construction": "If info is known at construction time, encode it then -- no lazy init. build_number returns (root, lsb); connect_operands(op, left_root, left_lsb, right_root, right_lsb).",
+    "transition_contract": [
+      "Static, read-only. Never executed -- only matched/read.",
+      "Input side mirrors the real matched subgraph AFTER step-1 marker insertion (clone of pattern; helper _make_input_graph).",
+      "Output nodes describe final state and NEVER reference real node IDs.",
+      "Every output node has AT LEAST one incoming OPERATIONAL edge from an input node -- no output-only nodes (indistinguishable from a deleted input). MULTIPLE incoming OPERATIONAL edges = a MERGE: multiple source references (incl. outside references) collapse into one output node, unioning their connections.",
+      "OpTag handles (build_operator/build_equality return (node, OpTag{cycle_nodes, anchor, tail})) wire each tag node input->output. tail None = finished, set = unfinished; tail input with no output = deleted = operator becomes finished.",
+      "Negative numbers = 0 - n subtree; no sign node."
+    ]
+  },
+  "confusion_tells": {
+    "finished_vs_unfinished": "Finished = STUCK (>=1 operand holds a parameter; terminal; no rule fires). Unfinished = still working (both operands concrete; rules fire). Mnemonic: finished = stuck. Check before writing any pattern.",
+    "transition_input_vs_output": "Engine matches INPUT nodes against the real graph to get real refs, then follows OPERATIONAL edges to carry those refs to OUTPUT nodes. Output nodes have no knowledge of real IDs. The transition is never executed.",
+    "sideways_vs_upward": "Sideways = same floor, reversible, no pointer (reframing). Upward = upper floor, irreversible, pointer (granularity shift). One poisoned (irreversible) match upgrades the whole layer to upward."
+  },
+  "rules_state_arithmetic_py": {
+    "add_init": "16 variants {bit}{bit}_{mm|ms|sm|ss}. Buffer node; implicit zero for single-bit operands; result LSB -> buffer anchor. Try order mm -> ms/sm -> ss.",
+    "bit_add": "8 variants. Patterns now include op->left_pos[S], op->right_pos[S], op->result[S].",
+    "drain": "16 variants drain_{side}_{active}e{exhausted}_c{carry}. exhausted + active_pos consumed; op advances to active_parent.",
+    "add_finalise": "NEEDS REDESIGN -- not done. Current task.",
+    "tombstone_gc": "unchanged."
+  },
+  "open_items": {
+    "reversibility_classification": {
+      "status": "reframes q_11 / q_12",
+      "model": "Reversibility is per (rule, floor); a layer is atomically sideways/upward (poisoned apple -- see layer_model). Classifier = provenance-gap-test.",
+      "branding_gate": "Do NOT brand on a can-overlap PROOF (binary, over-triggers -- and under poisoned-apple a wrongly-branded rule drags every layer it touches upward). Gate on overlap RATE per (rule, floor): rate~0 sideways, rate~1 (or can't-rule-out) static-upward, in-between decide per-pass.",
+      "bit_rules": "frameworks predicts maximum overlap at the bit floor -> add_init/bit_add/drain likely static-upward there; measure to confirm.",
+      "open_tradeoff": "Static per-(rule,floor) labels give the rule-space layer structure clean classifications (q_11 satisfied) at the cost of over-generating upward layers for middling-rate cases; dynamic per-pass is optimal but messy. q_11 design call.",
+      "blocks": "layer infrastructure (p3); correct shaping of arithmetic.py rules."
+    },
+    "hyperedges_structural_requirement": {
+      "status": "resolved to 'when, not whether'; timing open",
+      "issue": "Travel paths operate over regions (many nodes); a binary edge from a representative node is lossy, breaking self-similarity. Hyperedges are a structural requirement for the endpoint architecture, not just expressiveness.",
+      "blocked_on": "isomorphism cost (q_07, q_08, q_09).",
+      "supersedes": "roadmap 'hyperedges unless Phase 6 forces it'."
+    },
+    "ga_mutation_stability": {
+      "status": "resolved 2026-05-29",
+      "decision": "Single pass (graph2) kept. Mutation stability comes from CONSTRAINED OPERATORS (marker-aware), not substrate typing -- the GA never touches raw graph2; controlled imperative operators do. Freedom this stage = full freedom WITHIN well-formed graph2, none outside (malformed markers are un-scoreable noise now; no recognizer to reinterpret them).",
+      "scaffolding": "The well-formedness constraint is bootstrap scaffolding, not permanent imperative smuggling -- it becomes the seed of the GA-as-graph at the self-evolution transition (q_05).",
+      "why_not_triple": "Triple's GA-independence is partial: graph2s/graph2o share node fate, so independent mutation can still emit cross-graph-inconsistent rules. Triple costs (two passes, dual transition authoring, input/output map-juggling bug) tilt to single graph2. Marker well-formedness is a simpler operator invariant than two-graph consistency.",
+      "residual_deferred": "Second-system: substrate typing sits below the GA (unbreachable); seeded constraints sit within reach once operators self-evolve. Typing wouldn't cleanly fix this either (blocks type-confusion, not cross-graph inconsistency). Decide where the well-formedness invariant lives so self-evolution can't breach it. Moot for fixed prototype operators."
+    }
+  },
+  "unread_chunks_not_reconciled": ["relationships", "findings", "methodology", "timeline", "sources", "roadmap.p1-p6"],
+  "_note": "Session 2026-05-29 (Opus). Centralises load-bearing invariants + current state. Retire the superseded points in the older chunks when convenient -- mechanical, Sonnet-suitable, using _supersedes_pending_update as the spec."
+}
