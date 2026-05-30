@@ -1,10 +1,31 @@
 {
   "_chunk": "meta.session_lock",
-  "_last_updated": "2026-04-30",
+  "_last_updated": "2026-05-01",
   "_auto_load": false,
   "data": {
     "purpose": "Records session lock events. A lock is triggered when user reports erratic behavior or unexpected output quality. Data collected here is used to calibrate context ceilings over time. User is not expected to trigger this frequently — each observation is valuable precisely because it is not routine.",
-    "lock_events": []
+    "lock_events": [
+      {
+        "date": "2026-05-01",
+        "session_topic": "P1 implementation — operations module, tests",
+        "chunks_loaded_at_lock": [
+          "session_loader",
+          "meta.behaviour_personality",
+          "meta.workflow",
+          "projects.perspective.roadmap",
+          "projects.perspective.timeline",
+          "projects.perspective.definitions",
+          "projects.perspective.frameworks",
+          "meta.session_lock",
+          "notes.session_logs",
+          "meta.versioning"
+        ],
+        "session_position": "late",
+        "described_behavior": "GitHub MCP write tool failed on every attempt throughout the session. Reads worked consistently. Writes silently failed regardless of correct sha, content, or retries. Manual KB updates required as workaround.",
+        "action_taken": "No ceiling change — failure is tool-level, not context-size related. Flagged for monitoring. Anthropic feedback submitted via thumbs down.",
+        "notes": "Distinct from context ceiling issues — this is a write permission or MCP integration bug. Monitor whether write failures recur in future sessions."
+      }
+    ]
   },
   "lock_event_schema": {
     "date": "YYYY-MM-DD",
@@ -16,25 +37,5 @@
     "notes": "any additional context"
   },
   "ceiling_review_trigger": "After 5 lock events, review the data and assess whether ceilings need recalibration. Do not raise ceilings based on fewer observations.",
-  "notes": "Established session 9, 2026-04-30. No lock events yet — chunk created in anticipation."
-  {
-    "date": "2026-05-01",
-    "session_topic": "P1 implementation — operations module, tests",
-    "chunks_loaded_at_lock": [
-      "session_loader",
-      "meta.behaviour_personality",
-      "meta.workflow",
-      "projects.perspective.roadmap",
-      "projects.perspective.timeline",
-      "projects.perspective.definitions",
-      "projects.perspective.frameworks",
-      "meta.session_lock",
-      "notes.session_logs",
-      "meta.versioning"
-    ],
-    "session_position": "late",
-    "described_behavior": "GitHub MCP write tool failed on every attempt throughout the session. Reads worked consistently. Writes silently failed regardless of correct sha, content, or retries. Manual KB updates required as workaround.",
-    "action_taken": "No ceiling change — failure is tool-level, not context-size related. Flagged for monitoring. Anthropic feedback submitted via thumbs down.",
-    "notes": "Distinct from context ceiling issues — this is a write permission or MCP integration bug. Monitor whether write failures recur in future sessions."
-  }
+  "notes": "Established session 9, 2026-04-30. 1 lock event recorded."
 }
