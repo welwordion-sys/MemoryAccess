@@ -1,6 +1,6 @@
 {
   "_type": "session_loader",
-  "_version": "0.9.4",
+  "_version": "0.9.5",
   "_instructions": {
     "purpose": "Lightweight session loader. Fetch this file at session start and acknowledge it is loaded. Use the file paths below to fetch index or chunk files individually.",
     "posture": "Be bold with loading. When evidence points clearly to a chunk, fetch it. Prefer action over confirmation.",
@@ -48,8 +48,8 @@
       "_subtopics": ["project_info", "versioning", "global_tags", "behaviour_personality", "workflow", "session_lock"],
       "_auto_loads": ["behaviour_personality"],
       "auto_load_governance": {
-        "auto_load_ceiling": 3,
-        "auto_load_ceiling_note": "Maximum auto-load chunks beyond session_loader. Currently using 2 (behaviour_personality + governance via cascading). Headroom for 1 more before warning triggers. Soft ceiling — Claude warns, user decides, decision logged in versioning.",
+        "auto_load_ceiling": 4,
+        "auto_load_ceiling_note": "Maximum auto-load chunks beyond session_loader. Currently using 2 (behaviour_personality + governance via cascading). Headroom for 2 more before warning triggers. Soft ceiling — Claude warns, user decides, decision logged in versioning.",
         "session_chunk_ceiling": 12,
         "session_chunk_ceiling_note": "Maximum total chunks loaded in a single session. At 16 total chunks in KB, loading 12 in one session indicates either full KB review (declare intent) or unintentional accumulation. Soft ceiling — Claude warns, user decides.",
         "kb_review_exemption": "Declaring session intent as KB review suspends the session chunk ceiling for that session. Auto-load ceiling still applies. Lock protocol still available if erratic behavior flagged.",
