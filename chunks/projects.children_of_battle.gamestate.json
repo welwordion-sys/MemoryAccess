@@ -3,135 +3,137 @@
   "_project": "children_of_battle",
   "_last_updated": "2026-05-04",
   "_structure": "Complete game state data model organized by scope.",
-  "global_scope": {
-    "_description": "Persistent across all runs. Never cleared except on new game.",
-    "roster": [
-      {
-        "id": "character_id",
-        "name": "string",
-        "generation": "integer (0 for recruits, increments on each breeding cycle)",
-        "lineage": ["parent_id_1", "parent_id_2"],
-        "birth_campaign": "integer (campaign index)",
-        "current_age": "integer (in campaign cycles)",
-        "max_age": "integer (retirement age)",
-        "status": "enum: alive | retired | dead",
-        "genes": {
-          "inherited": ["gene_id_1", "gene_id_2", ...],
-          "_note": "Genes persist on character. Inherited at birth from parents. Define card unlock pool."
-        },
-        "trained_skills": ["training_id_1", "training_id_2", ...],
-        "_note": "Trained skills persist on character. Once learned, always available (teacher dependency breaks after learning)."
-      }
-    ],
-    "unlocked_trainings": [
-      {
-        "id": "training_id",
-        "name": "string",
-        "unlock_source": "enum: event | default",
-        "available_since_campaign": "integer",
-        "_note": "Once unlocked globally, any character can be taught it (if teacher exists). Event-based trainings refresh after campaign."
-      }
-    ],
-    "global_gold": "integer (cumulative, never resets)"
-  },
-  "run_scope": {
-    "_description": "Active run state. Cleared on new run or run conclusion.",
-    "run_id": "unique identifier",
-    "campaign_index": "integer (1-indexed)",
-    "active_roster": [
-      {
-        "character_id": "reference to global roster",
-        "current_equipment": ["equipment_id_1", "equipment_id_2"],
-        "equipment_condition": { "equipment_id_1": 0.85, ... },
-        "_note": "Equipment condition decays post-campaign (0.0 = broken, 1.0 = pristine). Repair costs gold."
-      }
-    ],
-    "breeding_queue": [
-      {
-        "parent_1_id": "character_id",
-        "parent_2_id": "character_id",
-        "rearing_mode": "enum: full | cheap",
-        "status": "enum: queued | in_training | ready_for_campaign",
-        "training_assigned": "training_id (if any during growing-up phase)",
-        "teacher_id": "character_id (retired or alive character with trained_skills match)",
-        "age_at_birth": "integer (for teacher aging tracking)"
-      }
-    ],
-    "resources": {
-      "campaign_gold": "integer (earned this run, resets next run)",
-      "revives_used": "integer (0-2, resets next campaign)",
-      "rest_years_elapsed": "integer (aging cycles without combat)"
-    },
-    "discovered_mates": [
-      {
-        "id": "mate_id",
-        "location": "event_name",
-        "compatibility": "enum: compatible | incompatible (optional based on design)",
-        "_note": "Potential mates found at events. Available for breeding decisions."
-      }
-    ]
-  },
-  "character_scope": {
-    "_description": "Character state during a campaign.",
-    "deck": {
-      "composition": {
-        "gene_cards": ["card_id_1", "card_id_2", ...],
-        "_note": "Cards derived from inherited genes. Count/power depends on full vs. cheap rearing."
-      },
-      "training_cards": ["card_id_1", "card_id_2", ...],
-      "_note": "Cards derived from trained_skills. Cheap rearing unlocks fewer cards per training."
-    },
-    "equipment_cards": ["card_id_1", "card_id_2", ...],
-    "_note": "Cards derived from equipped items.",
-    "draw_state": {
-      "hand": ["card_id", "card_id", ...],
-      "_note": "Max 5 cards",
-      "deck_pool": ["card_id", ...],
-      "discard_pile": ["card_id", ...],
-      "reshuffle_trigger": "integer (discard pile size threshold)"
-    },
-    "teacher_status": {
-      "is_teaching": "boolean",
-      "student_id": "character_id (if teaching)",
-      "can_teach": "boolean (derived from trained_skills)",
-      "_note": "Retired characters can still teach. Cannot participate in campaigns while teaching."
-    }
-  },
-  "combat_scope": {
-    "_description": "Ephemeral battle state. Cleared post-battle.",
-    "battle_id": "unique identifier",
-    "turn": "integer",
-    "grid": {
-      "dimensions": "integer (e.g., 8x8)",
-      "terrain": [["tile_type", ...]],
-      "character_positions": { "character_id": { "x": int, "y": int }, ... },
-      "enemies": [
+  "data": {
+    "global_scope": {
+      "_description": "Persistent across all runs. Never cleared except on new game.",
+      "roster": [
         {
-          "id": "enemy_id",
-          "position": { "x": int, "y": int },
-          "hp": "integer",
-          "deck": ["card_id", ...]
+          "id": "character_id",
+          "name": "string",
+          "generation": "integer (0 for recruits, increments on each breeding cycle)",
+          "lineage": ["parent_id_1", "parent_id_2"],
+          "birth_campaign": "integer (campaign index)",
+          "current_age": "integer (in campaign cycles)",
+          "max_age": "integer (retirement age)",
+          "status": "enum: alive | retired | dead",
+          "genes": {
+            "inherited": ["gene_id_1", "gene_id_2", "..."],
+            "_note": "Genes persist on character. Inherited at birth from parents. Define card unlock pool."
+          },
+          "trained_skills": ["training_id_1", "training_id_2", "..."],
+          "_note": "Trained skills persist on character. Once learned, always available (teacher dependency breaks after learning)."
+        }
+      ],
+      "unlocked_trainings": [
+        {
+          "id": "training_id",
+          "name": "string",
+          "unlock_source": "enum: event | default",
+          "available_since_campaign": "integer",
+          "_note": "Once unlocked globally, any character can be taught it (if teacher exists). Event-based trainings refresh after campaign."
+        }
+      ],
+      "global_gold": "integer (cumulative, never resets)"
+    },
+    "run_scope": {
+      "_description": "Active run state. Cleared on new run or run conclusion.",
+      "run_id": "unique identifier",
+      "campaign_index": "integer (1-indexed)",
+      "active_roster": [
+        {
+          "character_id": "reference to global roster",
+          "current_equipment": ["equipment_id_1", "equipment_id_2"],
+          "equipment_condition": { "equipment_id_example": 0.85 },
+          "_note": "Equipment condition decays post-campaign (0.0 = broken, 1.0 = pristine). Repair costs gold."
+        }
+      ],
+      "breeding_queue": [
+        {
+          "parent_1_id": "character_id",
+          "parent_2_id": "character_id",
+          "rearing_mode": "enum: full | cheap",
+          "status": "enum: queued | in_training | ready_for_campaign",
+          "training_assigned": "training_id (if any during growing-up phase)",
+          "teacher_id": "character_id (retired or alive character with trained_skills match)",
+          "age_at_birth": "integer (for teacher aging tracking)"
+        }
+      ],
+      "resources": {
+        "campaign_gold": "integer (earned this run, resets next run)",
+        "revives_used": "integer (0-2, resets next campaign)",
+        "rest_years_elapsed": "integer (aging cycles without combat)"
+      },
+      "discovered_mates": [
+        {
+          "id": "mate_id",
+          "location": "event_name",
+          "compatibility": "enum: compatible | incompatible (optional based on design)",
+          "_note": "Potential mates found at events. Available for breeding decisions."
         }
       ]
     },
-    "character_battle_state": {
-      "character_id": {
-        "hp": "integer",
-        "status": "enum: alive | incapacitated | dead",
-        "hand": ["card_id", ...],
-        "deck_pool": ["card_id", ...],
-        "discard_pile": ["card_id", ...],
-        "action_points": "integer (per turn, derived from stats/equipment)"
+    "character_scope": {
+      "_description": "Character state during a campaign.",
+      "deck": {
+        "composition": {
+          "gene_cards": ["card_id_1", "card_id_2", "..."],
+          "_note": "Cards derived from inherited genes. Count/power depends on full vs. cheap rearing."
+        },
+        "training_cards": ["card_id_1", "card_id_2", "..."],
+        "_note": "Cards derived from trained_skills. Cheap rearing unlocks fewer cards per training."
+      },
+      "equipment_cards": ["card_id_1", "card_id_2", "..."],
+      "_note": "Cards derived from equipped items.",
+      "draw_state": {
+        "hand": ["card_id_example", "..."],
+        "_note": "Max 5 cards",
+        "deck_pool": ["card_id_example", "..."],
+        "discard_pile": ["card_id_example", "..."],
+        "reshuffle_trigger": "integer (discard pile size threshold)"
+      },
+      "teacher_status": {
+        "is_teaching": "boolean",
+        "student_id": "character_id (if teaching)",
+        "can_teach": "boolean (derived from trained_skills)",
+        "_note": "Retired characters can still teach. Cannot participate in campaigns while teaching."
       }
     },
-    "revive_pool": "integer (0-2 remaining for run)",
-    "battle_log": ["event_1", "event_2", ...]
-  },
-  "notes": {
-    "card_mechanics": "Draw 5 at battle start, draw 2 each round. Spent cards go to discard. When discard reaches threshold, reshuffle into deck pool.",
-    "gene_card_pool": "Full children get all gene-based cards from both parents. Cheap children get subset (design detail pending: count vs. potency).",
-    "training_persistence": "Once a character learns a training, it persists. Teacher is no longer needed after learning. But teacher must exist at time of teaching.",
-    "equipment_decay": "Post-campaign, equipment condition drops. Repair cost gates equipment investment, creating resource tension.",
-    "retirement_and_teaching": "Retired characters cannot fight but can still teach. This allows long-term teacher pipeline."
+    "combat_scope": {
+      "_description": "Ephemeral battle state. Cleared post-battle.",
+      "battle_id": "unique identifier",
+      "turn": "integer",
+      "grid": {
+        "dimensions": "integer (e.g., 8x8)",
+        "terrain": [["tile_type_example"]],
+        "character_positions": { "character_id_example": { "x": "int", "y": "int" } },
+        "enemies": [
+          {
+            "id": "enemy_id",
+            "position": { "x": "int", "y": "int" },
+            "hp": "integer",
+            "deck": ["card_id_example", "..."]
+          }
+        ]
+      },
+      "character_battle_state": {
+        "character_id_example": {
+          "hp": "integer",
+          "status": "enum: alive | incapacitated | dead",
+          "hand": ["card_id_example", "..."],
+          "deck_pool": ["card_id_example", "..."],
+          "discard_pile": ["card_id_example", "..."],
+          "action_points": "integer (per turn, derived from stats/equipment)"
+        }
+      },
+      "revive_pool": "integer (0-2 remaining for run)",
+      "battle_log": ["event_1_example", "event_2_example", "..."]
+    },
+    "notes": {
+      "card_mechanics": "Draw 5 at battle start, draw 2 each round. Spent cards go to discard. When discard reaches threshold, reshuffle into deck pool.",
+      "gene_card_pool": "Full children get all gene-based cards from both parents. Cheap children get subset (design detail pending: count vs. potency).",
+      "training_persistence": "Once a character learns a training, it persists. Teacher is no longer needed after learning. But teacher must exist at time of teaching.",
+      "equipment_decay": "Post-campaign, equipment condition drops. Repair cost gates equipment investment, creating resource tension.",
+      "retirement_and_teaching": "Retired characters cannot fight but can still teach. This allows long-term teacher pipeline."
+    }
   }
 }
