@@ -1,44 +1,68 @@
 {
   "_type": "session_loader",
-  "_version": "0.9.5",
+  "_version": "0.9.6",
   "_instructions": {
-    "purpose": "Lightweight session loader. Fetch this file at session start and acknowledge it is loaded. Use the file paths below to fetch index or chunk files individually.",
-    "posture": "Be bold with loading. When evidence points clearly to a chunk, fetch it. Prefer action over confirmation.",
+    "purpose": "Session bootstrap. Fetch at session start. Meta operational chunks (behaviour_personality, workflow) load from GitHub. Project knowledge queries go to Supabase REST API — see supabase block.",
+    "posture": "Be bold with loading. When evidence points clearly to a node or query, execute it. Prefer action over confirmation.",
     "operation_model": {
-      "online": "Fast, lightweight operations: index lookup, chunk retrieval, reading. Do these freely within a session.",
-      "offline": "Heavy operations: chunk writing, restructuring, archiving, updating the loader. These are deliberate and explicit — only on user instruction or clear necessity."
+      "online": "Fast operations: Supabase REST queries for project knowledge, GitHub fetch for meta chunks. Do these freely.",
+      "offline": "Heavy operations: Supabase UPDATE/INSERT (via SQL editor), GitHub writes (loader/meta chunks). Deliberate and explicit only."
     },
     "session_start_acknowledgement": "After loading, always include this line in the acknowledgement: 'Type: load: meta.workflow to load working style and session rules.'",
     "how_to_load": [
-      "0. At session start: check for session intent declaration. Recognized intents: 'kb review', 'knowledge base review', 'memory review', 'database review'. KB = Knowledge Base. If declared, acknowledge it, suspend session chunk ceiling, proceed. Do not ask for clarification — recognize and act.",
-      "1. At session start: fetch session_loader.json via GitHub MCP if available. If unavailable, use web_fetch with raw_base (see github block). After loading, auto-load all chunks listed in _auto_loads for each domain. Report auto-load count and approximate token total as part of acknowledgement. Always append the session_start_acknowledgement line.",
-      "1b. Cascading sub-chunk load: after loading any chunk, check if it contains a '_sub_chunks' field. If yes, load all listed sub-chunks immediately and automatically. Sub-chunks count toward the auto-load ceiling. Report each sub-chunk load as part of the session start acknowledgement.",
-      "2. For ANY content request: first fetch the relevant index/<domain>.<subtopic>.json to see what topics are actually in it. This is mandatory before any chunk decision.",
-      "3. If the index clearly confirms a match, load the corresponding chunk immediately — no confirmation needed.",
-      "4. After fetching a chunk: summarise what was loaded and proceed.",
-      "5. Context eviction: if multiple chunks have been loaded and a topic is clearly finished, consider it evicted — do not re-reference unless the user returns to it.",
-      "6. Never speculatively fetch additional files unless the user explicitly requests it.",
-      "7. NEVER fetch anything from _archive/. That folder is a read-only human backup."
+      "0. At session start: check for session intent declaration. Recognized intents: 'kb review', 'knowledge base review', 'memory review', 'database review'. If declared, acknowledge and suspend session ceiling.",
+      "1. At session start: fetch session_loader.json via GitHub MCP or web_fetch raw_base. Auto-load behaviour_personality from GitHub (see github block). Report load count in acknowledgement. Append session_start_acknowledgement line.",
+      "1b. Cascading sub-chunk load: if a GitHub meta chunk contains '_sub_chunks', load them immediately. Counts toward auto-load ceiling.",
+      "2. For ANY project knowledge request (perspective, blob_world, ecosystem_ccg, etc.): query Supabase REST API (see supabase block). Use web_fetch with apikey and Authorization headers. Do NOT fetch the old GitHub chunk files for project content — they are the legacy system.",
+      "3. Common Supabase query patterns are in supabase.query_patterns. Replace {project} and {kind} with actual values. Prefer specific filters over broad selects. Surface only nodes relevant to the question.",
+      "4. For meta operational content (behaviour_personality, workflow, session_lock): fetch from GitHub chunk files (see github block). These are config, not project knowledge.",
+      "5. After querying: summarise kind + count of results, then show relevant titles and key body content. Do not dump raw JSON unless asked.",
+      "6. Context ceiling: Supabase queries are on-demand — do not pre-emptively load everything. Query specifically. Only fetch edges if the user asks about relationships.",
+      "7. NEVER fetch anything from _archive/. Never use old GitHub chunk files for project knowledge lookups."
     ],
     "lookup_syntax": {
-      "load": "load: <domain>.<subtopic>",
-      "index": "index: <domain>.<subtopic>",
-      "update": "update: <domain>.<subtopic>",
-      "new": "new chunk: <domain>.<subtopic>"
+      "load_meta": "load: meta.<subtopic> — fetches from GitHub",
+      "query": "query: <project> <kind> — translates to Supabase REST query",
+      "update": "update: <project>.<kind>.<id> — user runs SQL in Supabase editor",
+      "new": "new node: <project>.<kind> — user inserts via Supabase editor or API"
     },
     "logging_format": {
       "description": "Two-tier format.",
-      "tier_1_decisions": "Architectural and design decisions. Fields: decision, rationale (one sentence), affects (chunk name). Tag with project if project-specific. Written at end of session under decisions[session_id].",
-      "tier_2_implementation": "Implementation-phase entries. Fields: attempted, outcome, decided. Tag with project. Written during implementation sessions under implementation[]."
+      "tier_1_decisions": "Architectural and design decisions. Fields: decision, rationale (one sentence), affects (node kind + project). Written at end of session.",
+      "tier_2_implementation": "Implementation-phase entries. Fields: attempted, outcome, decided. Tag with project."
     },
     "github": {
       "owner": "welwordion-sys",
       "repo": "MemoryAccess",
       "branch": "main",
-      "index_path": "index/<domain>.<subtopic>.json",
       "chunk_path": "chunks/<domain>.<subtopic>.json",
       "raw_base": "https://raw.githubusercontent.com/welwordion-sys/MemoryAccess/refs/heads/main/",
-      "fallback": "If GitHub MCP is unavailable, construct fetch URLs as raw_base + index_path or raw_base + chunk_path and use web_fetch. Example: raw_base + 'chunks/meta.behaviour_personality.json'."
+      "use_for": "Meta operational chunks only: behaviour_personality, workflow, session_lock, governance. Not for project knowledge.",
+      "fallback": "If GitHub MCP unavailable, construct URLs as raw_base + chunk_path and use web_fetch."
+    },
+    "supabase": {
+      "rest_api": "https://oniywvgbjtusvrgoklrm.supabase.co/rest/v1",
+      "anon_key": "FILL_IN_FROM_SUPABASE_SETTINGS_API_ANON_PUBLIC",
+      "headers": {
+        "apikey": "<anon_key>",
+        "Authorization": "Bearer <anon_key>"
+      },
+      "schema": {
+        "nodes": "id, project, kind (decision|invariant|open_question|finding|definition|framework|rule_state|task|pitfall), title, body (jsonb), status (active|superseded|open|resolved|deferred|rejected|obsolete|in_progress|done), tags (text[]), legacy_chunk, legacy_id, source_session",
+        "edges": "id, source_node (uuid→nodes.id), target_node (uuid→nodes.id), relation (blocks|depends_on|supersedes|resolves|refines|contradicts|implements|derived_from|applies_to), note",
+        "projects": "name, summary, status (active|deferred), startup_config (jsonb)"
+      },
+      "query_patterns": {
+        "current_state": "/nodes?project=eq.{project}&status=in.(active,open,in_progress)&select=kind,title,status,body,tags",
+        "by_kind": "/nodes?project=eq.{project}&kind=eq.{kind}&select=title,status,body,legacy_id",
+        "pitfalls_active": "/nodes?kind=eq.pitfall&status=eq.active&select=title,body,tags",
+        "authoritative": "/nodes?project=eq.{project}&tags=cs.{authoritative}&select=kind,title,status,body",
+        "open_questions": "/nodes?project=eq.{project}&kind=eq.open_question&status=eq.open&select=title,body,legacy_id",
+        "roadmap": "/nodes?project=eq.{project}&kind=eq.task&tags=cs.{roadmap}&select=title,status,legacy_id&order=legacy_id.asc",
+        "all_projects": "/projects?select=name,summary,status&order=name.asc",
+        "node_by_id": "/nodes?legacy_id=eq.{id}&project=eq.{project}&select=kind,title,status,body"
+      },
+      "note": "Fill anon_key from: Supabase Dashboard → Settings → API → Project API keys → anon public. Replace {project} and {kind} with actual values in queries above."
     }
   },
   "domain_map": {
@@ -51,15 +75,15 @@
         "auto_load_ceiling": 4,
         "auto_load_ceiling_note": "Maximum auto-load chunks beyond session_loader. Currently using 2 (behaviour_personality + governance via cascading). Headroom for 2 more before warning triggers. Soft ceiling — Claude warns, user decides, decision logged in versioning.",
         "session_chunk_ceiling": 12,
-        "session_chunk_ceiling_note": "Maximum total chunks loaded in a single session. At 16 total chunks in KB, loading 12 in one session indicates either full KB review (declare intent) or unintentional accumulation. Soft ceiling — Claude warns, user decides.",
-        "kb_review_exemption": "Declaring session intent as KB review suspends the session chunk ceiling for that session. Auto-load ceiling still applies. Lock protocol still available if erratic behavior flagged.",
-        "kb_definition": "KB = Knowledge Base. The structured memory system stored in this repository.",
+        "session_chunk_ceiling_note": "Maximum total chunks loaded in a single session. Soft ceiling — Claude warns, user decides.",
+        "kb_review_exemption": "Declaring session intent as KB review suspends the session chunk ceiling for that session.",
+        "kb_definition": "KB = Knowledge Base. Project knowledge is in Supabase. Meta config is in GitHub chunks.",
         "kb_review_synonyms": ["kb review", "knowledge base review", "memory review", "database review"]
       }
     },
     "notes": {
       "_scope": "general",
-      "_summary": "General working notes, memory system drafts, session logs (cross-project). Project-specific notes live under projects.<name>.*",
+      "_summary": "General working notes, memory system drafts, session logs (cross-project).",
       "_subtopics": ["session_logs", "drafts", "ideas"]
     },
     "entities": {
@@ -69,41 +93,37 @@
     },
     "projects": {
       "_scope": "project-specific",
-      "_summary": "All project-specific content. Each project has its own subtopic namespace.",
+      "_summary": "All project-specific content. Knowledge lives in Supabase nodes — query via REST API.",
       "_projects": {
         "perspective": {
           "_summary": "Representation Space Traversal AI — a novel architecture where traversal of data representation space is the primary computational mechanism.",
           "_status": "active",
-          "_subtopics": ["current_state", "frameworks", "definitions", "relationships", "findings", "open_questions", "methodology", "sources", "timeline", "roadmap", "design_rationale"],
-          "_note": "LOAD current_state FIRST — reconciled ground truth (2026-05-29), wins over older chunks on conflict. Project findings may eventually inform the MemoryAccess memory architecture itself."
+          "_supabase_project": "perspective",
+          "_note": "Query authoritative nodes first: ?project=eq.perspective&tags=cs.{authoritative}. These win over any conflicting nodes on the same topic."
         },
         "blob_world": {
           "_summary": "Analytically deformable star-shaped soft-body creature system. Transported local coordinate frames create curved pseudo-appendages. Compact parameterization, analytical collision, GPU rendering. Target: ALife/evolutionary simulation.",
           "_status": "active",
           "_language": "Rust",
           "_files": ["blob.rs", "environment.rs", "gpu.rs", "main.rs", "math.rs", "shaders.rs"],
-          "_subtopics": ["frameworks", "findings", "open_questions", "implementation"],
-          "_note": "Single long session 2026-05-15. KB write missed due to token exhaustion. Reconstructed from ChatGPT summary. Resume point: rendering fiber artifact deferred, physics next."
+          "_note": "Resume point: rendering fiber artifact deferred, physics next."
         },
         "ecosystem_ccg": {
-          "_summary": "Ecosystem-building CCG. Players build shared biomes and food webs against an escalating world deck. Organisms have fitness-based population dynamics, resource needs, and trait systems. Shared biome contested via stack mechanic.",
+          "_summary": "Ecosystem-building CCG. Players build shared biomes and food webs against an escalating world deck. Organisms have fitness-based population dynamics, resource needs, and trait systems.",
           "_status": "active",
           "_language": "Rust",
           "_files": ["main.rs", "types.rs", "cards.rs", "biome.rs", "player.rs", "ai.rs", "game.rs", "ui.rs"],
-          "_subtopics": ["frameworks"],
-          "_note": "Single long session 2026-05-18. types.rs/cards.rs/biome.rs/player.rs complete at v4. game.rs/ai.rs/ui.rs not yet updated to v4 types — first task next session. Code in Claude outputs not in this repo."
+          "_note": "game.rs/ai.rs/ui.rs not yet updated to v4 types — first task next session."
         },
         "children_of_battle": {
           "_summary": "Mobile tactical roguelike with generational breeding, deck-building combat, and permadeath.",
           "_status": "deferred",
-          "_subtopics": ["frameworks"],
-          "_note": "Separate from ecosystem_ccg. Deferred until other projects complete. Frameworks chunk and index exist."
+          "_note": "Deferred until other projects complete."
         },
         "hextorussim": {
           "_summary": "Pre-KB simulation project, currently session-only.",
           "_status": "deferred",
-          "_subtopics": [],
-          "_note": "Started before KB system. No chunks yet — add subtopics and summary when KB writes begin."
+          "_note": "No chunks yet — add subtopics and summary when KB writes begin."
         }
       }
     }
