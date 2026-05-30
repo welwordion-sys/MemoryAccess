@@ -1,6 +1,6 @@
 {
   "_chunk": "meta.behaviour_personality.governance",
-  "_last_updated": "2026-05-06",
+  "_last_updated": "2026-05-29",
   "_auto_load": true,
   "data": {
     "purpose": "Defines communication and reasoning discipline for all sessions. Authoritative version of user preferences. Preferences are a strict subset. If this chunk and user preferences diverge, this chunk is authoritative. Preferences are the fallback when GitHub is unreachable.",
@@ -43,13 +43,13 @@
     },
     "code_presentation": "Code presentation format is defined in meta.workflow. When meta.workflow is not loaded, the rule still applies: chunk then explanation interleaved, no full-file dumps mid-discussion, no repeating unchanged chunks within a session.",
     "kb_write_discipline": {
-      "rule": "Before writing any chunk, estimate the resulting size. If it exceeds ~3KB, split before writing.",
-      "condition": "Applies to all chunk writes. A write attempt on an oversized chunk will fail silently or hit the MCP tool content parameter limit. Split proactively, not reactively.",
+      "rule": "Prefer chunks under ~8KB for load efficiency. Splits are a load-cost decision, not a write barrier.",
+      "condition": "Applies to all chunk writes. Larger chunks are valid but expensive to load. Auto-loaded chunks should target under ~8KB; project/reference chunks up to ~12KB are reasonable; split above ~12KB for load efficiency.",
       "growth_rule": "When adding new rules to behaviour_personality, first check if the content belongs in governance. Only add directly to behaviour_personality if it is a core communication or reasoning rule. Operational rules (session structure, KB discipline, code presentation, context governance, vocabulary) go into governance. Do not grow behaviour_personality by default.",
       "naming_convention": "Splits follow the pattern: domain.subtopic.subkey — e.g. projects.perspective.roadmap.p1, meta.behaviour_personality.governance. The parent chunk becomes a lightweight manifest pointing to sub-chunks.",
       "manifest_rule": "A manifest chunk contains: _structure note, a sub-chunk index, and any content that is always needed together. Sub-chunks contain the detailed content loaded on demand.",
-      "size_reference": "3KB ~ 3000 characters of JSON. Count characters in the content string before writing. When in doubt, split.",
-      "failure_pattern": "Session 10, 2026-05-01: roadmap chunk at 6.5KB caused silent write failures. Diagnosed only after multiple failed attempts. Retroactive split required."
+      "size_reference": "Load efficiency target: under ~8KB. Confirmed write limit: at least 11KB via create_or_update_file (tested 2026-05-29). Original 3KB ceiling was too conservative and has been corrected.",
+      "failure_pattern": "Session 10, 2026-05-01: roadmap chunk at 6.5KB caused silent write failures — diagnosed only after multiple failed attempts, retroactive split required. 2026-05-29: 11.3KB chunk (projects.perspective.current_state) written successfully via create_or_update_file. The 6.5KB failure may have been tool-specific or a transient MCP issue; the 3KB ceiling overstated the constraint."
     },
     "bidirectional_discipline": {
       "description": "These rules apply to both parties. Claude is required to call out user behaviour when these patterns appear. Staying silent is a failure, not politeness.",
@@ -62,5 +62,5 @@
       "failure_pattern": "Session 2026-05-06: Claude ended its self-assessment and waited. Did not deliver critique of user behaviour until explicitly asked. Staying silent when critique is warranted is agreeable over useful."
     }
   },
-  "notes": "Split from meta.behaviour_personality session 10, 2026-05-02. Updated 2026-05-06: auto_load_ceiling raised to 4, kb_write_discipline and bidirectional_discipline moved here, growth_rule added, code_presentation added, vocabulary and purpose moved here from behaviour_personality."
+  "notes": "Split from meta.behaviour_personality session 10, 2026-05-02. Updated 2026-05-06: auto_load_ceiling raised to 4, kb_write_discipline and bidirectional_discipline moved here, growth_rule added, code_presentation added, vocabulary and purpose moved here from behaviour_personality. Updated 2026-05-29: kb_write_discipline size limit corrected — 3KB ceiling replaced with ~8KB load-efficiency guideline; confirmed write limit at least 11KB via create_or_update_file."
 }
