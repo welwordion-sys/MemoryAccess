@@ -1,0 +1,79 @@
+{
+  "_type": "kb",
+  "_version": "1.0.0",
+  "_description": "Session bootstrap for welwordion-sys knowledge base. Project knowledge is in Supabase. Meta operational chunks are on GitHub.",
+
+  "session_start": {
+    "acknowledgement": "Loaded kb.json v1.0.0. Type: load: meta.workflow for working style and session rules.",
+    "instructions": [
+      "1. Acknowledge this file is loaded including version number.",
+      "2. Immediately fetch meta.behaviour_personality from GitHub (see github.meta_chunks.behaviour_personality). This is mandatory — it loads operational rules.",
+      "3. For ALL project knowledge (perspective, blob_world, ecosystem_ccg, children_of_battle): query Supabase REST API only. Use web_fetch with headers from supabase.headers. See supabase.query_patterns.",
+      "4. NEVER fetch files from the GitHub chunks/ or index/ directories for project knowledge. That is the old system. Supabase is the source of truth.",
+      "5. For meta content other than behaviour_personality (workflow, session_lock): fetch from GitHub using github.meta_chunks paths.",
+      "6. After any Supabase query: summarise kind and count of results, surface relevant titles and key body content. Do not dump raw JSON unless asked.",
+      "7. Query on demand — do not pre-load project data speculatively.",
+      "8. When starting work on perspective: first query authoritative nodes (tags=cs.{authoritative}) to get the reconciled ground truth before loading anything else."
+    ]
+  },
+
+  "supabase": {
+    "rest_api": "https://oniywvgbjtusvrgoklrm.supabase.co/rest/v1",
+    "publishable_key": "FILL_IN_PUBLISHABLE_KEY",
+    "headers": {
+      "apikey": "<publishable_key>",
+      "Authorization": "Bearer <publishable_key>"
+    },
+    "schema": {
+      "nodes": "id, project, kind (decision|invariant|open_question|finding|definition|framework|rule_state|task|pitfall), title, body (jsonb), status (active|superseded|open|resolved|deferred|rejected|obsolete|in_progress|done), tags (text[]), legacy_chunk, legacy_id, source_session",
+      "edges": "id, source_node (uuid), target_node (uuid), relation (blocks|depends_on|supersedes|resolves|refines|contradicts|implements|derived_from|applies_to), note",
+      "projects": "name, summary, status (active|deferred), startup_config (jsonb)"
+    },
+    "query_patterns": {
+      "authoritative":    "/nodes?project=eq.{p}&tags=cs.{authoritative}&select=kind,title,status,body",
+      "current_state":    "/nodes?project=eq.{p}&status=in.(active,open,in_progress)&select=kind,title,status,body,tags",
+      "by_kind":          "/nodes?project=eq.{p}&kind=eq.{k}&select=title,status,body,legacy_id",
+      "pitfalls":         "/nodes?kind=eq.pitfall&status=eq.active&select=title,body,tags",
+      "open_questions":   "/nodes?project=eq.{p}&kind=eq.open_question&status=eq.open&select=title,body,legacy_id",
+      "roadmap":          "/nodes?project=eq.{p}&kind=eq.task&tags=cs.{roadmap}&select=title,status,legacy_id&order=legacy_id.asc",
+      "all_projects":     "/projects?select=name,summary,status&order=name.asc",
+      "node_by_legacy_id":"/nodes?project=eq.{p}&legacy_id=eq.{id}&select=kind,title,status,body"
+    }
+  },
+
+  "github": {
+    "raw_base": "https://raw.githubusercontent.com/welwordion-sys/MemoryAccess/refs/heads/main/",
+    "use_for": "Meta operational chunks only. Not for project knowledge.",
+    "meta_chunks": {
+      "behaviour_personality": "chunks/meta.behaviour_personality.json",
+      "workflow":              "chunks/meta.workflow.json",
+      "session_lock":          "chunks/meta.session_lock.json"
+    }
+  },
+
+  "projects": {
+    "perspective": {
+      "status": "active",
+      "summary": "Representation Space Traversal AI — traversal of data representation space as the primary computational mechanism.",
+      "note": "Query authoritative nodes first. add_finalise needs redesign — current task."
+    },
+    "blob_world": {
+      "status": "active",
+      "summary": "Analytically deformable star-shaped soft-body creatures. Rust. ALife/evolutionary simulation target.",
+      "note": "Resume: rendering fiber artifact deferred, physics next."
+    },
+    "ecosystem_ccg": {
+      "status": "active",
+      "summary": "Ecosystem-building CCG in Rust. Shared biome, fitness-based population dynamics.",
+      "note": "game.rs/ai.rs/ui.rs not yet updated to v4 types — first task next session."
+    },
+    "children_of_battle": {
+      "status": "deferred",
+      "summary": "Mobile tactical roguelike with generational breeding and permadeath."
+    },
+    "hextorussim": {
+      "status": "deferred",
+      "summary": "Pre-KB simulation project, session-only."
+    }
+  }
+}
