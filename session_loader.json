@@ -1,6 +1,6 @@
 {
   "_type": "session_loader",
-  "_version": "0.9.4",
+  "_version": "0.9.5",
   "_instructions": {
     "purpose": "Lightweight session loader. Fetch this file at session start and acknowledge it is loaded. Use the file paths below to fetch index or chunk files individually.",
     "posture": "Be bold with loading. When evidence points clearly to a chunk, fetch it. Prefer action over confirmation.",
