@@ -42,10 +42,10 @@
     },
     "supabase": {
       "rest_api": "https://oniywvgbjtusvrgoklrm.supabase.co/rest/v1",
-      "anon_key": "FILL_IN_FROM_SUPABASE_SETTINGS_API_ANON_PUBLIC",
+      "publishable_key": "sb_publishable_-uYEMSqG3ilRlyXYi_vXkw_1TedK45g",
       "headers": {
-        "apikey": "<anon_key>",
-        "Authorization": "Bearer <anon_key>"
+        "apikey": "<publishable_key>",
+        "Authorization": "Bearer <publishable_key>"
       },
       "schema": {
         "nodes": "id, project, kind (decision|invariant|open_question|finding|definition|framework|rule_state|task|pitfall), title, body (jsonb), status (active|superseded|open|resolved|deferred|rejected|obsolete|in_progress|done), tags (text[]), legacy_chunk, legacy_id, source_session",
@@ -62,7 +62,7 @@
         "all_projects": "/projects?select=name,summary,status&order=name.asc",
         "node_by_id": "/nodes?legacy_id=eq.{id}&project=eq.{project}&select=kind,title,status,body"
       },
-      "note": "Fill anon_key from: Supabase Dashboard → Settings → API → Project API keys → anon public. Replace {project} and {kind} with actual values in queries above."
+      "note": "Fill publishable_key from: Supabase Dashboard → Settings → API → Project API keys → anon public. Replace {project} and {kind} with actual values in queries above."
     }
   },
   "domain_map": {
