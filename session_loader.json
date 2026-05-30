@@ -92,7 +92,7 @@
           "_files": ["main.rs", "types.rs", "cards.rs", "biome.rs", "player.rs", "ai.rs", "game.rs", "ui.rs"],
           "_subtopics": ["frameworks"],
           "_note": "Single long session 2026-05-18. types.rs/cards.rs/biome.rs/player.rs complete at v4. game.rs/ai.rs/ui.rs not yet updated to v4 types — first task next session. Code in Claude outputs not in this repo."
-        }
+        },
         "children_of_battle": {
           "_summary": "Mobile tactical roguelike with generational breeding, deck-building combat, and permadeath.",
           "_status": "deferred",
@@ -101,7 +101,7 @@
         },
         "hextorussim": {
           "_summary": "Pre-KB simulation project, currently session-only.",
-    	    "_status": "deferred",
+          "_status": "deferred",
           "_subtopics": [],
           "_note": "Started before KB system. No chunks yet — add subtopics and summary when KB writes begin."
         }
