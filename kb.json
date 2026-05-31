@@ -1,6 +1,6 @@
 {
   "_type": "kb",
-  "_version": "1.0.0",
+  "_version": "1.0.1",
   "_description": "Session bootstrap for welwordion-sys knowledge base. Project knowledge is in Supabase. Meta operational chunks are on GitHub.",
 
     "session_start": {
