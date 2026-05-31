@@ -1,0 +1,85 @@
+{
+  "_type": "kb",
+  "_version": "2.0.0",
+  "_description": "Session bootstrap served from GitHub. Project list and notes are inline. _endpoints URLs work from a browser or Supabase MCP (desktop) — not from Claude session web_fetch.",
+  "session_start": {
+    "acknowledgement": "KB bootstrap v2.0.0 loaded.",
+    "instructions": [
+      "1. Acknowledge the bootstrap is loaded, including version number.",
+      "2. The projects section below contains current status and key notes for all active projects. Use this as your working context for the session.",
+      "3. Behaviour rules are in your session preferences — apply them.",
+      "4. The _endpoints URLs are for browser or Supabase MCP access only. Do NOT attempt to fetch them via web_fetch — they will fail from Claude sessions.",
+      "5. When starting perspective work: note that add_finalise needs redesign — that is the current task. Query authoritative nodes if Supabase MCP is available.",
+      "6. This bootstrap is READ-ONLY. To query or update the live KB, use the Supabase MCP on desktop or the SQL editor."
+    ]
+  },
+  "projects": {
+    "perspective": {
+      "status": "active",
+      "summary": "Representation Space Traversal AI — traversal of data representation space as the primary computational mechanism.",
+      "note": "Query authoritative first. add_finalise needs redesign — current task."
+    },
+    "blob_world": {
+      "status": "active",
+      "summary": "Analytically deformable star-shaped soft-body creatures. Rust. ALife/evolutionary simulation target.",
+      "note": "Resume: rendering fiber artifact deferred, physics next."
+    },
+    "ecosystem_ccg": {
+      "status": "active",
+      "summary": "Ecosystem-building CCG in Rust. Shared biome, fitness-based population dynamics.",
+      "note": "game.rs/ai.rs/ui.rs not yet updated to v4 types — first task next session."
+    },
+    "children_of_battle": {
+      "status": "deferred",
+      "summary": "Mobile tactical roguelike with generational breeding, deck-building combat, and permadeath."
+    },
+    "hextorussim": {
+      "status": "deferred",
+      "summary": "Pre-KB simulation project, session-only."
+    }
+  },
+  "_endpoints": {
+    "_note": "These URLs require a browser or Supabase MCP. They do not work via Claude session web_fetch.",
+    "_meta": {
+      "behaviour_personality": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=node&project=meta&id=behaviour_personality",
+      "workflow": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=node&project=meta&id=workflow"
+    },
+    "projects": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=projects",
+    "pitfalls": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=pitfalls",
+    "perspective": {
+      "authoritative": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=authoritative&project=perspective",
+      "current_state": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=current_state&project=perspective",
+      "open_questions": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=open_questions&project=perspective",
+      "roadmap": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=roadmap&project=perspective",
+      "edges": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=edges&project=perspective"
+    },
+    "blob_world": {
+      "authoritative": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=authoritative&project=blob_world",
+      "current_state": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=current_state&project=blob_world",
+      "open_questions": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=open_questions&project=blob_world",
+      "roadmap": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=roadmap&project=blob_world",
+      "edges": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=edges&project=blob_world"
+    },
+    "ecosystem_ccg": {
+      "authoritative": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=authoritative&project=ecosystem_ccg",
+      "current_state": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=current_state&project=ecosystem_ccg",
+      "open_questions": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=open_questions&project=ecosystem_ccg",
+      "roadmap": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=roadmap&project=ecosystem_ccg",
+      "edges": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=edges&project=ecosystem_ccg"
+    },
+    "children_of_battle": {
+      "authoritative": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=authoritative&project=children_of_battle",
+      "current_state": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=current_state&project=children_of_battle",
+      "open_questions": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=open_questions&project=children_of_battle",
+      "roadmap": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=roadmap&project=children_of_battle",
+      "edges": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=edges&project=children_of_battle"
+    },
+    "hextorussim": {
+      "authoritative": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=authoritative&project=hextorussim",
+      "current_state": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=current_state&project=hextorussim",
+      "open_questions": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=open_questions&project=hextorussim",
+      "roadmap": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=roadmap&project=hextorussim",
+      "edges": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=edges&project=hextorussim"
+    }
+  }
+}
