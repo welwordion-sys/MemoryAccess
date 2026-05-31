@@ -7,7 +7,7 @@
     "acknowledgement": "Loaded kb.json v1.0.0. Type: load: meta.workflow for working style and session rules.",
     "instructions": [
       "1. Acknowledge this file is loaded including version number.",
-      "2. Immediately fetch meta.behaviour_personality from GitHub (see github.meta_chunks.behaviour_personality). This is mandatory — it loads operational rules.",
+      "2. Immediately after loading: fetch behaviour rules from startup_queries.behaviour_personality using web_fetch with supabase.headers. This replaces the old GitHub chunk fetch."
       "3. For ALL project knowledge (perspective, blob_world, ecosystem_ccg, children_of_battle): query Supabase REST API only. Use web_fetch with headers from supabase.headers. See supabase.query_patterns.",
       "4. NEVER fetch files from the GitHub chunks/ or index/ directories for project knowledge. That is the old system. Supabase is the source of truth.",
       "5. For meta content other than behaviour_personality (workflow, session_lock): fetch from GitHub using github.meta_chunks paths.",
@@ -16,7 +16,10 @@
       "8. When starting work on perspective: first query authoritative nodes (tags=cs.{authoritative}) to get the reconciled ground truth before loading anything else."
     ]
   },
-
+	 "startup_queries": {
+  "behaviour_personality": "https://oniywvgbjtusvrgoklrm.supabase.co/rest/v1/nodes?project=eq.meta&legacy_chunk=eq.meta.behaviour_personality&select=body",
+  "projects_list": "https://oniywvgbjtusvrgoklrm.supabase.co/rest/v1/projects?select=name,summary,status&order=name.asc"
+}
   "supabase": {
     "rest_api": "https://oniywvgbjtusvrgoklrm.supabase.co/rest/v1",
     "publishable_key": "FILL_IN_PUBLISHABLE_KEY",
