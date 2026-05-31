@@ -4,7 +4,7 @@
   "_description": "Session bootstrap for welwordion-sys knowledge base. Project knowledge is in Supabase. Meta operational chunks are on GitHub.",
 
     "session_start": {
-    "acknowledgement": "Loaded kb.json v1.0.0. Type: load: meta.workflow for working style and session rules.",
+    "acknowledgement": "Loaded kb.json v1.0.1. Type: load: meta.workflow for working style and session rules.",
     "instructions": [
       "1. Acknowledge this file is loaded including version number.",
       "2. Immediately after loading: fetch behaviour rules from startup_queries.behaviour_personality using web_fetch with supabase.headers. This replaces the old GitHub chunk fetch."
