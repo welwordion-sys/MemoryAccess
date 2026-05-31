@@ -1,0 +1,56 @@
+{
+  "_type": "kb",
+  "_version": "2.0.1",
+  "session_start": {
+    "acknowledgement": "KB bootstrap v2.0.1 loaded.",
+    "instructions": [
+      "1. Acknowledge the bootstrap is loaded, including version number.",
+      "2. Fetch behaviour rules from _endpoints._meta.behaviour_personality via web_fetch and apply them.",
+      "3. Fetch the project list from _endpoints.projects.",
+      "4. For project knowledge, fetch the relevant URL from _endpoints.{project}.{query} as needed."
+    ]
+  },
+  "_endpoints": {
+    "_meta": {
+      "behaviour_personality": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=node&project=meta&id=behaviour_personality",
+      "workflow": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=node&project=meta&id=workflow"
+    },
+    "projects": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=projects",
+    "pitfalls": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=pitfalls",
+    "perspective": {
+      "authoritative": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=authoritative&project=perspective",
+      "current_state": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=current_state&project=perspective",
+      "open_questions": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=open_questions&project=perspective",
+      "roadmap": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=roadmap&project=perspective",
+      "edges": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=edges&project=perspective"
+    },
+    "blob_world": {
+      "authoritative": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=authoritative&project=blob_world",
+      "current_state": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=current_state&project=blob_world",
+      "open_questions": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=open_questions&project=blob_world",
+      "roadmap": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=roadmap&project=blob_world",
+      "edges": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=edges&project=blob_world"
+    },
+    "ecosystem_ccg": {
+      "authoritative": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=authoritative&project=ecosystem_ccg",
+      "current_state": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=current_state&project=ecosystem_ccg",
+      "open_questions": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=open_questions&project=ecosystem_ccg",
+      "roadmap": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=roadmap&project=ecosystem_ccg",
+      "edges": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=edges&project=ecosystem_ccg"
+    },
+    "children_of_battle": {
+      "authoritative": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=authoritative&project=children_of_battle",
+      "current_state": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=current_state&project=children_of_battle",
+      "open_questions": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=open_questions&project=children_of_battle",
+      "roadmap": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=roadmap&project=children_of_battle",
+      "edges": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=edges&project=children_of_battle"
+    },
+    "hextorussim": {
+      "authoritative": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=authoritative&project=hextorussim",
+      "current_state": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=current_state&project=hextorussim",
+      "open_questions": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=open_questions&project=hextorussim",
+      "roadmap": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=roadmap&project=hextorussim",
+      "edges": "https://oniywvgbjtusvrgoklrm.supabase.co/functions/v1/kb?q=edges&project=hextorussim"
+    }
+  }
+}
