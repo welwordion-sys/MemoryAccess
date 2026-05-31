@@ -16,7 +16,7 @@
       "8. When starting work on perspective: first query authoritative nodes (tags=cs.{authoritative}) to get the reconciled ground truth before loading anything else."
     ]
   },
-	 "startup_queries": {
+"startup_queries": {
   "behaviour_personality": "https://oniywvgbjtusvrgoklrm.supabase.co/rest/v1/nodes?project=eq.meta&legacy_chunk=eq.meta.behaviour_personality&select=body",
   "projects_list": "https://oniywvgbjtusvrgoklrm.supabase.co/rest/v1/projects?select=name,summary,status&order=name.asc"
 }
