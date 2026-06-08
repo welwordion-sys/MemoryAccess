@@ -1,15 +1,15 @@
 {
   "_chunk": "projects.ecosystem_ccg.frameworks",
   "_project": "ecosystem_ccg",
-  "_last_updated": "2026-05-29",
-  "_session_note": "ecosystem_core built and validated. sim_test ported. Constants confirmed. Omnivore split logic implemented but dispatch bug still present — omnivore going through herbivore_fitness path instead of omnivore_fitness_at. Next session: fix dispatch, test omnivore dynamics.",
+  "_last_updated": "2026-06-08",
+  "_session_note": "Omnivore now working end-to-end. Dispatch bug fixed via two-pass + simultaneous-commit split resolution. Minerals reworked to limit producers (need scales with pop). Cap-based omnivore food formula. P+H+O confirmed stable. trampling currently 0 in sim.toml — minerals carry producer-limit load. Outstanding: omnivore entry-window tests, P+O boom-bust retest, four-way P+H+C+O, trampling revival at low value.",
 
   "overview": {
     "name": "Ecosystem CCG",
     "type": "card game / simulation",
     "language": "Rust",
     "target_platform": "Termux (terminal) now, Android/Steam later",
-    "status": "active — ecosystem_core running. sim_test ported. Constants confirmed. Omnivore dispatch bug pending fix.",
+    "status": "active — ecosystem_core running. sim_test ported. Carnivore AND omnivore both confirmed as stabilizers. Game crate not yet ported.",
     "files": ["main.rs", "types.rs", "cards.rs", "biome.rs", "player.rs", "ai.rs", "game.rs", "ui.rs"],
     "sim_files": ["sim_test/src/main.rs", "sim_test/sim.toml"],
     "core_files": ["core/src/lib.rs", "core/src/db.rs", "core/src/inputs.rs", "core/src/math.rs", "core/src/queries.rs"],
@@ -32,11 +32,11 @@
     "ecosystem_core": {
       "status": "BUILT AND RUNNING",
       "role": "Standalone crate owning all fitness computation via salsa 0.26. sim_test depends on it. Game crate not yet ported.",
-      "pattern": "OrganismInputs and BiomeInputs as salsa input structs. Trait modifiers are leaf fields with defaults. Fitness queries are tracked functions. Adding a trait = setting a leaf field. No formula changes required.",
-      "db_pattern": "Db trait (#[salsa::db]) + EcosystemDb concrete struct. All query functions take &dyn Db. fitness_for takes &mut dyn Db for omnivore split setting.",
-      "setter_export": "salsa::Setter re-exported as ecosystem_core::Setter for downstream crates.",
-      "last_population": "OrganismInputs has last_population field. Set at start of each turn before fitness queries. food_pool uses last_population not population (Option B timing).",
-      "omnivore_carnivore_fraction": "OrganismInputs has omnivore_carnivore_fraction field (f32, default 0.5). Set by fitness_for when role is Omnivore after trying all OMNI_SPLITS."
+      "pattern": "OrganismInputs and BiomeInputs as salsa input structs. Trait modifiers are leaf fields with defaults. Fitness queries are tracked functions. Adding a trait = setting a leaf field.",
+      "db_pattern": "Db trait (#[salsa::db]) + EcosystemDb concrete struct. fitness_for takes &dyn Db (pure compute, no mutation). best_omnivore_split takes &mut dyn Db (searches splits, restores state without committing).",
+      "setter_export": "salsa::Setter re-exported as ecosystem_core::Setter.",
+      "last_population": "OrganismInputs has last_population field. Set at start of each turn before fitness queries. food_pool uses last_population (Option B timing).",
+      "omnivore_carnivore_fraction": "OrganismInputs field (f32, default 0.5 baseline). Resolved each turn via simultaneous-commit (see omnivore_system)."
     }
   },
 
@@ -57,14 +57,15 @@
     "usage": "cd ~/ecosystem/sim_test && cargo run",
     "status": "PORTED TO ecosystem_core. biome.rs and types.rs still present as dead files.",
     "food_pool_timing": "Option B active — last_population snapshot at turn start. food_pool = sum(last_pop * food_output_multiplier). No fitness scaling.",
-    "population_thresholds": "Applied in sim_test/src/main.rs after fitness queries. Role-grouped for best/worst comparisons."
+    "population_thresholds": "Applied in sim_test/src/main.rs after fitness queries. Role-grouped; omnivore grouped by c (>0.5 carnivore group, else herbivore group).",
+    "turn_structure": "1) snapshot last_population. 2) PASS 1: resolve omnivore splits via best_omnivore_split against shared baseline, commit simultaneously. 3) PASS 2: compute all fitnesses. 4) apply population thresholds. 5) update land organism list."
   },
 
   "share_formula": {
-    "water": "water_share = (org_pop / total_animal_pop) * water — equal share per individual",
-    "herbivore_food": "food_share = (org_pop / total_herb_omni_pop) * food_pool — equal share per individual. Omnivore participates at fraction (1-c).",
-    "carnivore_food": "food_share = (org_pop / total_carn_pop) * prey_value — equal share per individual. Omnivore participates at fraction c.",
-    "rationale": "Pop-based not need-based. Each individual gets equal access; need determines sufficiency."
+    "water": "water_share = (org_pop / total_animal_pop) * water * water_multiplier. Need only determines sufficiency via resource_factor.",
+    "herbivore_food": "food_share = (org_pop / total_herb_omni_pop) * food_pool. Omnivore participates at (1-c).",
+    "carnivore_food": "food_share = (org_pop / total_carn_pop) * prey_value. Omnivore participates at c.",
+    "rationale": "Pop-based not need-based. Population IS biomass. Size is individual-only, used for eligibility gates not quantity."
   },
 
   "fitness_system": {
@@ -75,7 +76,7 @@
       "below_product": "product(f) for all f < 1.0"
     },
     "critical_check": "Any single factor below FITNESS_CRITICAL_NEED → returns FITNESS_AUTO_DOWNGRADE * 0.5",
-    "food_pool_timing": "Uses last_population (Option B) — one-turn delay. No fitness scaling on output."
+    "combine_factors": "Single helper in math.rs takes &[factors]. Thresholds read from constants, not passed as args."
   },
 
   "resource_factor": {
@@ -84,76 +85,73 @@
   },
 
   "resources": {
-    "sunlight": "tolerance_factor(supply, sun_need, 999.0). Shading: available_light -= sum(territory * pop) * SHADE_K per size group.",
-    "minerals": "resource_factor(share, mineral_need). share = (reach / total_reach) * minerals.",
-    "water": "Pop-based share. resource_factor(share, water_need * pop).",
+    "sunlight": "tolerance_factor(supply, sun_need, 999.0). Shading: largest producers shade smaller; available -= territory*pop*SHADE_K per tier.",
+    "minerals": "resource_factor(mineral_share, mineral_need * pop). mineral_share = (reach*pop / total_reach) * minerals. NEED NOW SCALES WITH POP — this makes minerals a per-capita producer self-limit even for a single species. Key change this session.",
+    "water": "Pop-based share. resource_factor(share, water_need * pop). No need-weighting in share.",
     "food_herbivore": "Pop-based share of food_pool. resource_factor(share, food_need * pop).",
     "food_carnivore": "Pop-based share of prey_value. resource_factor(share, food_need * pop).",
+    "food_omnivore": "Cap-based blend — see omnivore_system.",
     "moisture": "tolerance_factor. Producer only.",
-    "temperature": "tolerance_factor. All roles."
+    "temperature": "tolerance_factor. All roles.",
+    "territory": "All roles now route through tolerance_factor(total_territory, 0.0, space) — unified from old hand-rolled sqrt penalty. Capped at 1.0 below capacity, sqrt falloff above. Single producer never hits cap at POP_MAX=6 with space 8; multi-species needed to engage."
   },
 
   "pressure_system": {
-    "food_pressure": "(total_herb_omni_food_need / total_prod_pop) * PRESSURE_K1. Applied to producer fitness.",
-    "trampling": "sum(max(0, herb_size - prod_size) * herb_territory * herb_pop) * prod_pop * PRESSURE_K2. Absolute scaling — product of herbivore and producer populations. Herbivore and omnivore only, carnivore excluded.",
-    "trampling_rationale": "Physical encounter rate scales with both populations absolutely. Carnivore biomass too low to contribute."
+    "food_pressure": "(grazer_pressure / prod_pop) * PRESSURE_K1. grazer_pressure = sum over herb/omni of pop*weight (weight=1 herbivore, (1-c) omnivore). Applied to producer fitness.",
+    "trampling": "sum(max(0, consumer_size - prod_size) * territory * pop) * coverage * PRESSURE_K2. coverage = prod_pop/(prod_pop+1) — Michaelis-Menten saturation, eases early growth, saturates ~0.9 at pop 9. Omnivore trampling NOT weighted by c — full population always (intended: physical presence tramples regardless of diet).",
+    "trampling_status": "PRESSURE_K2 currently set to 0 in sim.toml. Minerals now carry the producer-limit / collapse load. Trampling to be revived at LOW value to add size-asymmetry flavor (large herbivore vs small producer) without being the collapse driver.",
+    "trampling_size_role": "Size in trampling is legitimate — it is a size-asymmetry physical interaction (big animal steps on small plant), distinct from biomass. This is why trampling is worth keeping alongside minerals — different axis."
   },
 
   "predation_system": {
-    "hunt_limit": "size * hunt_multiplier + hunt_size_bonus — additive bonus. hunt_multiplier always 1.0 for base organisms (vestigial, to be removed).",
-    "prey_value_herbivore": "size * pop * HERBIVORE_NUTRITION_FACTOR (0.7). Omnivore as prey also uses this.",
-    "prey_value_carnivore": "size * pop * CARNIVORE_NUTRITION_FACTOR (0.35).",
-    "competition": "total_prey_value / total_carn_pop — per individual share. Omnivore participates at fraction c.",
-    "predation_factor": "1 / (1 + carn_food_need / prey_share * PREDATION_K). Applied to herbivore and omnivore fitness."
+    "hunt_limit": "size * hunt_multiplier + hunt_size_bonus. hunt_multiplier always 1.0 base (vestigial, remove from config). At size 1.7 omnivore hunts prey <1.7 (catches herbivore 1.5, not carnivore 2.0).",
+    "prey_value": "sum over eligible prey of (pop * nutrition). NO SIZE — population is biomass. Nutrition: HERBIVORE_NUTRITION_FACTOR for herbivore/omnivore prey, CARNIVORE_NUTRITION_FACTOR for carnivore prey. Used for FEEDING only.",
+    "prey_biomass": "sum over eligible prey of (pop). No nutrition. Was added for predation decoupling but predation_factor now computes predator_pressure inline — prey_biomass is effectively dead code, remove later.",
+    "predation_factor": "PER-PREY now — takes the specific prey organism. predator_pressure = sum over hunters that can hunt THIS prey of (pop * weight); weight=1 carnivore, c omnivore. factor = 1/(1 + predator_pressure/prey_pop * PREDATION_K). NO nutrition, NO food_need — decoupled this session. A prey no predator can hunt feels zero pressure.",
+    "decoupling_rationale": "Nutrition in predation made it functionally food_need-in-disguise. Removed so nutrition only affects carnivore feeding, independent lever from predation pressure."
   },
 
   "omnivore_system": {
-    "split_options": "OMNI_SPLITS = [0.0, 0.25, 0.5, 0.75] — carnivore fraction. 1.0 excluded (that is Role::Carnivore).",
-    "food_blend": "plant_food = (pop * herb_frac / total_herb_omni_pop) * food_pool. prey_food = (pop * c / total_carn_pop) * prey_value. total_food = plant_food + prey_food.",
-    "aggregate_participation": "total_herb_omni_pop: omnivore counted at (1-c). total_carn_pop: omnivore counted at c.",
-    "prey_eligibility": "Same size rules as carnivore. hunt_limit = size * hunt_multiplier + hunt_size_bonus. At size 1.7 with multiplier 1.0: hunts prey below 1.7, catches herbivore (1.5) but not carnivore (2.0).",
-    "as_prey": "Omnivore is prey for carnivores at HERBIVORE_NUTRITION_FACTOR regardless of current split.",
-    "dispatch_bug": "fitness_for currently dispatches omnivore to herbivore_fitness instead of omnivore_fitness_at. Bug pending fix next session.",
-    "calibration_target": "50% split as reference. Tune food_need and water_need at 50/50."
+    "split_options": "OMNI_SPLITS = [0.0, 0.25, 0.5, 0.75, 1.0] — carnivore fraction c. 1.0 INCLUDED (omnivore can fully commit to hunting; earlier exclusion was wrong and capped it at 0.75).",
+    "resolution": "Simultaneous-move. All omnivores sit at current committed fraction (0.5 turn-1 baseline). best_omnivore_split finds each one's best c against that SHARED state WITHOUT committing (restores after search). All decisions collected, then committed together. Order-independent, deterministic. Multi-omnivore converges over turns rather than solving joint optimum instantly.",
+    "food_formula": "Per side: proportional = (pool / total_pool_pop) * (pop * commitment); cap = pool * commitment; intake = min(proportional, cap). prey side: pool=prey_value, commitment=c, total_pool_pop=total_carn_pop. plant side: pool=food_pool, commitment=(1-c), total_pool_pop=total_herb_omni_pop. total_food = prey_food + plant_food, vs resource_factor(total, food_need*pop).",
+    "cap_rationale": "Earlier bug: proportional share alone let a LONE omnivore at c=0.5 sweep the entire prey pool because c cancelled (c in numerator, c*pop in denominator). The min-with-cap (pool*commitment) ensures a half-committed sole hunter takes at most half the pool. Competition (proportional) binds when contested; commitment (cap) binds when uncontested.",
+    "aggregate_participation": "total_herb_omni_pop counts omnivore at (1-c). total_carn_pop counts omnivore at c. predation predator_pressure and grazer food_pressure weight omnivore fractionally. Trampling does NOT (full pop).",
+    "grouping_for_thresholds": "In main.rs population thresholds: omnivore joins carnivore group when c>0.5, else herbivore group. NOT its own group.",
+    "as_prey": "Omnivore is prey for carnivores at HERBIVORE_NUTRITION_FACTOR regardless of current split."
   },
 
   "constants": {
     "confirmed": {
       "SHADE_K": 0.4,
       "FITNESS_AUTO_UPGRADE": 1.25,
-      "FITNESS_UPGRADE_IF_BEST": 0.92,
+      "FITNESS_UPGRADE_IF_BEST": 0.9,
       "FITNESS_DOWNGRADE_IF_WORST": 0.85,
       "FITNESS_AUTO_DOWNGRADE": 0.5,
       "FITNESS_CRITICAL_NEED": 0.5,
       "FITNESS_START": 1.0,
       "POP_START": 1,
       "POP_MAX": 6,
-      "PRESSURE_K1": 0.2,
-      "PRESSURE_K2": 0.02,
-      "PREDATION_K": 0.15,
-      "HERBIVORE_NUTRITION_FACTOR": 0.7,
-      "CARNIVORE_NUTRITION_FACTOR": 0.35
+      "PRESSURE_K1": 0.21,
+      "PRESSURE_K2": "0.06 in math.rs but set 0 in sim.toml during mineral tuning",
+      "PREDATION_K": 0.3,
+      "HERBIVORE_NUTRITION_FACTOR": 1.0,
+      "CARNIVORE_NUTRITION_FACTOR": 0.95
     },
-    "threshold_note": "Stability window: DOWNGRADE_IF_WORST=0.85, UPGRADE_IF_BEST=0.92. Narrow gap prevents oscillation trap while allowing carnivore to hold population at low prey."
+    "tuning_note": "Values shifted from prior session during mineral overhaul. PREDATION_K up to 0.3, nutrition factors raised (herbivore 1.0, carnivore 0.95) to soften carnivore fitness cliff at hunter:prey parity. Producer mineral_need lowered to ~1.0 so mineral pinch bites at higher producer pop. These are mid-tuning — re-confirm before locking.",
+    "threshold_note": "Stability window DOWNGRADE_IF_WORST=0.85 / UPGRADE_IF_BEST=0.9. Narrow gap prevents oscillation trap."
   },
 
   "reference_land": {
-    "sunlight": 4.0,
-    "water": 8.0,
-    "moisture": 5.0,
-    "minerals": 8.0,
-    "temperature": 15.0,
-    "space_producer": 8.0,
-    "space_herbivore": 8.0,
-    "space_carnivore": 4.0,
-    "health": 12,
-    "regen": 1
+    "sunlight": 4.0, "water": 8.0, "moisture": 5.0, "minerals": 8.0,
+    "temperature": 15.0, "space_producer": 8.0, "space_herbivore": 8.0,
+    "space_carnivore": 4.0, "health": 12, "regen": 1
   },
 
   "reference_organisms": {
     "producer": {
       "size": 1.0, "territory_need": 1.0, "reach": 1.0,
-      "mineral_need": 1.5, "sunlight_need": 2.5,
+      "mineral_need": "~1.0 (lowered from 1.5 this session so minerals bite at higher pop)", "sunlight_need": 2.5,
       "moisture_tolerance": "2.0-8.0", "temp_tolerance": "-5 to 35", "water_need": 0.0
     },
     "herbivore": {
@@ -162,99 +160,84 @@
     },
     "omnivore": {
       "size": 1.7, "territory_need": 1.8, "hunt_multiplier": 1.0,
-      "water_need": 1.4, "food_need": 1.1,
+      "water_need": 1.4, "food_need": 1.3,
       "temp_tolerance": "-5 to 30",
-      "note": "hunt_multiplier to be removed from config — always 1.0 for base organisms. Dispatch bug pending fix."
+      "note": "hunt_multiplier vestigial — remove from config, hardcode 1.0."
     },
     "carnivore": {
       "size": 2.0, "territory_need": 2.0, "hunt_multiplier": 1.0,
-      "water_need": 2.1, "food_need": 1.3,
+      "water_need": "1.1 (good carnivore run was food 1.0 / water 1.1, NOT old 1.3/2.1)",
+      "food_need": 1.0,
       "temp_tolerance": "-10 to 30"
     }
   },
 
   "confirmed_dynamics": {
-    "without_carnivore": {
-      "1_1": "Collapse confirmed. Both extinct by turn 8-10.",
+    "without_predator": {
+      "1_1": "Collapse confirmed (mineral + grazing pressure, trampling 0). Boom to ~P3/H5 then crash.",
       "2_1": "Collapse confirmed.",
-      "design_goal": "No stable P+H — collapse is default. Carnivore or omnivore required for stability."
+      "design_goal": "No stable P+H — collapse is default. Predator (carnivore or omnivore) required for stability."
     },
     "with_carnivore": {
-      "2_2_1": "Stable. P reaches 4-6, H stabilizes 2-3, C stabilizes 2-3.",
-      "3_3_1": "Stable. P reaches 5-6, H stabilizes 2-4, C stabilizes 2-3.",
-      "4_4_1": "Stable. Takes until turn 8 to settle. Same final state.",
-      "entry_window": "Confirmed wide: 2/2/1 through 4/4/1 all stable.",
-      "carnivore_role": "Keeps H below trampling threshold, allows P to grow toward max."
+      "2_2_1": "Stable P6/H4/C3 — near-parity carn:herb. Confirmed with mineral-limit model, trampling 0, PREDATION_K 0.3, nutrition 1.0.",
+      "entry_window": "With mineral model the window SHIFTED: 1/1/1 works, 3/3/1 too late (producer already mineral-stressed by then). Opposite of old trampling-era window. Accepted — turn-1 full-web establishment matches card economy (full opening hand) and is ecologically sensible.",
+      "carnivore_role": "Keeps herbivore in check so producer survives mineral pressure."
     },
     "with_omnivore": {
-      "status": "PENDING — dispatch bug prevents omnivore split logic from firing.",
-      "p_alone_boom_bust": "Confirmed — P+O collapses same as P+H without carnivore.",
-      "p_h_o": "Not yet confirmed stable — blocked by dispatch bug."
+      "status": "CONFIRMED STABLE.",
+      "p_h_o_1_1_1": "Stable through 20 turns. Settles ~turn 8 into 2-turn cycle: P6 locked, H 3<->4, O 2<->3. Omnivore alternates c=1.0 (when H=4) and c=0.75 (when H=3) — tracks prey availability like real predator-prey. Near-parity O:H.",
+      "split_behavior": "Omnivore picks high c (1.0/0.75) when prey abundant, drops toward 0.5 when herbivore scarce. Adaptive splitting working as designed.",
+      "outstanding": "P+O without herbivore (boom-bust retest), entry window (only 1/1/1 confirmed), four-way P+H+C+O."
     }
   },
 
+  "session_milestones_2026-06-08": [
+    "Fixed omnivore dispatch — was routing to herbivore_fitness, now omnivore_fitness_at via fitness_for.",
+    "Fixed evaluation-order bug — producer saw stale omnivore c. Two-pass: resolve splits first, then compute fitnesses.",
+    "Replaced single-pass split with simultaneous-commit (best_omnivore_split + collect + commit together). Order-independent for multi-omnivore.",
+    "Reworked minerals: need scales with pop → producer self-limits even as single species. Now carries collapse load.",
+    "Unified all territory through tolerance_factor.",
+    "Decoupled predation from nutrition — predation_factor now per-prey, population-only, no food_need.",
+    "Removed size from prey_value — population is biomass.",
+    "Cap-based omnivore food formula — min(proportional_share, pool*commitment) fixes lone-hunter sweeping whole pool.",
+    "Added c=1.0 to OMNI_SPLITS."
+  ],
+
   "card_ideas_noted": {
-    "camouflage_trait": "PredationResistance scaling with population density — uses sparsity-style mechanic",
-    "carnivorous_plant": "Producer role with predation-like mechanic — gains fitness from small animal presence.",
-    "hunt_size_bonus": "Additive in ecosystem_core. hunt_multiplier vestigial — remove from config next session."
+    "camouflage_trait": "PredationResistance scaling with population density — sparsity-style.",
+    "carnivorous_plant": "Producer role with predation-like mechanic.",
+    "hunt_multiplier": "Vestigial — remove from config, hardcode 1.0."
   },
 
   "decisions": {
     "2026-05-26": [
-      {
-        "decision": "Adopt salsa 0.26 as incremental computation backend for ecosystem_core",
-        "rationale": "Validated prototype confirms dirty-flagging isolates per-organism subgraphs; trait modifiers as input leaves require no formula changes",
-        "affects": "projects.ecosystem_ccg.frameworks"
-      }
+      {"decision": "Adopt salsa 0.26 as incremental computation backend", "rationale": "Dirty-flagging isolates per-organism subgraphs; trait modifiers as input leaves need no formula changes", "affects": "projects.ecosystem_ccg.frameworks"}
     ],
-    "2026-05-29": [
-      {
-        "decision": "Trampling scales as absolute product (herb_pop * prod_pop), not ratio",
-        "rationale": "Physical encounter rate scales with both populations; ratio formula prevented P from growing under carnivore control",
-        "affects": "core/src/queries.rs herbivore_pressure_on_producer"
-      },
-      {
-        "decision": "food_pool decoupled from producer fitness (Option B)",
-        "rationale": "Fitness-scaled food created tight feedback preventing boom-bust. Pop-based food gives cliff-edge collapse.",
-        "affects": "core/src/queries.rs food_pool"
-      },
-      {
-        "decision": "Narrow stability window: DOWNGRADE_IF_WORST=0.85, UPGRADE_IF_BEST=0.92",
-        "rationale": "Allows carnivore to hold population at low prey without oscillation trap.",
-        "affects": "core/src/math.rs"
-      },
-      {
-        "decision": "Omnivore uses adaptive split across OMNI_SPLITS [0.0, 0.25, 0.5, 0.75] each turn",
-        "rationale": "Maximizes fitness given current food availability. Participates fractionally in both herb and carn pools.",
-        "affects": "core/src/queries.rs omnivore_fitness_at, fitness_for"
-      }
+    "2026-06-08": [
+      {"decision": "Minerals limit producers via pop-scaled need", "rationale": "Gives producer an intrinsic per-capita cap independent of trampling; shares collapse load so trampling need not be extreme", "affects": "core/src/queries.rs producer_fitness"},
+      {"decision": "Predation decoupled from nutrition; per-prey factor", "rationale": "Nutrition-in-predation was food_need in disguise; per-prey lets unhuntable prey feel zero pressure", "affects": "core/src/queries.rs predation_factor"},
+      {"decision": "Population is biomass; size is eligibility-only (except trampling size-asymmetry)", "rationale": "Size removed from prey_value; kept in trampling as genuine size-asymmetry interaction", "affects": "core/src/queries.rs prey_value, trampling"},
+      {"decision": "Omnivore food cap = min(proportional, pool*commitment)", "rationale": "Lone hunter at c<1 was sweeping whole pool (c cancelled in share); cap throttles intake by commitment when uncontested", "affects": "core/src/queries.rs omnivore_fitness_at"},
+      {"decision": "Omnivore split resolved by simultaneous-commit", "rationale": "Sequential resolution was order-dependent and producer saw stale c; simultaneous commit from shared baseline is deterministic", "affects": "sim_test/src/main.rs, core/src/queries.rs best_omnivore_split"},
+      {"decision": "OMNI_SPLITS includes 1.0", "rationale": "Omnivore must be able to fully commit to hunting when optimal; prior exclusion capped it at 0.75", "affects": "core/src/math.rs"}
     ]
   },
 
   "implementation": [
-    {
-      "project": "ecosystem_ccg",
-      "date": "2026-05-26",
-      "attempted": "salsa_proto — producer + herbivore + carnivore fitness graph",
-      "outcome": "All four validation checks passed.",
-      "decided": "Migrate fitness resolution into ecosystem_core crate using salsa 0.26."
-    },
-    {
-      "project": "ecosystem_ccg",
-      "date": "2026-05-29",
-      "attempted": "ecosystem_core build + sim_test port + constant tuning + omnivore split implementation",
-      "outcome": "ecosystem_core builds. sim_test ported and running. Constants confirmed against reference dynamics. Workspace restructured to ~/ecosystem/. Omnivore split logic written but dispatch bug prevents it firing — omnivore still routed to herbivore_fitness.",
-      "decided": "Next: fix omnivore dispatch in queries.rs, test P+H+O dynamics, then clean up hunt_multiplier from config."
-    }
+    {"project": "ecosystem_ccg", "date": "2026-05-26", "attempted": "salsa_proto fitness graph", "outcome": "All four validation checks passed.", "decided": "Migrate to ecosystem_core."},
+    {"project": "ecosystem_ccg", "date": "2026-05-29", "attempted": "ecosystem_core build + sim_test port + tuning + omnivore split", "outcome": "Built and running. Omnivore dispatch bug found.", "decided": "Fix dispatch next."},
+    {"project": "ecosystem_ccg", "date": "2026-06-08", "attempted": "Omnivore dispatch fix, mineral overhaul, predation decoupling, cap-based omnivore food, simultaneous-commit resolution", "outcome": "P+H+O confirmed stable through 20 turns with adaptive splitting and near-parity O:H. Carnivore still stable P6/H4/C3. Minerals carry producer-limit; trampling at 0 pending low-value revival.", "decided": "Next: omnivore entry-window + P+O boom-bust + four-way tests, then revive trampling low, then port game crate."}
   ],
 
   "next_session_tasks": [
-    "Fix omnivore dispatch bug in core/src/queries.rs — verify fitness_for routes Omnivore to omnivore_fitness_at",
-    "Test P+H+O dynamics — confirm omnivore stabilizes like carnivore",
-    "Remove hunt_multiplier from sim.toml and OrgConfig — hardcode 1.0 in OrganismInputs::new",
-    "Test P+O alone boom-bust still works after dispatch fix",
+    "Test P+O without herbivore — confirm boom-bust collapse (omnivore can't sustain on plants alone)",
+    "Test omnivore entry window — does P+H+O stabilize from 2/2/1, 3/3/1, 4/4/1 or only 1/1/1",
+    "Test four-way P+H+C+O — does it hold with both predators present",
+    "Revive trampling at low PRESSURE_K2 — size-asymmetry flavor, not collapse driver",
+    "Re-confirm constants after mineral overhaul (PREDATION_K 0.3, nutrition 1.0/0.95, producer mineral_need ~1.0)",
+    "Remove hunt_multiplier from sim.toml and OrgConfig — hardcode 1.0",
+    "Remove dead prey_biomass function from queries.rs",
     "Port game crate (game.rs, ai.rs, ui.rs) to v4 types and ecosystem_core",
-    "Remove dead biome.rs and types.rs from sim_test",
-    "cargo build game crate"
+    "Remove dead biome.rs and types.rs from sim_test"
   ]
 }
